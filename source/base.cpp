@@ -8,7 +8,7 @@
  * 	2 March 2023
  * 
  * @brief
- * 	Backend code for 'source/base.hpp'
+ * 	Backend code for 'include/base.hpp'
  * 
  * @copyright
  * 	Copyright (C) 2023 Evan Clegern
