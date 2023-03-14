@@ -1,5 +1,5 @@
 # Anoptamin
-Currently in development. Base driver code behind a test game I'm working on.
+Currently in development. Base driver code behind a test game I'm working on. So far in development, in fact, it is not worthy of being considered a game, more like an "abstracted way to access SDL windows."
 
 ## External Libraries
 Anoptamin abstracts itself from Simple DirectMedia Layer 2 and Open Graphics Layer 2 in a straightforward way, using wrapper classes to streamline the process. Anoptamin also makes use of the GNU C library's `<execinfo.h>` utilities.
