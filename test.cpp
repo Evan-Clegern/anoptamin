@@ -19,6 +19,12 @@ Anoptamin::Base::c_HookReturn exitWindowOnEsc(size_t inputVectorSize, uint16_t i
 		if (X.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			Anoptamin_LogDebug("MWAAHAHAHAHAHAHAH!!!!");
 			BobWindow->closeWindow(); break;
+		} else if (X.key.keysym.scancode == SDL_SCANCODE_GRAVE) {
+			if (BobWindow->windowFullscreen()) {
+				BobWindow->exitFullscreen(); break;
+			} else {
+				BobWindow->goFullscreen(); break;
+			}
 		}
 	}
 	std::clock_t EndTicks = std::clock();

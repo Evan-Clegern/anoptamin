@@ -467,4 +467,14 @@ LIBANOP_FUNC_CODEPT const bool c_SDLWindow::isOpen() const noexcept {
 	return this->m_open;
 }
 
+LIBANOP_FUNC_CODEPT void c_SDLWindow::goFullscreen() {
+	assert_safety( this->m_open );
+	check_video( SDL_SetWindowFullscreen(this->mp_window, SDL_WINDOW_FULLSCREEN) == 0 );
+}
+//! Makes the window leave fullscreen mode.
+LIBANOP_FUNC_CODEPT void c_SDLWindow::exitFullscreen() {
+	assert_safety( this->m_open );
+	check_video( SDL_SetWindowFullscreen(this->mp_window, 0) == 0 );  // This call sets the fullscreen state to 0 (windowed)
+}
+
 }} // End Anoptamin::Low

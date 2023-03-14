@@ -57,11 +57,11 @@ namespace Anoptamin { namespace Base {
 
 //! Identifies the type of window when construction a new c_SDLWindow.
 enum e_SDLWindow_Type : uint8_t {
-	TYPE_GENERIC,
-	TYPE_NO_TASKBAR,
-	TYPE_UTILITY,
-	TYPE_TOOLTIP,
-	TYPE_POPUP
+	TYPE_GENERIC,  //! Generic Windows have all the standard utilities.
+	TYPE_NO_TASKBAR, //! This indicates that we do not want the window to appear in the taskbar (i.e., minor configuration)
+	TYPE_UTILITY, //! This indicates that we are making a utility-type window (system dependent)
+	TYPE_TOOLTIP, //! This indicates that we are making a window which is a trivial tooltip or informational window.
+	TYPE_POPUP //! This indicates we're making a menu window that pops above other windows.
 };
 
 //! Wrapper for any general SDL window. Implements basic window controls, surface control, and basic event access.
@@ -78,9 +78,10 @@ class c_SDLWindow {
 	
 	SDL_Event m_windowEvents;
 	
+	//! Hook handlers for the various input events that are processed during fullEventPoll().
 	c_Function_Hook m_hookKeyboard, m_hookMouseBtn, m_hookMouseMove, m_hookMouseScrl;
 	
-	//! Updates surface, then frees surface and closes window. Does not deinitialize the pointers.
+	//! Updates the window surface, then frees surface and closes window. Does not deinitialize the pointers.
 	void cleanup();
 public:
 	//! Initializes and opens the window with an undefined or centered position.
@@ -93,7 +94,7 @@ public:
 	~c_SDLWindow();
 	//! Calls the cleanup protocol, then nulls out the pointers and finishes window exit.
 	void closeWindow();
-	//! Query if the window is even open/valid.
+	//! Query if the window is open or not. This is true so long as closeWindow() has not been called from an event poll or user action.
 	const bool isOpen() const noexcept;
 	//! Deques as many events as possible and handles them if they're window related or if they're related to input hooks.
 	std::vector<SDL_Event> fullEventPoll();
@@ -216,56 +217,60 @@ public:
     SDL_SCANCODE_RGUI = 231, // right windows sign, apple command, or other gui interactor
 	*/
 	
-	//! Gets the most recent key presses from the last event poll.
+	//! Gets the most recent key presses from the last event poll. Alternative to using KeyboardEvent hooks.
 	LIBANOP_FUNC_HOT std::vector<SDL_Scancode> getLastKeys();
 	//! Tests if a given key is pressed in last poll.
 	LIBANOP_FUNC_HOT bool keyPressed(SDL_Scancode what);
-	//! Hooks a function for its Keyboard Event hook.
+	//! Hooks a function for this Window's Keyboard Event system.
 	//! The hookable functions are expected to process a vector of SDL_Event objects (union member SDL_KeyboardEvent).
 	uint16_t addHook_KeyboardEvent(const c_Hookable_Func& function);
-	//! Hooks a function for its Mouse Button Event hook.
+	//! Hooks a function for this Window's Mouse Button Event system.
 	//! The hookable functions are expected to process a vector of SDL_Event objects (union member SDL_MouseButtonEvent).
 	uint16_t addHook_MouseButtonEvent(const c_Hookable_Func& function);
-	//! Hooks a function for its Mouse Motion Event hook.
+	//! Hooks a function for this Window's Mouse Motion Event system.
 	//! The hookable functions are expected to process a vector of SDL_Event objects (union member SDL_MouseMotionEvent).
 	uint16_t addHook_MouseMotionEvent(const c_Hookable_Func& function);
-	//! Hooks a function for its Mouse Scroll Event hook.
+	//! Hooks a function for this Window's Mouse Scroll Event system.
 	//! The hookable functions are expected to process a vector of SDL_Event objects (union member SDL_MouseScrollEvent).
 	uint16_t addHook_MouseScrollEvent(const c_Hookable_Func& function);
-	//! Gets the current height.
+	//! Gets the current height of the window from SDL.
 	const uint16_t getWindowHeight() const noexcept;
-	//! Gets the current width.
+	//! Gets the current width of the window from SDL.
 	const uint16_t getWindowWidth() const noexcept;
-	//! Hides the window.
+	//! Hides the window from appearance in userland.
 	void hideWindow();
-	//! Shows the window.
+	//! Shows the window into userland once again.
 	void showWindow();
-	//! Gets visibility.
+	//! Gets visibility (returns TRUE if the window is visible in Userland).
 	const bool getWindowVisiblity() const noexcept;
-	//! Sets the window title.
+	//! Sets the window title to a C string.
 	LIBANOP_FUNC_INPUTS_NONNULL void setTitle(const char* title);
-	//! Sets the window title.
+	//! Sets the window title to a safer string object.
 	void setTitle(std::string title);
 	//! Gets the window title.
 	const std::string getTitle() const noexcept;
-	//! Gets the current flags and returns if we're minimized
+	//! Gets the current flags, and returns if we're minimized.
 	const bool windowMinimized() const noexcept;
-	//! Gets the current flags and returns if we're maximized
+	//! Gets the current flags, and returns if we're maximized.
 	const bool windowMaximized() const noexcept;
-	//! Gets the current flags and returns if we're fullscreen
+	//! Gets the current flags, and returns if we're fullscreen.
 	const bool windowFullscreen() const noexcept;
-	//! Gets the current flags and returns if we've got mouse focus
+	//! Gets the current flags, and returns if we've got mouse focus.
 	const bool windowHasMouse() const noexcept;
-	//! Gets the current flags and returns if we've got general focus
+	//! Gets the current flags, and returns if we've got general focus.
 	const bool windowHasFocus() const noexcept;
-	//! Gets the current flags and returns if we have grabbed keyboard & mouse
+	//! Gets the current flags, and returns if we have grabbed keyboard & mouse.
 	const bool windowFullFocus() const noexcept;
-	//! Updates the internal dimensions info.
+	//! Updates the internal dimensions info; automatically called if the window's dimensions change during a fullEventPoll().
 	void checkDimensions();
-	//! Makes the window maximized
+	//! Makes the window maximized in userland.
 	void maximizeWindow();
-	//! Makes the window minimized
+	//! Makes the window minimized in userland.
 	void minimizeWindow();
+	//! Makes the window enter fullscreen mode.
+	void goFullscreen();
+	//! Makes the window leave fullscreen mode.
+	void exitFullscreen();
 	//! Brings the window to the top for input focus.
 	void focusWindow();
 	//! Restores window from maximizing/minimizing
