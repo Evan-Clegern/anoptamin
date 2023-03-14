@@ -35,3 +35,6 @@ lib/libanoptamin_sdlops.so: lib/libanoptamin_base.so
 	
 test: lib/libanoptamin_sdlops.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps)
+
+01_Hooked_Closing.out: lib/libanoptamin_sdlops.so
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) 01_Hooked_Closing.cpp -o 01_Hooked_Closing.out $(UseBase) $(UseSDLOps)
