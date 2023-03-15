@@ -312,7 +312,6 @@ namespace Graphics {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		glUseProgram( 0 );
-		this->mp_renderCtrl->updateRenderer();
 	}
 	int c_Render_Engine::getAttributeLocation(std::string what) const {
 		check_codelogic(this->m_valid);
@@ -352,11 +351,14 @@ namespace Graphics {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
+		glClear( GL_COLOR_BUFFER_BIT );
 		glEnableVertexAttribArray(attribLocation);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
 		glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
 		glDrawElements( GL_TRIANGLE_FAN, pointsRender, GL_UNSIGNED_INT, NULL );
 		glDisableVertexAttribArray(attribLocation);
+		
+		this->mp_renderCtrl->updateRenderer();
 	}
 }} //End Anoptamin::Graphics
