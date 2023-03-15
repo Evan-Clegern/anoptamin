@@ -38,7 +38,7 @@ lib/libanoptamin_glact.so: lib/libanoptamin_base.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/glact.cpp -o lib/libanoptamin_glact.so $(UseBase) $(UseOpenGL)
 	
 test: lib/libanoptamin_sdlops.so lib/libanoptamin_glact.so
-	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps) $(UseGLAct)
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps) $(UseGLAct) $(UseOpenGL)
 
 01_Hooked_Closing.out: lib/libanoptamin_sdlops.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) 01_Hooked_Closing.cpp -o 01_Hooked_Closing.out $(UseBase) $(UseSDLOps)

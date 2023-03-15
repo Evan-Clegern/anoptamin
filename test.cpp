@@ -14,7 +14,7 @@ Anoptamin::Base::c_HookReturn exitWindowOnEsc(size_t inputVectorSize, uint16_t i
 	std::clock_t StartTicks = std::clock();
 	TopTMP.Valid = 1;
 
-	Anoptamin_LogDebug("Running Hooked Function!");
+	Anoptamin_LogDebug("Running Hooked Function (Inputs: " + std::to_string(inputVectorSize));
 
 
 	for (size_t i = 0; i < inputVectorSize; i++) {
@@ -51,21 +51,36 @@ int main() {
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
 	Anoptamin_LogCommon("Window Created.");
 	
+	BobWindow->addHook_KeyboardEvent(exitWindowOnEsc_F);
+	
 	Anoptamin::Graphics::c_Window_Renderer autorender( BobWindow->getRawSDLWindow() );
 	assert_runtime( Anoptamin::Graphics::initializeGL() );
 	
-	BobWindow->addHook_KeyboardEvent(exitWindowOnEsc_F);
+	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
 	
 	bool isclosed = 0;
-	for (uint16_t i = 0; i < 15000; i++) {
+	for (uint16_t i = 0; i < 1500; i++) {
+		// This essentially gives us a 1 ms delay
 		std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
-		// Wait one millisecond
-		SDL_Delay(1);
 		if (!BobWindow->isOpen()) {
 			isclosed = 1;
 			break;
 		}
 		autorender.updateRenderer();
+	}
+	std::cout << "Exchange Point.\n";
+	// Change colors!
+	if (!isclosed) {
+		glClearColor(1.0, 0.0, 0.0, 0.8);
+		for (uint16_t i = 0; i < 1500; i++) {
+			std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
+			// Wait one millisecond
+			if (!BobWindow->isOpen()) {
+				isclosed = 1;
+				break;
+			}
+			autorender.updateRenderer();
+		}
 	}
 
 	if (!isclosed) BobWindow->closeWindow(); else {
