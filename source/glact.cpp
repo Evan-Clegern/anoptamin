@@ -27,9 +27,49 @@
  * 
  ********/
 
-#inclide "glact.hpp"
+#include "../include/glact.hpp"
 
-namespace Anoptamin { namespace Graphics {
+namespace Anoptamin {
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_COLD void initializeSDLGraphics() {
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+		assert_libsdl( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == 0 );
+		
+		if (SDL_GL_SetSwapInterval( 1 ) < 0) {
+			Anoptamin_LogInfo("VSYNC Not Permitted?");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+		}
+		
+		GLenum Error = GL_NO_ERROR;
+		glMatrixMode( GL_PROJECTION );
+		glLoadIdentity();
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogFatal("GL Failed to load identity for projection!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			std::exit(-1);
+		}
+		glMatrixMode( GL_MODELVIEW );
+		glLoadIdentity();
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogFatal("GL Failed to load identity for model viewing!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			std::exit(-2);
+		}
+		glClearColor( 0.2, 0.2, 0.2, 1.0 );
+		glClear( GL_COLOR_BUFFER_BIT );
+	}
+namespace Graphics {
 	
 	
 }} //End Anoptamin::Graphics

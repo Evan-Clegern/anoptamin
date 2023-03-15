@@ -8,7 +8,7 @@
  * 	14 March 2023
  * 
  * @brief
- * 	Provides the base OpenGL interfaces and SDL2 OpenGL interfaces.
+ * 	Provides the base OpenGL interfaces and SDL2-OpenGL operations.
  *	Provides includes in:
  *		Anoptamin::Graphics
  * 
@@ -35,24 +35,20 @@
 
 #include "base.hpp"
 
-// SDL2 portion
-// Don't include the full "sdl.hpp" because we just need to handle single contexts
-#include <SDL2/SDL_opengl.h>
-#include <SDL2/SDL_surface.h>
-
-// OpenGL: Embedded Systems v2
-// It isn't as efficient as GLES3, but more portable.
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <GLES2/gl2platform.h>
 
 // Standard OpenGL
-#include <GL/gle.h>  // Graphics Layer Extensions
-#include <GL/glew.h> // Graphics Layer Extension Wrangler
+#include <GL/glew.h>     // Graphics Layer Extension Wrangler. Should handle OpenGL-ES2, i think? because including GL2.h makes it screeem
 #include <GL/freeglut.h> // Free-and-open-source Graphics Layer Utility Tools (Cross-Platform)
+#include <GL/glu.h>      // Graphics Layer Utilities (piping)
 
-namespace Anoptamin { namespace Graphics {
-	
+// SDL2 portion
+// Don't include the full "sdl.hpp" because we just need to handle single contexts
+#include <SDL2/SDL_surface.h>
+
+namespace Anoptamin { 
+	//! Handles the setup of the SDL Subsystems and the initialization of SDL for OpenGL.
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD void initializeSDLGraphics();
+namespace Graphics {
 	
 }} //End Anoptamin::Graphics
 
