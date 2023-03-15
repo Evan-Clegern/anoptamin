@@ -185,7 +185,6 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::closeWindow() {
 
 
 LIBANOP_FUNC_CODEPT std::vector<SDL_Event> c_SDLWindow::fullEventPoll() {
-	
 	std::vector<SDL_Event> Out, KeyEvents, MouseBtnEvents, MouseScrlEvents, MouseMoveEvents;
 	int32_t X;
 	if (this->m_open) {
