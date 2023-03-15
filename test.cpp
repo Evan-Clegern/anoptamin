@@ -59,6 +59,8 @@ int main() {
 	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
 	
 	bool isclosed = 0;
+	
+	std::time_t timest = std::time(NULL);
 	for (uint16_t i = 0; i < 1500; i++) {
 		// This essentially gives us a 1 ms delay
 		std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
@@ -68,18 +70,19 @@ int main() {
 		}
 		autorender.updateRenderer();
 	}
-	std::cout << "Exchange Point.\n";
+	std::time_t timeend = std::time(NULL);
+	std::cout << "Elapsed Time: " << std::difftime(timeend, timest) << " seconds for 1,500 event polls and render updates.\n";
 	// Change colors!
 	if (!isclosed) {
 		glClearColor(1.0, 0.0, 0.0, 0.8);
+		glClear( GL_COLOR_BUFFER_BIT );
 		for (uint16_t i = 0; i < 1500; i++) {
 			std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
-			// Wait one millisecond
+			autorender.updateRenderer();
 			if (!BobWindow->isOpen()) {
 				isclosed = 1;
 				break;
 			}
-			autorender.updateRenderer();
 		}
 	}
 
