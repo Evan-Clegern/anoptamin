@@ -70,16 +70,31 @@ namespace Graphics {
 		c_Window_Renderer* mp_renderCtrl;
 		
 		uint32_t m_progID = 0;
-		uint32_t m_VBOs = 0, m_IBOs = 0;
+		
 		std::vector<uint32_t> m_vertexShaders;
 		std::vector<uint32_t> m_fragShaders;
-		std::vector<uint32_t> m_otherShaders;
-		bool m_valid = false;
+		bool m_valid = false, m_compiled = false;
 	public:
+		//! Creates the OpenGL Rendering Program in respect to the window rendering object.
 		c_Render_Engine(c_Window_Renderer& baseRenderer);
 		
+		//! Shuts down the OpenGL Rendering Program, detaches shaders, and updates the Window Renderer.
+		void shutdownEngine();
+		
+		//! Compiles a new Vertex Shader into the rendering engine, and returns 'true' if done successfully.
 		bool registerShader_Vertex(std::string source);
+		//! Compiles a new Fragment Shader into the rendering engine, and returns 'true' if done successfully.
 		bool registerShader_Fragment(std::string source);
+		//! Compiles and links the OpenGL Rendering Program.
+		void compileWithShaders();
+		
+		//! Returns if the rendering engine is valid, compiled, and error-free.
+		bool renderEngineGood() noexcept;
+		
+		//! Binds the rendering engine for drawing in OpenGL.
+		void bindRenderer() const;
+		//! Unbinds the rendering engine and updates the Window Renderer to display the graphics.
+		void unbindRenderer() const;
 	};
 }} //End Anoptamin::Graphics
 

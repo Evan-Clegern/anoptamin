@@ -163,6 +163,138 @@ namespace Graphics {
 	c_Render_Engine::c_Render_Engine(c_Window_Renderer& baseRenderer) {
 		mp_renderCtrl = &baseRenderer;
 		m_progID = glCreateProgram();
+		GLenum Error = GL_NO_ERROR;
+		Error = glGetError();
+		if (Error != GL_NO_ERROR || m_progID == 0) {
+			Anoptamin_LogError("Failed to initialize OpenGL interface program!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* V = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+		} else {
+			m_valid = true;
+			Anoptamin_LogCommon("OpenGL Interface Program Created, ID #" + std::to_string(m_progID));
+		}
+	}
+	bool c_Render_Engine::registerShader_Vertex(std::string source) {
+		check_codelogic( this->m_valid );
+		uint32_t nshader = glCreateShader( GL_VERTEX_SHADER );
+		const char* tmpptr[] = {source.c_str()};
+		glShaderSource( nshader, 1, tmpptr, NULL );
+		glCompileShader( nshader );
+		int32_t compiled = GL_FALSE;
+		glGetShaderiv( nshader, GL_COMPILE_STATUS, &compiled );
+		if ( compiled != GL_TRUE ) {
+			Anoptamin_LogWarn("Failed to compile vertex shader for program #" + std::to_string(this->m_progID));
+			int errloglen = 0, maxloglen = 0;
+			glGetShaderiv( nshader, GL_INFO_LOG_LENGTH, &maxloglen );
+			char* infolog = new char[maxloglen + 1];
+			glGetShaderInfoLog( nshader, maxloglen, &errloglen, infolog );
+			Anoptamin_LogTrace("OpenGL Shader Log: " + std::string(infolog));
+			delete [] infolog;
+			GLenum Error = glGetError();
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			return false;
+		}
+		glAttachShader( this->m_progID, nshader );
+		m_vertexShaders.push_back(nshader);
+		Anoptamin_LogDebug("Successfully compiled vertex shader for program #" + std::to_string(this->m_progID));
+		return true;
+	}
+	bool c_Render_Engine::registerShader_Fragment(std::string source) {
+		check_codelogic( this->m_valid );
+		uint32_t nshader = glCreateShader( GL_FRAGMENT_SHADER );
+		const char* tmpptr[] = {source.c_str()};
+		glShaderSource( nshader, 1, tmpptr, NULL );
+		glCompileShader( nshader );
+		int32_t compiled = GL_FALSE;
+		glGetShaderiv( nshader, GL_COMPILE_STATUS, &compiled );
+		if ( compiled != GL_TRUE ) {
+			Anoptamin_LogWarn("Failed to compile fragment shader for program #" + std::to_string(this->m_progID));
+			int errloglen = 0, maxloglen = 0;
+			glGetShaderiv( nshader, GL_INFO_LOG_LENGTH, &maxloglen );
+			char* infolog = new char[maxloglen + 1];
+			glGetShaderInfoLog( nshader, maxloglen, &errloglen, infolog );
+			Anoptamin_LogTrace("OpenGL Shader Log: " + std::string(infolog));
+			delete [] infolog;
+			GLenum Error = glGetError();
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			return false;
+		}
+		glAttachShader( this->m_progID, nshader );
+		m_fragShaders.push_back(nshader);
+		Anoptamin_LogDebug("Successfully compiled fragment shader for program #" + std::to_string(this->m_progID));
+		return true;
+	}
+	void c_Render_Engine::compileWithShaders() {
+		check_codelogic( this->m_valid );
+		check_video(glIsProgram(this->m_progID));
+		glLinkProgram( this->m_progID );
+		m_compiled = true;
+	}
+	bool c_Render_Engine::renderEngineGood() noexcept {
+		if (!m_compiled) {
+			Anoptamin_LogInfo("Called a check for the renderEngine before it was compiled.");
+			this->compileWithShaders();
+		}
+		if (!this->m_valid) return false;
+		if (!glIsProgram(this->m_progID)) return false;
+		int32_t test = GL_TRUE;
+		glGetProgramiv( this->m_progID, GL_LINK_STATUS, &test );
+		if (test != GL_TRUE) {
+			Anoptamin_LogError("Failed to link OpenGL render program #" + std::to_string(this->m_progID));
+			int errloglen=0, maxloglen=0;
+			glGetProgramiv( this->m_progID, GL_INFO_LOG_LENGTH, &maxloglen );
+			char* infolog = new char[maxloglen + 1];
+			glGetProgramInfoLog( this->m_progID, maxloglen, &errloglen, infolog );
+			
+			std::string X = ((infolog));
+			Anoptamin_LogTrace("OpenGL Program Log: " + X);
+			delete [] infolog;
+			
+			
+			GLenum Error = glGetError();
+			const uint8_t* V = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			
+			
+			return false;
+		}
+		return true;
+	}
+	void c_Render_Engine::shutdownEngine() {
+		Anoptamin_LogDebug("Shutting down OpenGL render program #" + std::to_string(this->m_progID));
+		this->m_valid = 0;
+		for (auto i : this->m_fragShaders) {
+			glDetachShader( this->m_progID, i );
+		}
+		this->m_fragShaders.clear();
+		for (auto i : this->m_vertexShaders) {
+			glDetachShader( this->m_progID, i );
+		}
+		this->m_vertexShaders.clear();
+		this->m_compiled = 0;
+		glDeleteProgram( this->m_progID );
 		
+		this->mp_renderCtrl->updateRenderer();
+		Anoptamin_LogCommon("Shut down OpenGL Interface Program.");
+	}
+	
+	void c_Render_Engine::bindRenderer() const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		glUseProgram( this->m_progID );
+	}
+	void c_Render_Engine::unbindRenderer() const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		glUseProgram( 0 );
+		this->mp_renderCtrl->updateRenderer();
 	}
 }} //End Anoptamin::Graphics
