@@ -46,9 +46,13 @@ int main() {
 	
 	Anoptamin::initializeSDLGraphics();
 	
+	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
 	Anoptamin_LogCommon("Window Created.");
+	
+	Anoptamin::Graphics::c_Window_Renderer autorender( BobWindow->getRawSDLWindow() );
+	assert_runtime( Anoptamin::Graphics::initializeGL() );
 	
 	BobWindow->addHook_KeyboardEvent(exitWindowOnEsc_F);
 	
@@ -61,6 +65,7 @@ int main() {
 			isclosed = 1;
 			break;
 		}
+		autorender.updateRenderer();
 	}
 
 	if (!isclosed) BobWindow->closeWindow(); else {

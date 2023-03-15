@@ -45,8 +45,8 @@
 // Don't include the full "sdl.hpp" because we just need to handle single contexts
 #include <SDL2/SDL_surface.h>
 
-namespace Anoptamin { 
-	//! Handles the setup of the SDL Subsystems and the initialization of SDL for OpenGL. Use this to start the needed systems.
+namespace Anoptamin {
+	//! Handles the setup of the SDL Subsystems for video.
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD void initializeSDLGraphics();
 namespace Graphics {
 	struct c_Window_Renderer {
@@ -56,6 +56,9 @@ namespace Graphics {
 		c_Window_Renderer(SDL_Window* workFrom);
 		bool updateRenderer();
 	};
+	
+	//! Initializes OpenGL, GLEW, GLUT and the sort. Can only be called AFTER a c_Window_Renderer is created.
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD bool initializeGL();
 	
 }} //End Anoptamin::Graphics
 
