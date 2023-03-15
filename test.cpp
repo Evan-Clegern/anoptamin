@@ -1,5 +1,6 @@
 #include "include/base.hpp"
 #include "include/sdl.hpp"
+#include "include/glact.hpp"
 
 std::atomic<bool> eWOE_Flag = false;
 
@@ -42,9 +43,8 @@ Anoptamin::Base::c_Hookable_Func exitWindowOnEsc_F = {0, exitWindowOnEsc};
 
 int main() {
 	Anoptamin::Log::SetupFiles();
-	std::cout << "Initializing Test Code.\n";
 	
-	assert_libsdl( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == 0 );
+	Anoptamin::initializeSDLGraphics();
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
