@@ -71,6 +71,8 @@ namespace Graphics {
 		
 		uint32_t m_progID = 0;
 		
+		uint32_t m_VBO = 0, m_IBO = 0;
+		
 		std::vector<uint32_t> m_vertexShaders;
 		std::vector<uint32_t> m_fragShaders;
 		bool m_valid = false, m_compiled = false;
@@ -95,6 +97,18 @@ namespace Graphics {
 		void bindRenderer() const;
 		//! Unbinds the rendering engine and updates the Window Renderer to display the graphics.
 		void unbindRenderer() const;
+		
+		//! Gets the internal OpenGL location for the given attribute.
+		int getAttributeLocation(std::string what) const;
+		
+		//! Preloads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
+		void loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic = false);
+		//! Preloads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
+		void loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic = false);
+		
+		//! Binds preloaded data, prepares it for rendering, and then calls the 'glDrawElements' to draw them.
+		//! Allows for 1D, 2D and 3D rendering (vertexSize, and attribLocation based on getAttributeLocation(OPENGL STRING FOR IT) )
+		void bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender);
 	};
 }} //End Anoptamin::Graphics
 

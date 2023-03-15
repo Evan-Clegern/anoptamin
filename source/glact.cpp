@@ -173,8 +173,25 @@ namespace Graphics {
 			X = (reinterpret_cast<const char*>(V));
 			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		} else {
-			m_valid = true;
 			Anoptamin_LogCommon("OpenGL Interface Program Created, ID #" + std::to_string(m_progID));
+			
+			glGenBuffers(1, &m_VBO);
+			glBindBuffer( GL_ARRAY_BUFFER, m_VBO );
+			
+			glGenBuffers(1, &m_IBO);
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_IBO );
+			
+			Error = glGetError();
+			if (Error != GL_NO_ERROR) {
+				Anoptamin_LogError("Failed to initialize OpenGL Buffers for Rendering Engine!");
+				std::string X = SDL_GetError();
+				Anoptamin_LogTrace("SDL2 Error State: " + X);
+				const uint8_t* V = gluErrorString( Error );
+				X = (reinterpret_cast<const char*>(V));
+				Anoptamin_LogTrace("OpenGL Error State: " + X);
+			}
+			Anoptamin_LogDebug("OpenGL VBO and IBO buffers bound.");
+			m_valid = true;
 		}
 	}
 	bool c_Render_Engine::registerShader_Vertex(std::string source) {
@@ -296,5 +313,50 @@ namespace Graphics {
 		check_video(this->m_compiled);
 		glUseProgram( 0 );
 		this->mp_renderCtrl->updateRenderer();
+	}
+	int c_Render_Engine::getAttributeLocation(std::string what) const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		int ReturnLoc = 0;
+		ReturnLoc = glGetAttribLocation(this->m_progID, what.c_str());
+		check_video(ReturnLoc != -1);
+		return ReturnLoc;
+	}
+	
+	
+	//! Loads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
+	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic) {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		
+		glBindBuffer(1, this->m_VBO);
+		if (vbostatic) {
+			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_STATIC_DRAW );
+		} else {
+			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_DYNAMIC_DRAW );
+		}
+	}
+	//! Loads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
+	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic) {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		
+		glBindBuffer(1, this->m_IBO);
+		if (ibostatic) {
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_STATIC_DRAW );
+		} else {
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_DYNAMIC_DRAW );
+		}
+	}
+	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender) {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		
+		glEnableVertexAttribArray(attribLocation);
+		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
+		glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
+		glDrawElements( GL_TRIANGLE_FAN, pointsRender, GL_UNSIGNED_INT, NULL );
+		glDisableVertexAttribArray(attribLocation);
 	}
 }} //End Anoptamin::Graphics
