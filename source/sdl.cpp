@@ -329,7 +329,7 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::checkDimensions() {
 	int tmpw, tmph;
 	SDL_GetWindowSize( this->mp_window, &tmpw, &tmph );
 	
-	this->m_windowHgt = uint16_t(tmph); // I mean, when is a window going to be 65,000 pixels wide???
+	this->m_windowHgt = uint16_t(tmph); // I mean, when is a window going to be more than 65,000 pixels wide???
 	this->m_windowWdt = uint16_t(tmpw);
 	
 }
@@ -338,6 +338,7 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::maximizeWindow() {
 	assert_safety( this->m_open );
 	
 	SDL_MaximizeWindow( this->mp_window );
+	this->refreshWindowSurface();
 	
 }
 //! Brings the window to the top for input focus.
@@ -345,6 +346,7 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::focusWindow() {
 	assert_safety( this->m_open );
 	
 	SDL_RaiseWindow( this->mp_window );
+	this->refreshWindowSurface();
 	
 }
 //! Restores window from maximizing/minimizing
@@ -352,6 +354,7 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::restoreFromMinMax() {
 	assert_safety( this->m_open );
 	
 	SDL_RestoreWindow( this->mp_window );
+	this->refreshWindowSurface();
 	
 }
 LIBANOP_FUNC_CODEPT void c_SDLWindow::refreshWindowSurface() {
@@ -469,12 +472,14 @@ LIBANOP_FUNC_CODEPT const bool c_SDLWindow::isOpen() const noexcept {
 
 LIBANOP_FUNC_CODEPT void c_SDLWindow::goFullscreen() {
 	assert_safety( this->m_open );
-	check_video( SDL_SetWindowFullscreen(this->mp_window, SDL_WINDOW_FULLSCREEN) == 0 );
+	check_video( SDL_SetWindowFullscreen(this->mp_window, SDL_TRUE) == 0 );
+	this->refreshWindowSurface();
 }
 //! Makes the window leave fullscreen mode.
 LIBANOP_FUNC_CODEPT void c_SDLWindow::exitFullscreen() {
 	assert_safety( this->m_open );
-	check_video( SDL_SetWindowFullscreen(this->mp_window, 0) == 0 );  // This call sets the fullscreen state to 0 (windowed)
+	check_video( SDL_SetWindowFullscreen(this->mp_window, SDL_FALSE) == 0 );  // This call sets the fullscreen state to 0 (windowed)
+	this->refreshWindowSurface();
 }
 
 }} // End Anoptamin::Low

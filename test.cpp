@@ -1,6 +1,7 @@
 #include "include/base.hpp"
 #include "include/sdl.hpp"
 
+std::atomic<bool> eWOE_Flag = false;
 
 Anoptamin::Base::c_SDLWindow* BobWindow;
 
@@ -14,16 +15,21 @@ Anoptamin::Base::c_HookReturn exitWindowOnEsc(size_t inputVectorSize, uint16_t i
 
 	Anoptamin_LogDebug("Running Hooked Function!");
 
+
 	for (size_t i = 0; i < inputVectorSize; i++) {
 		const SDL_Event X = EventList[i];
 		if (X.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
 			Anoptamin_LogDebug("MWAAHAHAHAHAHAHAH!!!!");
 			BobWindow->closeWindow(); break;
 		} else if (X.key.keysym.scancode == SDL_SCANCODE_GRAVE) {
+			// Prevents the 1-ms polling delay from messing with this.
+			if (eWOE_Flag.load()) {
+				eWOE_Flag.store(false); break;
+			}
 			if (BobWindow->windowFullscreen()) {
-				BobWindow->exitFullscreen(); break;
+				BobWindow->exitFullscreen(); eWOE_Flag.store(true); break;
 			} else {
-				BobWindow->goFullscreen(); break;
+				BobWindow->goFullscreen(); eWOE_Flag.store(true); break;
 			}
 		}
 	}
@@ -41,13 +47,13 @@ int main() {
 	assert_libsdl( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == 0 );
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
-		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true);
+		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
 	Anoptamin_LogCommon("Window Created.");
 	
 	BobWindow->addHook_KeyboardEvent(exitWindowOnEsc_F);
 	
 	bool isclosed = 0;
-	for (uint16_t i = 0; i < 5000; i++) {
+	for (uint16_t i = 0; i < 15000; i++) {
 		std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
 		// Wait one millisecond
 		SDL_Delay(1);
