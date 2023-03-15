@@ -76,8 +76,8 @@ int main() {
 	Anoptamin_LogCommon("Window Closed.");
 	
 	// Finish up.
-	SDL_Quit();
-	Anoptamin::Log::CleanupFiles();
+	
+	Anoptamin::cleanupSDLGraphics();
 	
 	return 0;
 }
