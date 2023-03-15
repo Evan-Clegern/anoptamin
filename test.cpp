@@ -59,6 +59,10 @@ int main() {
 	assert_runtime( Anoptamin::Graphics::initializeGL() );
 	
 	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
+	mainrenderer.registerShader_Vertex( "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }" );
+	mainrenderer.registerShader_Fragment("#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }");
+	mainrenderer.compileWithShaders();
+	assert_runtime( mainrenderer.renderEngineGood() );
 	
 	bool isclosed = 0;
 	
@@ -77,7 +81,8 @@ int main() {
 			isclosed = 1;
 			break;
 		}
-		autorender.updateRenderer();
+		mainrenderer.bindRenderer();
+		mainrenderer.unbindRenderer();
 	}
 	uint64_t msed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	std::cout << "The average event polling time was: " << (sum_avg / 1500.0) << " us, and the total time elapsed was: " << (msed - msst) << "ms.\n";
@@ -93,7 +98,11 @@ int main() {
 				break;
 			}
 		}
+		mainrenderer.bindRenderer();
+		mainrenderer.unbindRenderer();
 	}
+	
+	mainrenderer.shutdownEngine();
 
 	if (!isclosed) BobWindow->closeWindow(); else {
 		Anoptamin_LogCommon("Window Closed at User Bequest.");
