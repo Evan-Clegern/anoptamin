@@ -68,6 +68,20 @@ int main() {
 	
 	uint64_t sum_avg = 0;
 	
+	float vertexes[] = {
+		-0.5, -0.5,
+		0.5, -0.5,
+		0.5, 0.5,
+		-0.5, 0.5
+	};
+	uint32_t indexes[] = {
+		0, 1, 2, 3
+	};
+	
+	mainrenderer.loadDataVBO(sizeof(float) * 2 * 4, vertexes, true);
+	mainrenderer.loadDataIBO(sizeof(uint32_t) * 4, indexes, true);
+	int attrib2d = mainrenderer.getAttributeLocation("LVertexPos2D");
+	
 	uint64_t msst = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	for (uint16_t i = 0; i < 1500; i++) {
 		// This essentially gives us a 1 ms delay
@@ -82,6 +96,9 @@ int main() {
 			break;
 		}
 		mainrenderer.bindRenderer();
+		// Draw the rectangle
+		mainrenderer.bindAndDraw(attrib2d, 2, 4); // 2D points; 4 of them in total.
+		
 		mainrenderer.unbindRenderer();
 	}
 	uint64_t msed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
@@ -99,6 +116,7 @@ int main() {
 			}
 		}
 		mainrenderer.bindRenderer();
+		mainrenderer.bindAndDraw(attrib2d, 2, 4); // 2D points; 4 of them in total.
 		mainrenderer.unbindRenderer();
 	}
 	
