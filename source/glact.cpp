@@ -31,11 +31,20 @@
 
 namespace Anoptamin {
 	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_COLD void initializeSDLGraphics() {
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 2 );
-		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+		SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
+        SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 		assert_libsdl( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == 0 );
 		
 		Anoptamin_LogDebug("Initialized LibSDL2 with expected GL version.");
+	}
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_COLD void cleanupSDLGraphics() {
+		SDL_Quit();
+		
+		Anoptamin_LogCommon("Deinitialized OpenGL and LibSDL2.");
+		Anoptamin::Log::CleanupFiles();
 	}
 namespace Graphics {
 	LIBANOP_FUNC_EXPORT c_Window_Renderer::c_Window_Renderer(SDL_Window* workFrom) {
@@ -53,6 +62,11 @@ namespace Graphics {
 		
 		glClear( GL_COLOR_BUFFER_BIT );
 		Anoptamin_LogDebug("Created OpenGL Context for Window #" + nx);
+	}
+	LIBANOP_FUNC_EXPORT c_Window_Renderer::~c_Window_Renderer() {
+		SDL_GL_SwapWindow(this->ExternWindow);
+		SDL_GL_DeleteContext( this->BridgeContext );
+		SDL_UpdateWindowSurface(this->ExternWindow);
 	}
 	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT bool c_Window_Renderer::updateRenderer() {
 		GLenum Error = glGetError();
@@ -143,5 +157,12 @@ namespace Graphics {
 		
 		Anoptamin_LogCommon("Graphical System Initialized.");
 		return true;
+	}
+	
+	
+	c_Render_Engine::c_Render_Engine(c_Window_Renderer& baseRenderer) {
+		mp_renderCtrl = &baseRenderer;
+		m_progID = glCreateProgram();
+		
 	}
 }} //End Anoptamin::Graphics

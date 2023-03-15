@@ -37,7 +37,7 @@
 
 
 // Standard OpenGL
-#include <GL/glew.h>     // Graphics Layer Extension Wrangler. Should handle OpenGL-ES2, i think? because including GL2.h makes it screeem
+#include <GL/glew.h>     // Graphics Layer Extension Wrangler. Should handle OpenGL3 includes.
 #include <GL/freeglut.h> // Free-and-open-source Graphics Layer Utility Tools (Cross-Platform)
 #include <GL/glu.h>      // Graphics Layer Utilities (piping)
 
@@ -48,18 +48,39 @@
 namespace Anoptamin {
 	//! Handles the setup of the SDL Subsystems for video.
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD void initializeSDLGraphics();
+	
+	//! Handles the cleanup of both the SDL Subsystems and the graphical sysstems.
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD void cleanupSDLGraphics();
 namespace Graphics {
+	//! Handles the linkage of SDL2 and OpenGL/GLEW.
 	struct c_Window_Renderer {
 		SDL_Window* ExternWindow;
 		SDL_GLContext BridgeContext;
 		
 		c_Window_Renderer(SDL_Window* workFrom);
+		~c_Window_Renderer();
 		bool updateRenderer();
 	};
 	
 	//! Initializes OpenGL, GLEW, GLUT and the sort. Can only be called AFTER a c_Window_Renderer is created.
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD bool initializeGL();
 	
+	//! Handles the basic OpenGL and GLEW rendering system.
+	class c_Render_Engine {
+		c_Window_Renderer* mp_renderCtrl;
+		
+		uint32_t m_progID = 0;
+		uint32_t m_VBOs = 0, m_IBOs = 0;
+		std::vector<uint32_t> m_vertexShaders;
+		std::vector<uint32_t> m_fragShaders;
+		std::vector<uint32_t> m_otherShaders;
+		bool m_valid = false;
+	public:
+		c_Render_Engine(c_Window_Renderer& baseRenderer);
+		
+		bool registerShader_Vertex(std::string source);
+		bool registerShader_Fragment(std::string source);
+	};
 }} //End Anoptamin::Graphics
 
 #endif
