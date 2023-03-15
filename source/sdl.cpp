@@ -46,7 +46,7 @@ LIBANOP_FUNC_CODEPT void c_SDLWindow::cleanup() {
 
 LIBANOP_FUNC_CODEPT c_SDLWindow::c_SDLWindow(uint16_t width, uint16_t height, std::string title, bool centerOnOpen,
 	e_SDLWindow_Type openType, bool allowResize, bool initOpenGL, bool openFullscreen) {
-	Anoptamin_LogDebug("Initializing new window.");
+	Anoptamin_LogDebug("Creating new window.");
 	m_windowWdt = width;
 	m_windowHgt = height;
 	m_windowTitle = title;
