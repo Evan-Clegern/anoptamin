@@ -2,6 +2,8 @@
 #include "include/sdl.hpp"
 #include "include/glact.hpp"
 
+#include <chrono>
+
 std::atomic<bool> eWOE_Flag = false;
 
 Anoptamin::Base::c_SDLWindow* BobWindow;
@@ -60,18 +62,25 @@ int main() {
 	
 	bool isclosed = 0;
 	
-	std::time_t timest = std::time(NULL);
+	uint64_t sum_avg = 0;
+	
+	uint64_t msst = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	for (uint16_t i = 0; i < 1500; i++) {
 		// This essentially gives us a 1 ms delay
+		uint64_t mst_top = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
+		uint64_t mst_btm = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+		
+		sum_avg += (mst_btm - mst_top);
+		
 		if (!BobWindow->isOpen()) {
 			isclosed = 1;
 			break;
 		}
 		autorender.updateRenderer();
 	}
-	std::time_t timeend = std::time(NULL);
-	std::cout << "Elapsed Time: " << std::difftime(timeend, timest) << " seconds for 1,500 event polls and render updates.\n";
+	uint64_t msed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	std::cout << "The average event polling time was: " << (sum_avg / 1500.0) << " us, and the total time elapsed was: " << (msed - msst) << "ms.\n";
 	// Change colors!
 	if (!isclosed) {
 		glClearColor(1.0, 0.0, 0.0, 0.8);

@@ -97,7 +97,9 @@ public:
 	//! Query if the window is open or not. This is true so long as closeWindow() has not been called from an event poll or user action.
 	const bool isOpen() const noexcept;
 	//! Deques as many events as possible and handles them if they're window related or if they're related to input hooks.
-	//! This takes around 275 ticks to run, plus about 200 per hooked function -- so slightly less than 1 ms on most machines
+	//! From testing performed on a single thread, a fullEventPoll() for a normal window takes about 17.0247 microseconds without hooks,
+	//! and about 9 microseconds more per additional hook attached (assuming high-efficiency hooks)
+	//! Most of the slowdown when running a loop comes from the OpenGL rendering cycles.
 	std::vector<SDL_Event> fullEventPoll();
 	/*
 	Scancode List:
