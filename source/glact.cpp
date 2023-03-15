@@ -83,7 +83,6 @@ namespace Graphics {
 			Anoptamin_LogTrace("GLEW Error State: " + X); return false;
 		}
 		SDL_GL_SwapWindow(this->ExternWindow);
-		SDL_UpdateWindowSurface(this->ExternWindow);
 		Error = glGetError();
 		if (Error != GL_NO_ERROR) {
 			Anoptamin_LogWarn("Window Renderer detected OpenGL Error!");
@@ -151,7 +150,8 @@ namespace Graphics {
 			return false;
 		}
 		Anoptamin_LogDebug("Loaded OpenGL with MODELVIEW Matrix Mode.");
-		glClearColor( 0.2, 0.2, 0.2, 1.0 );
+		glClear( GL_COLOR_BUFFER_BIT );
+		glClearColor( 0.1, 0.2, 0.4, 1.0 );
 		glClear( GL_COLOR_BUFFER_BIT );
 		Anoptamin_LogDebug("Initialized OpenGL.");
 		
