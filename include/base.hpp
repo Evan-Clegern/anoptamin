@@ -214,6 +214,22 @@ namespace Anoptamin { namespace Base {
 	void LIBANOP_FUNC_COLD LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_IMPORT LIBANOP_FUNC_NO_EXIT dbg_assertfunc(const char* type, const char* func, uint32_t line, const char* file, const char* expr);
 	//! Prints out information regarding a failed check, but doesn't abort the program or scream bloody murder.
 	void LIBANOP_FUNC_COLD LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_IMPORT dbg_checkfunc(const char* type, const char* func, uint32_t line, const char* file, const char* expr);
+	
+	//! A 3D coordinate with no decimal positions and only 2^32 possible positions along a single axis.
+	struct c_Point3D_Integer {
+		int32_t x, y, z;
+		c_Point3D_Integer();
+		c_Point3D_Integer(int32_t ix, int32_t iy, int32_t iz);
+		c_Point3D_Integer(const c_Point3D_Integer& other);
+	};
+	//! A 3D coordinate with decimal positions.
+	struct c_Point3D_Floating {
+		double x, y, z;
+		c_Point3D_Floating();
+		c_Point3D_Floating(double ix, double iy, double iz);
+		c_Point3D_Floating(const c_Point3D_Floating& other);
+		c_Point3D_Floating(const c_Point3D_Integer& base);
+	};
 }}
 
 	// Linear search

@@ -367,7 +367,7 @@ namespace Graphics {
 			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		}
 	}
-	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender) {
+	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
@@ -376,7 +376,11 @@ namespace Graphics {
 		glClear( GL_COLOR_BUFFER_BIT );
 		glEnableVertexAttribArray(attribLocation);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
-		glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
+		if (useLongFloats) {
+			glVertexAttribPointer( attribLocation, vertexSize, GL_DOUBLE, GL_FALSE, vertexSize * sizeof(float), NULL );
+		} else {
+			glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
+		}
 		Error = glGetError();
 		if (Error != GL_NO_ERROR) {
 			Anoptamin_LogInfo("Bad Enumeration in ARRAY_BUFFER Binding.");

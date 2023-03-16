@@ -162,6 +162,31 @@ namespace Anoptamin {
 			return this->HookedFuncs.size();
 		}
 		
+		
+		
+		c_Point3D_Integer::c_Point3D_Integer() {
+			x = 0; y = 0; z = 0;
+		}
+		c_Point3D_Integer::c_Point3D_Integer(int32_t ix, int32_t iy, int32_t iz) {
+			x = ix; y = iy; z = iz;
+		}
+		c_Point3D_Integer::c_Point3D_Integer(const c_Point3D_Integer& other) {
+			x = other.x; y = other.y; z = other.z;
+		}
+		
+		
+		c_Point3D_Floating::c_Point3D_Floating() {
+			x = 0; y = 0; z = 0;
+		}
+		c_Point3D_Floating::c_Point3D_Floating(double ix, double iy, double iz) {
+			x = ix; y = iy; z = iz;
+		}
+		c_Point3D_Floating::c_Point3D_Floating(const c_Point3D_Floating& other) {
+			x = other.x; y = other.y; z = other.z;
+		}
+		c_Point3D_Floating::c_Point3D_Floating(const c_Point3D_Integer& base) {
+			x = double(base.x); y = double(base.y); z = double(base.z);
+		}
 	} // End Base namespace
 	
 	namespace Log {
