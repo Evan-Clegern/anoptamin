@@ -328,11 +328,21 @@ namespace Graphics {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
-		glBindBuffer(1, this->m_VBO);
+		GLenum Error = GL_NO_ERROR;
+		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
 		if (vbostatic) {
 			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_STATIC_DRAW );
 		} else {
 			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_DYNAMIC_DRAW );
+		}
+		Error = glGetError();
+		if (Error == GL_INVALID_ENUM) {
+			Anoptamin_LogInfo("Bad Enumeration in VBO Binding.");
+		} else if (Error != GL_NO_ERROR) {
+			Anoptamin_LogWarn("Bad VBO Binding Data.");
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		}
 	}
 	//! Loads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
@@ -340,23 +350,43 @@ namespace Graphics {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
-		glBindBuffer(1, this->m_IBO);
+		GLenum Error = GL_NO_ERROR;
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
 		if (ibostatic) {
 			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_STATIC_DRAW );
 		} else {
 			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_DYNAMIC_DRAW );
+		}
+		Error = glGetError();
+		if (Error == GL_INVALID_ENUM) {
+			Anoptamin_LogInfo("Bad Enumeration in IBO Binding.");
+		} else if (Error != GL_NO_ERROR) {
+			Anoptamin_LogWarn("Bad IBO Binding Data.");
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		}
 	}
 	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
+		GLenum Error = GL_NO_ERROR;
+		
 		glClear( GL_COLOR_BUFFER_BIT );
 		glEnableVertexAttribArray(attribLocation);
 		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
 		glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogInfo("Bad Enumeration in ARRAY_BUFFER Binding.");
+		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
 		glDrawElements( GL_TRIANGLE_FAN, pointsRender, GL_UNSIGNED_INT, NULL );
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogInfo("Bad Enumeration in object drawing.");
+		}
 		glDisableVertexAttribArray(attribLocation);
 		
 		this->mp_renderCtrl->updateRenderer();
