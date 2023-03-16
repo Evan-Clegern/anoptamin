@@ -221,7 +221,7 @@ namespace Anoptamin { namespace Base {
 		c_Point3D_Integer();
 		c_Point3D_Integer(int32_t ix, int32_t iy, int32_t iz);
 		c_Point3D_Integer(const c_Point3D_Integer& other);
-	};
+	} __attribute__((__packed__));
 	//! A 3D coordinate with decimal positions.
 	struct c_Point3D_Floating {
 		double x, y, z;
@@ -229,7 +229,7 @@ namespace Anoptamin { namespace Base {
 		c_Point3D_Floating(double ix, double iy, double iz);
 		c_Point3D_Floating(const c_Point3D_Floating& other);
 		c_Point3D_Floating(const c_Point3D_Integer& base);
-	};
+	} __attribute__((__packed__));
 }}
 
 	// Linear search
