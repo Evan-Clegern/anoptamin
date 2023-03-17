@@ -108,7 +108,8 @@ namespace Graphics {
 		
 		//! Binds preloaded data, prepares it for rendering, and then calls the 'glDrawElements' to draw them.
 		//! Allows for 1D, 2D and 3D rendering (vertexSize, and attribLocation based on getAttributeLocation(OPENGL STRING FOR IT) )
-		void bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender);
+		//! Note that the speed of this will likely be capped to 1 over the max refresh rate of the main monitor (VSYNCed).
+		void bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats = false);
 	};
 }} //End Anoptamin::Graphics
 

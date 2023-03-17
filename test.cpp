@@ -59,7 +59,7 @@ int main() {
 	assert_runtime( Anoptamin::Graphics::initializeGL() );
 	
 	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
-	mainrenderer.registerShader_Vertex( "#version 140\nin vec3 LVertexPos3D; void main() { gl_Position = vec4( LVertexPos3D.x, LVertexPos3D.y, LVertexPos3D.z, 1 ); }" );
+	mainrenderer.registerShader_Vertex( "#version 140\nin vec3 LVertexPos3D1; void main() { gl_Position = vec4( LVertexPos3D1.x, LVertexPos3D1.y, LVertexPos3D1.z, 1 ); }" );
 	mainrenderer.registerShader_Fragment("#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }");
 	mainrenderer.compileWithShaders();
 	assert_runtime( mainrenderer.renderEngineGood() );
@@ -68,19 +68,20 @@ int main() {
 	
 	uint64_t sum_avg = 0;
 	
-	float vertexes[] = {
+	float vertexes1[] = {
 		0.5, 0.5, 1.0,
 		0.5, -0.5, 1.0,
-		-0.85, -0.35, -0.8,
+		-0.85, -0.35, -1.0,
+		-1.0, -0.4, -0.8,
 		-0.5, 0.5, -1.0
 	};
 	uint32_t indexes[] = {
-		0, 1, 2, 3
+		0, 1, 2, 3, 4
 	};
 	
-	mainrenderer.loadDataVBO(sizeof(float) * 3 * 4, vertexes, true);
-	mainrenderer.loadDataIBO(sizeof(uint32_t) * 4, indexes, true);
-	int attrib3d = mainrenderer.getAttributeLocation("LVertexPos3D");
+	mainrenderer.loadDataVBO(sizeof(float) * 3 * 5, vertexes1, true);
+	mainrenderer.loadDataIBO(sizeof(uint32_t) * 5, indexes, true);
+	int attrib3d = mainrenderer.getAttributeLocation("LVertexPos3D1");
 	
 	uint64_t msst = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	for (uint16_t i = 0; i < 1500; i++) {
@@ -97,28 +98,12 @@ int main() {
 		}
 		mainrenderer.bindRenderer();
 		// Draw the rectangle
-		mainrenderer.bindAndDraw(attrib3d, 3, 4); // 3D points; 4 of them in total.
+		mainrenderer.bindAndDraw(attrib3d, 3, 5); // 3D points; 5 of them in total.
 		
 		mainrenderer.unbindRenderer();
 	}
 	uint64_t msed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 	std::cout << "The average event polling time was: " << (sum_avg / 1500.0) << " us, and the total time elapsed was: " << (msed - msst) << "ms.\n";
-	// Change colors!
-	if (!isclosed) {
-		glClear( GL_COLOR_BUFFER_BIT );
-		glClearColor(1.0, 0.0, 0.0, 0.8);
-		for (uint16_t i = 0; i < 1500; i++) {
-			std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
-			autorender.updateRenderer();
-			if (!BobWindow->isOpen()) {
-				isclosed = 1;
-				break;
-			}
-		}
-		mainrenderer.bindRenderer();
-		mainrenderer.bindAndDraw(attrib3d, 3, 4); // 2D points; 4 of them in total.
-		mainrenderer.unbindRenderer();
-	}
 	
 	mainrenderer.shutdownEngine();
 
