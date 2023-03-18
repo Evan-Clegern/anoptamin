@@ -48,17 +48,17 @@ namespace Anoptamin { namespace Geometry {
 		int16_t Angle_AroundX, Angle_AroundZ, Angle_AroundY;
 		
 		//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
-		double getPitchFloat_Rad() const noexcept;
+		double getPitch_Rad() const noexcept;
 		//! Return the angle as a value of (Angle_AroundX * (360 / 32767))
-		double getPitchFloat_Deg() const noexcept;
+		double getPitch_Deg() const noexcept;
 		//! Return the angle as a value of (Angle_AroundZ * (2 PI / 32767))
-		double getYawFloat_Rad() const noexcept;
+		double getYaw_Rad() const noexcept;
 		//! Return the angle as a value of (Angle_AroundZ * (360 / 32767))
-		double getYawFloat_Deg() const noexcept;
+		double getYaw_Deg() const noexcept;
 		//! Return the angle as a value of (Angle_AroundY * (2 PI / 32767))
-		double getRollFloat_Rad() const noexcept;
+		double getRoll_Rad() const noexcept;
 		//! Return the angle as a value of (Angle_AroundY * (360 / 32767))
-		double getRollFloat_Deg() const noexcept;
+		double getRoll_Deg() const noexcept;
 		
 		//! Sets the 'X' angle to a value which is a direct multiple of Pi: X = 32767(VAL) / (2 PI)
 		void setPitch_Rad(double Radians) noexcept;

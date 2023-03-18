@@ -34,28 +34,28 @@
 namespace Anoptamin { namespace Geometry {
 	
 	//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
-	double c_Angle::getPitchFloat_Rad() const noexcept {
+	double c_Angle::getPitch_Rad() const noexcept {
 		return this->Angle_AroundX * ANGStepRad;
 	}
 	//! Return the angle as a value of (Angle_AroundX * (360 / 32767))
-	double c_Angle::getPitchFloat_Deg() const noexcept {
-		return this->Angle_AroundX * ANGStepRad;
+	double c_Angle::getPitch_Deg() const noexcept {
+		return this->Angle_AroundX * ANGStepDeg;
 	}
 	//! Return the angle as a value of (Angle_AroundZ * (2 PI / 32767))
-	double c_Angle::getYawFloat_Rad() const noexcept {
+	double c_Angle::getYaw_Rad() const noexcept {
 		return this->Angle_AroundZ * ANGStepRad;
 	}
 	//! Return the angle as a value of (Angle_AroundZ * (360 / 32767))
-	double c_Angle::getYawFloat_Deg() const noexcept {
-		return this->Angle_AroundZ * ANGStepRad;
+	double c_Angle::getYaw_Deg() const noexcept {
+		return this->Angle_AroundZ * ANGStepDeg;
 	}
 	//! Return the angle as a value of (Angle_AroundY * (2 PI / 32767))
-	double c_Angle::getRollFloat_Rad() const noexcept {
+	double c_Angle::getRoll_Rad() const noexcept {
 		return this->Angle_AroundZ * ANGStepRad;
 	}
 	//! Return the angle as a value of (Angle_AroundY * (360 / 32767))
-	double c_Angle::getRollFloat_Deg() const noexcept {
-		return this->Angle_AroundY * ANGStepRad;
+	double c_Angle::getRoll_Deg() const noexcept {
+		return this->Angle_AroundY * ANGStepDeg;
 	}
 	
 	//! Sets the 'X' angle to a value which is a direct multiple of Pi: X = 32767(VAL) / (2 PI)
