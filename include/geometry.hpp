@@ -37,10 +37,10 @@
 #include "base.hpp"
 
 namespace Anoptamin { namespace Geometry {
-	static const long double PI =         3.1415926535898;
-	static const long double EULER =      2.7182818284590;
-	static const long double ANGStepRad = 0.0001917534503;
-	static const long double ANGStepDeg = 0.0109866634114;
+	static const long double PI =         3.14159265359;
+	static const long double EULER =      2.71828182846;
+	static const long double ANGStepRad = 0.00019175345;
+	static const long double ANGStepDeg = 0.01098666341;
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
 	struct c_Angle {
