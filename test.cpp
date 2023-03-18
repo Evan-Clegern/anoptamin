@@ -1,6 +1,7 @@
 #include "include/base.hpp"
 #include "include/sdl.hpp"
 #include "include/glact.hpp"
+#include "include/geometry.hpp"
 
 #include <chrono>
 
@@ -48,6 +49,15 @@ int main() {
 	
 	Anoptamin::initializeSDLGraphics();
 	
+	Anoptamin::Geometry::c_Angle TMP;
+	TMP.setPitch_Deg(45);
+	TMP.setYaw_Deg(45);
+	TMP.setRoll_Deg(0);
+	
+	std::cout << "Angle test data:\nPitch: " << TMP.getPitch_Deg() << ", Yaw: " << TMP.getYaw_Deg() << ", Roll: " << TMP.getRoll_Deg() << '\n';
+	TMP.Angle_AroundX += 1;
+	TMP.Angle_AroundZ += 1;
+	std::cout << "Angle test data:\nPitch: " << TMP.getPitch_Deg() << ", Yaw: " << TMP.getYaw_Deg() << ", Roll: " << TMP.getRoll_Deg() << '\n';
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
