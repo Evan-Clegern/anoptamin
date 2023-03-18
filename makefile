@@ -16,8 +16,8 @@ FlagsIncludeGL := -I. -I/usr/include/GL -I/usr/include/GLES3
 # libglew2.2 libglew-dev libsdl2-2.0-0 libsdl2-dev libopengl0 libopengl-dev libgle3 libgle3-dev libgles2
 
 UseSDL2 := -lSDL2
-UseOpenGL := -lGLEW -lGLU -lGL -lGLESv2
-UseBase := -lanoptamin_base -lSDL2
+UseOpenGL := -lGLEW -lGLU -lGL
+UseBase := -lanoptamin_base
 UseSDLOps := -lanoptamin_sdlops
 UseGLAct := -lanoptamin_glact
 UseGeom := -lanoptamin_geometry
@@ -33,7 +33,7 @@ lib/libanoptamin_base.so:
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/base.cpp -o lib/libanoptamin_base.so $(UseSDL2)
 	
 lib/libanoptamin_sdlops.so: lib/libanoptamin_base.so
-	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/sdl.cpp -o lib/libanoptamin_sdlops.so $(UseBase)
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/sdl.cpp -o lib/libanoptamin_sdlops.so $(UseBase) $(UseSDL2)
 	
 lib/libanoptamin_glact.so: lib/libanoptamin_base.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/glact.cpp -o lib/libanoptamin_glact.so $(UseBase) $(UseOpenGL)

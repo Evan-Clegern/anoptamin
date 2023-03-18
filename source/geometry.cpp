@@ -62,37 +62,37 @@ namespace Anoptamin { namespace Geometry {
 	void c_Angle::setPitch_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundX = int16_t((Radians * 32767) / (2 * PI));
+		this->Angle_AroundX = int16_t(Radians / ANGStepRad);
 	}
 	//! Sets the 'X' angle to a value which is expressed as degrees: X = 32767(VAL) / 360
 	void c_Angle::setPitch_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundX = int16_t((Degrees * 32767) / 360);
+		this->Angle_AroundX = int16_t(Degrees / ANGStepDeg);
 	}
 	//! Sets the 'Z' angle to a value which is a direct multiple of Pi: Z = 32767(VAL) / (2 PI)
 	void c_Angle::setYaw_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundZ = int16_t((Radians * 32767) / (2 * PI));
+		this->Angle_AroundZ = int16_t(Radians / ANGStepRad);
 	}
 	//! Sets the 'Z' angle to a value which is expressed as degrees: Z = 32767(VAL) / 360
 	void c_Angle::setYaw_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundZ = int16_t((Degrees * 32767) / 360);
+		this->Angle_AroundZ = int16_t(Degrees / ANGStepDeg);
 	}
 	//! Sets the 'Y' angle to a value which is a direct multiple of Pi: Y = 32767(VAL) / (2 PI)
 	void c_Angle::setRoll_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundY = int16_t((Radians * 32767) / (2 * PI));
+		this->Angle_AroundY = int16_t(Radians / ANGStepRad);
 	}
 	//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
 	void c_Angle::setRoll_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundY = int16_t((Degrees * 32767) / 360);
+		this->Angle_AroundY = int16_t(Degrees / ANGStepDeg);
 	}
 	
 	// Stop c_Angle methods
