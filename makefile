@@ -20,6 +20,7 @@ UseOpenGL := -lGLEW -lGLU -lGL -lGLESv2
 UseBase := -lanoptamin_base -lSDL2
 UseSDLOps := -lanoptamin_sdlops
 UseGLAct := -lanoptamin_glact
+UseGeom := -lanoptamin_geometry
 
 .PHONY: all
 all: clean test
@@ -37,7 +38,10 @@ lib/libanoptamin_sdlops.so: lib/libanoptamin_base.so
 lib/libanoptamin_glact.so: lib/libanoptamin_base.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/glact.cpp -o lib/libanoptamin_glact.so $(UseBase) $(UseOpenGL)
 	
-test: lib/libanoptamin_sdlops.so lib/libanoptamin_glact.so
+lib/libanoptamin_geometry.so: lib/libanoptamin_base.so
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/geometry.cpp -o lib/libanoptamin_geometry.so $(UseBase)
+	
+test: lib/libanoptamin_sdlops.so lib/libanoptamin_glact.so lib/libanoptamin_geometry.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps) $(UseGLAct) $(UseOpenGL)
 
 01_Hooked_Closing.out: lib/libanoptamin_sdlops.so
