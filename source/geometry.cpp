@@ -33,41 +33,41 @@
 
 namespace Anoptamin { namespace Geometry {
 	
-	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
 	const Base::c_Point3D_Floating* B) noexcept {
 		return (A->x == B->x) and (A->y == B->y) and (A->z == B->z);
 	}
-	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
 	const Base::c_Point3D_Integer* B) noexcept {
 		return (A->x == B->x) and (A->y == B->y) and (A->z == B->z);
 	}
-	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_F(const Base::c_Point3D_Floating* A,
 	const Base::c_Point3D_Floating* B) noexcept {
 		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
 	}
-	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_I(const Base::c_Point3D_Integer* A,
 	const Base::c_Point3D_Integer* B) noexcept {
 		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
 	const Base::c_Point3D_Floating* B) noexcept {
 		Base::c_Point3D_Floating N(A->x - B->x, A->y - B->y, A->z - B->z);
 		return N;
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
 	const Base::c_Point3D_Integer* B) noexcept {
 		Base::c_Point3D_Integer N(A->x - B->x, A->y - B->y, A->z - B->z);
 		return N;
 	}
 	
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept {
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept {
 		std::string tmp = "(";
 		tmp += std::to_string(A->x) + ", ";
 		tmp += std::to_string(A->y) + ", ";
 		tmp += std::to_string(A->z) + ")";
 		return tmp;
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept {
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept {
 		std::string tmp = "(";
 		tmp += std::to_string(A->x) + ", ";
 		tmp += std::to_string(A->y) + ", ";
@@ -257,7 +257,7 @@ namespace Anoptamin { namespace Geometry {
 	//Stop c_Vector3D methods
 	
 namespace PtTransforms {
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Floating NEWPT(*main);
 		NEWPT.x += level->ValX;
@@ -265,7 +265,7 @@ namespace PtTransforms {
 		NEWPT.z += level->ValZ;
 		return NEWPT;
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Integer NEWPT(*main);
 		NEWPT.x += int32_t(level->ValX);
@@ -273,7 +273,7 @@ namespace PtTransforms {
 		NEWPT.z += int32_t(level->ValZ);
 		return NEWPT;
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Floating NEWPT(*main);
 		NEWPT.x *= level->ValX;
@@ -281,7 +281,7 @@ namespace PtTransforms {
 		NEWPT.z *= level->ValZ;
 		return NEWPT;
 	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Integer NEWPT(*main);
 		NEWPT.x *= int32_t(level->ValX);
@@ -515,9 +515,12 @@ namespace PtTransforms {
 	void c_Volume::translateSelf(c_Vector3D translateBy) {
 		c_Vector3D nvec = translateBy;
 		for (c_Face_Triangle i : this->Faces) {
-			i.Points.A = PtTransforms::translateBy_F(&i.Points.A, &nvec);
-			i.Points.B = PtTransforms::translateBy_F(&i.Points.B, &nvec);
-			i.Points.C = PtTransforms::translateBy_F(&i.Points.C, &nvec);
+			auto na = PtTransforms::translateBy_F(&i.Points.A, &nvec);
+			i.Points.A = na;
+			na = PtTransforms::translateBy_F(&i.Points.B, &nvec);
+			i.Points.B = na;
+			na = PtTransforms::translateBy_F(&i.Points.C, &nvec);
+			i.Points.C = na;
 		}
 		this->updatePointers();
 		this->calculateData();

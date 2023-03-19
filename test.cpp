@@ -50,11 +50,26 @@ int main() {
 	Anoptamin::initializeSDLGraphics();
 	
 	Anoptamin::Base::c_Point3D_Floating ptA(0, 0, 0);
-	Anoptamin::Base::c_Point3D_Floating ptB(2, 1.25, 1);
+	Anoptamin::Base::c_Point3D_Floating ptB(2, 1.5, 1);
 	
+	Anoptamin::Geometry::c_Vector3D translatinator(2, 0, -1);
+	Anoptamin::Geometry::c_Angle rotatinator;
+	rotatinator.setRoll_Deg(-15);
+	rotatinator.setPitch_Deg(30);
 	
 	Anoptamin::Geometry::c_Volume box = Anoptamin::Geometry::generateRectangle(ptA, ptB);
 	std::cout << "Box info: " << box.toString() << '\n';
+	for (auto i : box.MainPoints) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(i) << '\n';
+	}
+	//box.rotateSelf(rotatinator);
+	box.translateSelf(translatinator);
+	box.calculateData();
+	std::cout << "Box info: " << box.toString() << '\n';
+	for (auto i : box.MainPoints) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(i) << '\n';
+	}
+	
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);

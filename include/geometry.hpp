@@ -42,20 +42,20 @@ namespace Anoptamin { namespace Geometry {
 	static const long double ANGStepRad = 0.00019175345;
 	static const long double ANGStepDeg = 0.01098666341;
 	
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept;
 	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
@@ -116,13 +116,13 @@ namespace Anoptamin { namespace Geometry {
 	};
 	
 namespace PtTransforms {
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT std::vector<long double> getRotationVector(const c_Angle& by);
 	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByVector(const std::vector<long double> &vector, Base::c_Point3D_Floating main,
