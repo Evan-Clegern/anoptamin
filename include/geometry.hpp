@@ -124,8 +124,9 @@ namespace PtTransforms {
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
+	//! Rotates any arbitrary point about a second point using matrices.
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotate(Base::c_Point3D_Floating main, const Base::c_Point3D_Floating& about, const c_Angle& by);
 }
-	
 	//! Class which represents a line drawn between two points.
 	struct c_Edge {
 		double Length;

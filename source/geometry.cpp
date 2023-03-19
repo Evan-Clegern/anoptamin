@@ -289,6 +289,40 @@ namespace PtTransforms {
 		NEWPT.z *= int32_t(level->ValZ);
 		return NEWPT;
 	}
+	
+	//! Rotates any arbitrary point about a second point using matrices.
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotate(Base::c_Point3D_Floating main, const Base::c_Point3D_Floating& about, const c_Angle& by) {
+		// 'A' vector: 1x3
+		// 'B' vector: 3x3
+		// Output: 1x3 (new point)
+
+		// Manually create the matrix
+		// for Wikipedia info: alpha == yaw, beta == pitch, gamma == roll
+		double R0C0 = std::cos(by.getPitch_Rad()) * std::cos(by.getRoll_Rad());
+		double R0C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) - (std::cos(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
+		double R0C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::sin(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
+		
+		double R1C0 = std::cos(by.getPitch_Rad()) * std::sin(by.getRoll_Rad());
+		double R1C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::cos(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
+		double R1C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::sin(by.getRoll_Rad())) - (std::sin(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
+		
+		double R2C0 = -1 * std::sin(by.getPitch_Rad());
+		double R2C1 = std::sin(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
+		double R2C2 = std::cos(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
+		
+		// Add this back to the rotated point
+		auto DIFF = getPointDiff_F(&main, &about);
+		
+		double NewX = (main.x * R0C0) + (main.y * R1C0) + (main.z * R2C0);
+		double NewY = (main.x * R0C1) + (main.y * R1C1) + (main.z * R2C1);
+		double NewZ = (main.x * R0C2) + (main.y * R1C2) + (main.z * R2C2);
+		
+		NewX += DIFF.x;
+		NewY += DIFF.y;
+		NewZ += DIFF.z;
+		
+		return Base::c_Point3D_Floating(NewX, NewY, NewZ);
+	}
 } // End Anoptamin::Geometry::Transforms
 		
 		
