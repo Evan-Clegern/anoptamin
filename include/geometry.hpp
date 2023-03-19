@@ -115,6 +115,10 @@ namespace Anoptamin { namespace Geometry {
 		c_Angle EdgeAngle;
 		const Base::c_Point3D_Floating *PointA, *PointB;
 		
+		c_Edge();
+		LIBANOP_FUNC_INPUTS_NONNULL c_Edge(const Base::c_Point3D_Floating* from, const Base::c_Point3D_Floating* to);
+		c_Edge(const c_Edge& b);
+		
 		//! Calculates the 'length' value and its angle.
 		void calculateData();
 		//! Calculate a vector to represent the edge from PointA to PointB.
@@ -132,6 +136,9 @@ namespace Anoptamin { namespace Geometry {
 		Base::c_Point3D_Floating Center;
 		c_Edge EdgeA, EdgeB, EdgeC;
 		c_Face_Simple Points;
+		
+		c_Face_Triangle();
+		c_Face_Triangle(Base::c_Point3D_Floating A, Base::c_Point3D_Floating B, Base::c_Point3D_Floating C);
 		
 		//! Computes the face's area and its center; updates state of edges as well.
 		void calculateData();

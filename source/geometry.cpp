@@ -225,6 +225,20 @@ namespace Anoptamin { namespace Geometry {
 	//Stop c_Vector3D methods
 		
 	//! Calculates the 'length' value and its angle.
+	c_Edge::c_Edge() {
+		PointA = NULL; PointB = NULL;
+	}
+	LIBANOP_FUNC_INPUTS_NONNULL c_Edge::c_Edge(const Base::c_Point3D_Floating* from, const Base::c_Point3D_Floating* to) {
+		PointA = from; PointB = to;
+		calculateData();
+	}
+	c_Edge::c_Edge(const c_Edge& b) {
+		check_ptr(b.PointA != NULL);
+		check_ptr(b.PointB != NULL);
+		check_ptr(b.PointA != b.PointB);
+		PointA = b.PointA;
+		PointB = b.PointB;
+	}
 	void c_Edge::calculateData() {
 		check_ptr(this->PointA != NULL);
 		check_ptr(this->PointB != NULL);
@@ -262,6 +276,33 @@ namespace Anoptamin { namespace Geometry {
 	
 	
 	// get area and center
+	c_Face_Triangle::c_Face_Triangle() {
+		Points.A.x = 0;
+		Points.A.y = 0;
+		Points.A.z = 0;
+		
+		Points.B.x = 0;
+		Points.B.y = 0;
+		Points.B.z = 0;
+		
+		Points.C.x = 0;
+		Points.C.y = 0;
+		Points.C.z = 0;
+	}
+	c_Face_Triangle::c_Face_Triangle(Base::c_Point3D_Floating A, Base::c_Point3D_Floating B, Base::c_Point3D_Floating C) {
+		Points.A = A;
+		Points.B = B;
+		Points.C = C;
+		
+		c_Edge NA(&Points.A, &Points.B);
+		c_Edge NB(&Points.B, &Points.C);
+		c_Edge NC(&Points.C, &Points.A);
+		EdgeA = NA;
+		EdgeB = NB;
+		EdgeC = NC;
+		
+		calculateData();
+	}
 	void c_Face_Triangle::calculateData() {
 		this->EdgeA.calculateData();
 		this->EdgeB.calculateData();
