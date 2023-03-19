@@ -51,7 +51,7 @@ int main() {
 	
 	Anoptamin::Base::c_Point3D_Floating pointsTest[3] = {
 		Anoptamin::Base::c_Point3D_Floating(0, 0, 0.1),
-		Anoptamin::Base::c_Point3D_Floating(2, 1, 0),
+		Anoptamin::Base::c_Point3D_Floating(2, 1.25, 0),
 		Anoptamin::Base::c_Point3D_Floating(1, 4, 0)
 	};
 	
