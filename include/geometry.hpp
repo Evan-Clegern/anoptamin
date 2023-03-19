@@ -37,13 +37,67 @@
 #include "base.hpp"
 
 namespace Anoptamin { namespace Geometry {
+	static const long double PI =         3.14159265359;
+	static const long double EULER =      2.71828182846;
+	static const long double ANGStepRad = 0.00019175345;
+	static const long double ANGStepDeg = 0.01098666341;
+	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
+	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
+	struct c_Angle {
+		//! Pitch Yaw and Roll respectively; each subsequent value being equal to (X * 2 Pi / 32767)
+		int16_t Angle_AroundX, Angle_AroundZ, Angle_AroundY;
+		
+		//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
+		double getPitch_Rad() const noexcept;
+		//! Return the angle as a value of (Angle_AroundX * (360 / 32767))
+		double getPitch_Deg() const noexcept;
+		//! Return the angle as a value of (Angle_AroundZ * (2 PI / 32767))
+		double getYaw_Rad() const noexcept;
+		//! Return the angle as a value of (Angle_AroundZ * (360 / 32767))
+		double getYaw_Deg() const noexcept;
+		//! Return the angle as a value of (Angle_AroundY * (2 PI / 32767))
+		double getRoll_Rad() const noexcept;
+		//! Return the angle as a value of (Angle_AroundY * (360 / 32767))
+		double getRoll_Deg() const noexcept;
+		
+		//! Sets the 'X' angle to a value which is a direct multiple of Pi: X = 32767(VAL) / (2 PI)
+		void setPitch_Rad(double Radians) noexcept;
+		//! Sets the 'X' angle to a value which is expressed as degrees: X = 32767(VAL) / 360
+		void setPitch_Deg(double Degrees) noexcept;
+		//! Sets the 'Z' angle to a value which is a direct multiple of Pi: Z = 32767(VAL) / (2 PI)
+		void setYaw_Rad(double Radians) noexcept;
+		//! Sets the 'Z' angle to a value which is expressed as degrees: Z = 32767(VAL) / 360
+		void setYaw_Deg(double Degrees) noexcept;
+		//! Sets the 'Y' angle to a value which is a direct multiple of Pi: Y = 32767(VAL) / (2 PI)
+		void setRoll_Rad(double Radians) noexcept;
+		//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
+		void setRoll_Deg(double Degrees) noexcept;
+	};
+	//! Class which represents a single 3D vector. Can be tied to a point.
+	struct c_Vector3D {
+		double ValX, ValY, ValZ, Magnitude;
+		
+		c_Vector3D(double X, double Y, double Z);
+		//! Zero vector.
+		c_Vector3D();
+		c_Vector3D(const c_Vector3D& b);
+		
+		//! Calculates the vector's magnitude, given the three components.
+		void calculateMagnitude() noexcept;
+		//! Adjusts all values so that the sum of their squares all add up to one.
+		void normalize() noexcept;
+		//! Gets the angle at which the vector is pointed from the base point.
+		c_Angle getAngles() const;
+	};
 	//! Class whichs contains pointers to three points to compose a triangle.
 	struct c_Face_Simple {
 		Base::c_Point3D_Floating* A, B, C;
 	};
 	//! Class which stores the simple point face plus information about it.
 	struct c_Face_Triangle {
-		double Area, Opposite, Adjacent, Hypotenuse;
+		double Area, Hypotenuse;
+		//! Angles relative to their trigonometric identities
+		c_Angle Angle_Sine, Angle_Cosine;
 		Base::c_Point3D_Floating Center;
 		c_Face_Simple Points;
 		
@@ -51,6 +105,7 @@ namespace Anoptamin { namespace Geometry {
 	};
 	//! Class which combines two triangular faces by two fused points; an edge between two faces.
 	struct c_Edge {
+		double Length;
 		const c_Face_Triangle* FaceA, FaceB;
 		const Base::c_Point3D_Floating* PointA, PointB;
 		bool isValid() const noexcept;
@@ -62,7 +117,7 @@ namespace Anoptamin { namespace Geometry {
 		std::vector<c_Edge> triangleEdges;
 		struct Stats {
 			Base::c_Point3D_Floating Average, Variance, Min_All, Max_All;
-			long double SurfaceArea;
+			long double SurfaceArea; // just the sum of the Areas
 		};
 		Base::c_Point3D_Integer meshCenter;
 	};
