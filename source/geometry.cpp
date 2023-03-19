@@ -33,6 +33,16 @@
 
 namespace Anoptamin { namespace Geometry {
 	
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+	const Base::c_Point3D_Floating* B) noexcept {
+		return (A->x == B->x) and (A->y == B->y) and (A->z == B->z);
+	}
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+	const Base::c_Point3D_Integer* B) noexcept {
+		return (A->x == B->x) and (A->y == B->y) and (A->z == B->z);
+	}
+		
+		
 	//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
 	double c_Angle::getPitch_Rad() const noexcept {
 		return this->Angle_AroundX * ANGStepRad;
@@ -159,4 +169,30 @@ namespace Anoptamin { namespace Geometry {
 		return TMP;
 	}
 	
+	//Stop c_Vector3D methods
+		
+	//! Calculates the 'length' value and its angle.
+	void c_Edge::calculateData() {
+		check_runtime(this->isValid());
+		
+	}
+	//! Ensures that the faces actually fuse at the points specified.
+	bool c_Edge::isValid() const noexcept {
+		// Get the point pointers ready for comparison
+		const Base::c_Point3D_Floating* faceApt1 = this->FaceA->Points.A;
+		const Base::c_Point3D_Floating* faceApt2 = this->FaceA->Points.B;
+		const Base::c_Point3D_Floating* faceApt3 = this->FaceA->Points.C;
+		
+		const Base::c_Point3D_Floating* faceBpt1 = this->FaceB->Points.A;
+		const Base::c_Point3D_Floating* faceBpt2 = this->FaceB->Points.B;
+		const Base::c_Point3D_Floating* faceBpt3 = this->FaceB->Points.C;
+		const Base::c_Point3D_Floating* edgePtA = this->PointA;
+		const Base::c_Point3D_Floating* edgePtB = this->PointB;
+		
+		if (arePointsEqual_F(faceApt1, edgePtA) || arePointsEqual_F(faceApt2, edgePtA) || arePointsEqual_F(faceApt3, edgePtA) ) {
+			return (arePointsEqual_F(faceBpt1, edgePtB) || arePointsEqual_F(faceBpt2, edgePtB) || arePointsEqual_F(faceBpt3, edgePtB));
+		} else if (arePointsEqual_F(faceApt1, edgePtB) || arePointsEqual_F(faceApt2, edgePtB) || arePointsEqual_F(faceApt3, edgePtB) ) {
+			return (arePointsEqual_F(faceBpt1, edgePtA) || arePointsEqual_F(faceBpt2, edgePtA) || arePointsEqual_F(faceBpt3, edgePtA));
+		} else return false;
+	}
 }}; //End Anoptamin::Geometry

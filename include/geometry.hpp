@@ -41,6 +41,12 @@ namespace Anoptamin { namespace Geometry {
 	static const long double EULER =      2.71828182846;
 	static const long double ANGStepRad = 0.00019175345;
 	static const long double ANGStepDeg = 0.01098666341;
+	
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
+	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
 	struct c_Angle {
@@ -91,23 +97,29 @@ namespace Anoptamin { namespace Geometry {
 	};
 	//! Class whichs contains pointers to three points to compose a triangle.
 	struct c_Face_Simple {
-		Base::c_Point3D_Floating* A, B, C;
+		Base::c_Point3D_Floating *A, *B, *C;
 	};
 	//! Class which stores the simple point face plus information about it.
 	struct c_Face_Triangle {
-		double Area, Hypotenuse;
+		double Area;
 		//! Angles relative to their trigonometric identities
-		c_Angle Angle_Sine, Angle_Cosine;
+		c_Angle Angle_Sine, Angle_Cosine, Angle_Tangent;
 		Base::c_Point3D_Floating Center;
 		c_Face_Simple Points;
 		
+		//! Computes the face's area and the angles which the edges make.
 		void calculateData();
 	};
 	//! Class which combines two triangular faces by two fused points; an edge between two faces.
 	struct c_Edge {
 		double Length;
-		const c_Face_Triangle* FaceA, FaceB;
-		const Base::c_Point3D_Floating* PointA, PointB;
+		c_Angle EdgeAngle;
+		const c_Face_Triangle *FaceA, *FaceB;
+		const Base::c_Point3D_Floating *PointA, *PointB;
+		
+		//! Calculates the 'length' value and its angle.
+		void calculateData();
+		//! Ensures that the faces actually fuse at the points specified.
 		bool isValid() const noexcept;
 	};
 	//! Class which combines the raw points, the edges it makes, and the total faces, along with extra information.
