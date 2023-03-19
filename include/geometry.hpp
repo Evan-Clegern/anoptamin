@@ -54,6 +54,8 @@ namespace Anoptamin { namespace Geometry {
 		const Base::c_Point3D_Floating* B) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept;
 	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
@@ -86,6 +88,8 @@ namespace Anoptamin { namespace Geometry {
 		void setRoll_Rad(double Radians) noexcept;
 		//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
 		void setRoll_Deg(double Degrees) noexcept;
+		//! Returns a String representation.
+		std::string toString(bool degrees = 1) const noexcept;
 	};
 	//! Class which represents a single 3D vector. Can be tied to a point.
 	struct c_Vector3D {
@@ -102,21 +106,10 @@ namespace Anoptamin { namespace Geometry {
 		void normalize() noexcept;
 		//! Gets the angle at which the vector is pointed from the base point.
 		c_Angle getAngles() const;
+		//! Returns a String representation.
+		std::string toString() const noexcept;
 	};
-	//! Class whichs contains pointers to three points to compose a triangle.
-	struct c_Face_Simple {
-		Base::c_Point3D_Floating *A, *B, *C;
-	};
-	//! Class which stores the simple point face plus information about it.
-	struct c_Face_Triangle {
-		double Area;
-		Base::c_Point3D_Floating Center;
-		c_Face_Simple Points;
-		
-		//! Computes the face's area and its center
-		void calculateData();
-	};
-	//! Class which combines two triangular faces by two fused points; an edge between two faces.
+	//! Class which represents a line drawn between two points.
 	struct c_Edge {
 		double Length;
 		c_Angle EdgeAngle;
@@ -126,6 +119,24 @@ namespace Anoptamin { namespace Geometry {
 		void calculateData();
 		//! Calculate a vector to represent the edge from PointA to PointB.
 		c_Vector3D calculateAsVector() const;
+		//! Returns a String representation.
+		std::string toString() const;
+	};
+	//! Class whichs contains the three points needed to compose a triangle.
+	struct c_Face_Simple {
+		Base::c_Point3D_Floating A, B, C;
+	};
+	//! Class which stores the simple point face plus information about it.
+	struct c_Face_Triangle {
+		double Area;
+		Base::c_Point3D_Floating Center;
+		c_Edge EdgeA, EdgeB, EdgeC;
+		c_Face_Simple Points;
+		
+		//! Computes the face's area and its center; updates state of edges as well.
+		void calculateData();
+		//! Returns a String representation.
+		std::string toString() const;
 	};
 	// references for the rendering info:
 	//https://open.gl/drawing

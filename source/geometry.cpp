@@ -59,33 +59,47 @@ namespace Anoptamin { namespace Geometry {
 		Base::c_Point3D_Integer N(A->x - B->x, A->y - B->y, A->z - B->z);
 		return N;
 	}
-		
-	//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
+	
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept {
+		std::string tmp = "(";
+		tmp += std::to_string(A->x) + ", ";
+		tmp += std::to_string(A->y) + ", ";
+		tmp += std::to_string(A->z) + ")";
+		return tmp;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept {
+		std::string tmp = "(";
+		tmp += std::to_string(A->x) + ", ";
+		tmp += std::to_string(A->y) + ", ";
+		tmp += std::to_string(A->z) + ")";
+		return tmp;
+	}
+	
 	double c_Angle::getPitch_Rad() const noexcept {
 		return this->Angle_AroundX * ANGStepRad;
 	}
-	//! Return the angle as a value of (Angle_AroundX * (360 / 32767))
+	
 	double c_Angle::getPitch_Deg() const noexcept {
 		return this->Angle_AroundX * ANGStepDeg;
 	}
-	//! Return the angle as a value of (Angle_AroundZ * (2 PI / 32767))
+	
 	double c_Angle::getYaw_Rad() const noexcept {
 		return this->Angle_AroundZ * ANGStepRad;
 	}
-	//! Return the angle as a value of (Angle_AroundZ * (360 / 32767))
+	
 	double c_Angle::getYaw_Deg() const noexcept {
 		return this->Angle_AroundZ * ANGStepDeg;
 	}
-	//! Return the angle as a value of (Angle_AroundY * (2 PI / 32767))
+	
 	double c_Angle::getRoll_Rad() const noexcept {
 		return this->Angle_AroundZ * ANGStepRad;
 	}
-	//! Return the angle as a value of (Angle_AroundY * (360 / 32767))
+	
 	double c_Angle::getRoll_Deg() const noexcept {
 		return this->Angle_AroundY * ANGStepDeg;
 	}
 	
-	//! Sets the 'X' angle to a value which is a direct multiple of Pi: X = 32767(VAL) / (2 PI)
+	
 	void c_Angle::setPitch_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
@@ -95,7 +109,7 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundX = int16_t(Radians / ANGStepRad);
 		}
 	}
-	//! Sets the 'X' angle to a value which is expressed as degrees: X = 32767(VAL) / 360
+	
 	void c_Angle::setPitch_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
@@ -105,7 +119,7 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundX = int16_t(Degrees / ANGStepDeg);
 		}
 	}
-	//! Sets the 'Z' angle to a value which is a direct multiple of Pi: Z = 32767(VAL) / (2 PI)
+	
 	void c_Angle::setYaw_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
@@ -115,7 +129,7 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundZ = int16_t(Radians / ANGStepRad);
 		}
 	}
-	//! Sets the 'Z' angle to a value which is expressed as degrees: Z = 32767(VAL) / 360
+	
 	void c_Angle::setYaw_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
@@ -125,7 +139,7 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundZ = int16_t(Degrees / ANGStepDeg);
 		}
 	}
-	//! Sets the 'Y' angle to a value which is a direct multiple of Pi: Y = 32767(VAL) / (2 PI)
+	
 	void c_Angle::setRoll_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
@@ -135,7 +149,7 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundY = int16_t(Radians / ANGStepRad);
 		}
 	}
-	//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
+	
 	void c_Angle::setRoll_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
@@ -144,6 +158,19 @@ namespace Anoptamin { namespace Geometry {
 		} else {
 			this->Angle_AroundY = int16_t(Degrees / ANGStepDeg);
 		}
+	}
+	std::string c_Angle::toString(bool degrees) const noexcept {
+		std::string tmp = "(";
+		if (degrees) {
+			tmp += std::to_string(this->getPitch_Deg()) + "°, ";
+			tmp += std::to_string(this->getYaw_Deg()) + "°, ";
+			tmp += std::to_string(this->getRoll_Deg()) + "°)";
+		} else {
+			tmp += std::to_string(this->getPitch_Rad()) + "R, ";
+			tmp += std::to_string(this->getYaw_Rad()) + "R, ";
+			tmp += std::to_string(this->getRoll_Rad()) + "R)";
+		}
+		return tmp;
 	}
 	
 	// Stop c_Angle methods
@@ -185,6 +212,15 @@ namespace Anoptamin { namespace Geometry {
 		
 		return TMP;
 	}
+
+	std::string c_Vector3D::toString() const noexcept {
+		std::string tmpx = "(";
+		tmpx += std::to_string(this->ValX) + ", ";
+		tmpx += std::to_string(this->ValY) + ", ";
+		tmpx += std::to_string(this->ValZ) + " : ";
+		tmpx += std::to_string(this->Magnitude) + "u)";
+		return tmpx;
+	}
 	
 	//Stop c_Vector3D methods
 		
@@ -213,21 +249,41 @@ namespace Anoptamin { namespace Geometry {
 		c_Vector3D nyehehe(DIFF.x, DIFF.y, DIFF.z);
 		return nyehehe;
 	}
+	std::string c_Edge::toString() const {
+		check_ptr(this->PointA != NULL);
+		check_ptr(this->PointB != NULL);
+		check_ptr(this->PointA != this->PointB);
+		//→
+		std::string tmp = "{";
+		tmp += pointToStr_F(this->PointA) + " → " + pointToStr_F(this->PointB) + ", ";
+		tmp += std::to_string(this->Length) + "u}";
+		return tmp;
+	}
 	
 	
 	// get area and center
 	void c_Face_Triangle::calculateData() {
+		this->EdgeA.calculateData();
+		this->EdgeB.calculateData();
+		this->EdgeC.calculateData();
+		
 		// Centers
-		double tmpx = (this->Points.A->x + this->Points.B->x + this->Points.C->x) / 3;
-		double tmpy = (this->Points.A->y + this->Points.B->y + this->Points.C->y) / 3;
-		double tmpz = (this->Points.A->z + this->Points.B->z + this->Points.C->z) / 3;
+		double tmpx = (this->Points.A.x + this->Points.B.x + this->Points.C.x) / 3;
+		double tmpy = (this->Points.A.y + this->Points.B.y + this->Points.C.y) / 3;
+		double tmpz = (this->Points.A.z + this->Points.B.z + this->Points.C.z) / 3;
 		this->Center = Base::c_Point3D_Floating(tmpx, tmpy, tmpz);
 		// Distances
-		double gooberAB = getPointDist_F(this->Points.A, this->Points.B);
-		double gooberBC = getPointDist_F(this->Points.B, this->Points.C);
-		double gooberCA = getPointDist_F(this->Points.C, this->Points.A);
+		double gooberAB = this->EdgeA.Length;
+		double gooberBC = this->EdgeB.Length;
+		double gooberCA = this->EdgeC.Length;
 		long double perim = 0.5 * (gooberAB + gooberBC + gooberCA);
 		this->Area = std::sqrt( perim * (perim - gooberAB) * (perim - gooberBC) * (perim - gooberCA) );
+	}
+	//! Returns a String representation.
+	std::string c_Face_Triangle::toString() const {
+		std::string tmp = "Tri: " + pointToStr_F(&(this->Points.A)) + "; " + pointToStr_F(&(this->Points.B)) + "; " + pointToStr_F(&(this->Points.C));
+		tmp += "\nArea: " + std::to_string(this->Area) + "u², Center: " + pointToStr_F(&(this->Center));
+		return tmp;
 	}
 	
 	
