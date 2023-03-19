@@ -41,7 +41,24 @@ namespace Anoptamin { namespace Geometry {
 	const Base::c_Point3D_Integer* B) noexcept {
 		return (A->x == B->x) and (A->y == B->y) and (A->z == B->z);
 	}
-		
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
+	const Base::c_Point3D_Floating* B) noexcept {
+		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
+	}
+	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
+	const Base::c_Point3D_Integer* B) noexcept {
+		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+	const Base::c_Point3D_Floating* B) noexcept {
+		Base::c_Point3D_Floating N(A->x - B->x, A->y - B->y, A->z - B->z);
+		return N;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+	const Base::c_Point3D_Integer* B) noexcept {
+		Base::c_Point3D_Integer N(A->x - B->x, A->y - B->y, A->z - B->z);
+		return N;
+	}
 		
 	//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
 	double c_Angle::getPitch_Rad() const noexcept {
@@ -174,7 +191,14 @@ namespace Anoptamin { namespace Geometry {
 	//! Calculates the 'length' value and its angle.
 	void c_Edge::calculateData() {
 		check_runtime(this->isValid());
-		
+		this->Length = getPointDist_F(this->PointA, this->PointB);
+		c_Angle TMPANG;
+		Base::c_Point3D_Floating DIFF = getPointDiff_F(this->PointA, this->PointB);
+		// hypotenuse == this->Length
+		TMPANG.setPitch_Rad( std::acos(DIFF.x / this->Length) );
+		TMPANG.setYaw_Rad( std::acos(DIFF.z / this->Length) );
+		TMPANG.setRoll_Rad( std::acos(DIFF.y / this->Length) );
+		this->EdgeAngle = TMPANG;
 	}
 	//! Ensures that the faces actually fuse at the points specified.
 	bool c_Edge::isValid() const noexcept {
@@ -186,6 +210,7 @@ namespace Anoptamin { namespace Geometry {
 		const Base::c_Point3D_Floating* faceBpt1 = this->FaceB->Points.A;
 		const Base::c_Point3D_Floating* faceBpt2 = this->FaceB->Points.B;
 		const Base::c_Point3D_Floating* faceBpt3 = this->FaceB->Points.C;
+		
 		const Base::c_Point3D_Floating* edgePtA = this->PointA;
 		const Base::c_Point3D_Floating* edgePtB = this->PointB;
 		
@@ -195,4 +220,14 @@ namespace Anoptamin { namespace Geometry {
 			return (arePointsEqual_F(faceBpt1, edgePtA) || arePointsEqual_F(faceBpt2, edgePtA) || arePointsEqual_F(faceBpt3, edgePtA));
 		} else return false;
 	}
+	
+	// Stop c_Edge methods
+	
+	void c_Face_Triangle::calculateData() {
+		
+	}
+	
+	// Stop c_Face_Triangle methods
+	
+	
 }}; //End Anoptamin::Geometry

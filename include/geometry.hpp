@@ -46,6 +46,14 @@ namespace Anoptamin { namespace Geometry {
 		const Base::c_Point3D_Floating* B) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
 	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
@@ -102,12 +110,10 @@ namespace Anoptamin { namespace Geometry {
 	//! Class which stores the simple point face plus information about it.
 	struct c_Face_Triangle {
 		double Area;
-		//! Angles relative to their trigonometric identities
-		c_Angle Angle_Sine, Angle_Cosine, Angle_Tangent;
 		Base::c_Point3D_Floating Center;
 		c_Face_Simple Points;
 		
-		//! Computes the face's area and the angles which the edges make.
+		//! Computes the face's area
 		void calculateData();
 	};
 	//! Class which combines two triangular faces by two fused points; an edge between two faces.
