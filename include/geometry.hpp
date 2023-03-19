@@ -124,8 +124,9 @@ namespace PtTransforms {
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
-	//! Rotates any arbitrary point about a second point using matrices.
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotate(Base::c_Point3D_Floating main, const Base::c_Point3D_Floating& about, const c_Angle& by);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT std::vector<long double> getRotationVector(const c_Angle& by);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByVector(const std::vector<long double> &vector, Base::c_Point3D_Floating main,
+		const Base::c_Point3D_Floating& about);
 }
 	//! Class which represents a line drawn between two points.
 	struct c_Edge {
@@ -178,6 +179,17 @@ namespace PtTransforms {
 		void updatePointers();
 		//! Simple string representation (lists stats and face count, but not main points)
 		std::string toString() const;
+		
+		//! Move the object by the amount specified in the vector.
+		void translateSelf(c_Vector3D translateBy);
+		//! Scale the object's points by the amount specified in the vector.
+		void scaleSelf(c_Vector3D scaleBy);
+		//! Scale the object's points by the amount specified.
+		void scaleSelf(float scalar);
+		//! Rotate the object by the various angles specified, about the position specified.
+		void rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about);
+		//! Rotate the object by the various angles specified
+		void rotateSelf(c_Angle rotateBy);
 	};
 	
 	//! Generates a rectangular volume between the specified points

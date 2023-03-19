@@ -291,37 +291,35 @@ namespace PtTransforms {
 	}
 	
 	//! Rotates any arbitrary point about a second point using matrices.
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotate(Base::c_Point3D_Floating main, const Base::c_Point3D_Floating& about, const c_Angle& by) {
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT std::vector<long double> getRotationVector(const c_Angle& by) {
 		// 'A' vector: 1x3
 		// 'B' vector: 3x3
 		// Output: 1x3 (new point)
 
 		// Manually create the matrix
 		// for Wikipedia info: alpha == yaw, beta == pitch, gamma == roll
-		double R0C0 = std::cos(by.getPitch_Rad()) * std::cos(by.getRoll_Rad());
-		double R0C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) - (std::cos(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
-		double R0C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::sin(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
+		long double R0C0 = std::cos(by.getPitch_Rad()) * std::cos(by.getRoll_Rad());
+		long double R0C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) - (std::cos(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
+		long double R0C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::sin(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
 		
-		double R1C0 = std::cos(by.getPitch_Rad()) * std::sin(by.getRoll_Rad());
-		double R1C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::cos(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
-		double R1C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::sin(by.getRoll_Rad())) - (std::sin(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
+		long double R1C0 = std::cos(by.getPitch_Rad()) * std::sin(by.getRoll_Rad());
+		long double R1C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::cos(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
+		long double R1C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::sin(by.getRoll_Rad())) - (std::sin(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
 		
-		double R2C0 = -1 * std::sin(by.getPitch_Rad());
-		double R2C1 = std::sin(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
-		double R2C2 = std::cos(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
+		long double R2C0 = -1 * std::sin(by.getPitch_Rad());
+		long double R2C1 = std::sin(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
+		long double R2C2 = std::cos(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
 		
-		// Add this back to the rotated point
-		auto DIFF = getPointDiff_F(&main, &about);
-		
-		double NewX = (main.x * R0C0) + (main.y * R1C0) + (main.z * R2C0);
-		double NewY = (main.x * R0C1) + (main.y * R1C1) + (main.z * R2C1);
-		double NewZ = (main.x * R0C2) + (main.y * R1C2) + (main.z * R2C2);
-		
-		NewX += DIFF.x;
-		NewY += DIFF.y;
-		NewZ += DIFF.z;
-		
-		return Base::c_Point3D_Floating(NewX, NewY, NewZ);
+		std::vector<long double> N = {R0C0, R0C1, R0C2,  R1C0, R1C1, R1C2,  R2C0, R2C1, R2C2};
+		return N;
+	}
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByVector(const std::vector<long double> &vector, Base::c_Point3D_Floating main,
+	const Base::c_Point3D_Floating& about) {
+		Base::c_Point3D_Floating offset = getPointDiff_F(&main, &about);
+		double nX = (main.x * vector[0]) + (main.y * vector[3]) + (main.z * vector[6]) + offset.x;
+		double nY = (main.x * vector[1]) + (main.y * vector[4]) + (main.z * vector[7]) + offset.y;
+		double nZ = (main.x * vector[2]) + (main.y * vector[5]) + (main.z * vector[8]) + offset.z;
+		return Base::c_Point3D_Floating(nX, nY, nZ);
 	}
 } // End Anoptamin::Geometry::Transforms
 		
@@ -509,6 +507,154 @@ namespace PtTransforms {
 		std::string TMP = "Volume SA: " + std::to_string(this->SurfaceArea) + ", Volume Faces: " + std::to_string(this->Faces.size());
 		TMP += "; Volume Center: " + pointToStr_F(&(this->Center));
 		return TMP;
+	}
+	
+	
+	// simplest operation
+	//! Move the object by the amount specified in the vector.
+	void c_Volume::translateSelf(c_Vector3D translateBy) {
+		c_Vector3D nvec = translateBy;
+		for (c_Face_Triangle i : this->Faces) {
+			i.Points.A = PtTransforms::translateBy_F(&i.Points.A, &nvec);
+			i.Points.B = PtTransforms::translateBy_F(&i.Points.B, &nvec);
+			i.Points.C = PtTransforms::translateBy_F(&i.Points.C, &nvec);
+		}
+		this->updatePointers();
+		this->calculateData();
+	}
+	
+	// we have to increase the distance of each point from the center
+	//! Scale the object's points by the amount specified in the vector.
+	void c_Volume::scaleSelf(c_Vector3D scaleBy) {
+		for (c_Face_Triangle i : this->Faces) {
+			// we can try to do the reverse of normalizing a vector
+			if (i.Points.A.x > i.Center.x) {
+				i.Points.A.x *= scaleBy.ValX;
+			} else {
+				i.Points.A.x *= -1 * scaleBy.ValX;
+			}
+			if (i.Points.A.y > i.Center.y) {
+				i.Points.A.y *= scaleBy.ValY;
+			} else {
+				i.Points.A.y *= -1 * scaleBy.ValY;
+			}
+			if (i.Points.A.z > i.Center.z) {
+				i.Points.A.z *= scaleBy.ValZ;
+			} else {
+				i.Points.A.z *= -1 * scaleBy.ValZ;
+			}
+			
+			if (i.Points.B.x > i.Center.x) {
+				i.Points.B.x *= scaleBy.ValX;
+			} else {
+				i.Points.B.x *= -1 * scaleBy.ValX;
+			}
+			if (i.Points.B.y > i.Center.y) {
+				i.Points.B.y *= scaleBy.ValY;
+			} else {
+				i.Points.B.y *= -1 * scaleBy.ValY;
+			}
+			if (i.Points.B.z > i.Center.z) {
+				i.Points.B.z *= scaleBy.ValZ;
+			} else {
+				i.Points.B.z *= -1 * scaleBy.ValZ;
+			}
+			
+			if (i.Points.C.x > i.Center.x) {
+				i.Points.C.x *= scaleBy.ValX;
+			} else {
+				i.Points.C.x *= -1 * scaleBy.ValX;
+			}
+			if (i.Points.C.y > i.Center.y) {
+				i.Points.C.y *= scaleBy.ValY;
+			} else {
+				i.Points.C.y *= -1 * scaleBy.ValY;
+			}
+			if (i.Points.C.z > i.Center.z) {
+				i.Points.C.z *= scaleBy.ValZ;
+			} else {
+				i.Points.C.z *= -1 * scaleBy.ValZ;
+			}
+		}
+		this->updatePointers();
+		this->calculateData();
+	}
+	void c_Volume::scaleSelf(float scaleBy) {
+		for (c_Face_Triangle i : this->Faces) {
+			// we can try to do the reverse of normalizing a vector
+			if (i.Points.A.x > i.Center.x) {
+				i.Points.A.x *= scaleBy;
+			} else {
+				i.Points.A.x *= -1 * scaleBy;
+			}
+			if (i.Points.A.y > i.Center.y) {
+				i.Points.A.y *= scaleBy;
+			} else {
+				i.Points.A.y *= -1 * scaleBy;
+			}
+			if (i.Points.A.z > i.Center.z) {
+				i.Points.A.z *= scaleBy;
+			} else {
+				i.Points.A.z *= -1 * scaleBy;
+			}
+			
+			if (i.Points.B.x > i.Center.x) {
+				i.Points.B.x *= scaleBy;
+			} else {
+				i.Points.B.x *= -1 * scaleBy;
+			}
+			if (i.Points.B.y > i.Center.y) {
+				i.Points.B.y *= scaleBy;
+			} else {
+				i.Points.B.y *= -1 * scaleBy;
+			}
+			if (i.Points.B.z > i.Center.z) {
+				i.Points.B.z *= scaleBy;
+			} else {
+				i.Points.B.z *= -1 * scaleBy;
+			}
+			
+			if (i.Points.C.x > i.Center.x) {
+				i.Points.C.x *= scaleBy;
+			} else {
+				i.Points.C.x *= -1 * scaleBy;
+			}
+			if (i.Points.C.y > i.Center.y) {
+				i.Points.C.y *= scaleBy;
+			} else {
+				i.Points.C.y *= -1 * scaleBy;
+			}
+			if (i.Points.C.z > i.Center.z) {
+				i.Points.C.z *= scaleBy;
+			} else {
+				i.Points.C.z *= -1 * scaleBy;
+			}
+		}
+		this->updatePointers();
+		this->calculateData();
+	}
+	// rotation time baby
+	//! Rotate the object by the various angles specified
+	void c_Volume::rotateSelf(c_Angle rotateBy) {
+		auto rotvec = PtTransforms::getRotationVector(rotateBy);
+		for (c_Face_Triangle i : this->Faces) {
+			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, this->Center);
+			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, this->Center);
+			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, this->Center);
+		}
+		this->updatePointers();
+		this->calculateData();
+	}
+	//! Rotate the object by the various angles specified, about the position specified.
+	void c_Volume::rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about) {
+		auto rotvec = PtTransforms::getRotationVector(rotateBy);
+		for (c_Face_Triangle i : this->Faces) {
+			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, about);
+			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, about);
+			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, about);
+		}
+		this->updatePointers();
+		this->calculateData();
 	}
 	
 	// End c_Volume methods
