@@ -73,6 +73,22 @@ namespace Anoptamin { namespace Geometry {
 		//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
 		void setRoll_Deg(double Degrees) noexcept;
 	};
+	//! Class which represents a single 3D vector. Can be tied to a point.
+	struct c_Vector3D {
+		double ValX, ValY, ValZ, Magnitude;
+		
+		c_Vector3D(double X, double Y, double Z);
+		//! Zero vector.
+		c_Vector3D();
+		c_Vector3D(const c_Vector3D& b);
+		
+		//! Calculates the vector's magnitude, given the three components.
+		void calculateMagnitude() noexcept;
+		//! Adjusts all values so that the sum of their squares all add up to one.
+		void normalize() noexcept;
+		//! Gets the angle at which the vector is pointed from the base point.
+		c_Angle getAngles() const;
+	};
 	//! Class whichs contains pointers to three points to compose a triangle.
 	struct c_Face_Simple {
 		Base::c_Point3D_Floating* A, B, C;
@@ -89,6 +105,7 @@ namespace Anoptamin { namespace Geometry {
 	};
 	//! Class which combines two triangular faces by two fused points; an edge between two faces.
 	struct c_Edge {
+		double Length;
 		const c_Face_Triangle* FaceA, FaceB;
 		const Base::c_Point3D_Floating* PointA, PointB;
 		bool isValid() const noexcept;

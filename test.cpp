@@ -49,15 +49,10 @@ int main() {
 	
 	Anoptamin::initializeSDLGraphics();
 	
-	Anoptamin::Geometry::c_Angle TMP;
-	TMP.setPitch_Deg(45);
-	TMP.setYaw_Deg(45);
-	TMP.setRoll_Deg(0);
+	Anoptamin::Geometry::c_Vector3D Test(2, 2, 2.2);
+	auto angle = Test.getAngles();
 	
-	std::cout << "Angle test data:\nPitch: " << TMP.getPitch_Deg() << ", Yaw: " << TMP.getYaw_Deg() << ", Roll: " << TMP.getRoll_Deg() << '\n';
-	TMP.Angle_AroundX += 1;
-	TMP.Angle_AroundZ += 1;
-	std::cout << "Angle test data:\nPitch: " << TMP.getPitch_Deg() << ", Yaw: " << TMP.getYaw_Deg() << ", Roll: " << TMP.getRoll_Deg() << '\n';
+	std::cout << "Angles; X: " << angle.getPitch_Deg() << ", Z: " << angle.getYaw_Deg() << ", Y: " << angle.getRoll_Deg() << '\n';
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);

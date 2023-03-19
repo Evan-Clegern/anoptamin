@@ -62,39 +62,101 @@ namespace Anoptamin { namespace Geometry {
 	void c_Angle::setPitch_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundX = int16_t(Radians / ANGStepRad);
+		if (Radians == 0) {
+			this->Angle_AroundX = 0;
+		} else {
+			this->Angle_AroundX = int16_t(Radians / ANGStepRad);
+		}
 	}
 	//! Sets the 'X' angle to a value which is expressed as degrees: X = 32767(VAL) / 360
 	void c_Angle::setPitch_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundX = int16_t(Degrees / ANGStepDeg);
+		if (Degrees == 0) {
+			this->Angle_AroundX = 0;
+		} else {
+			this->Angle_AroundX = int16_t(Degrees / ANGStepDeg);
+		}
 	}
 	//! Sets the 'Z' angle to a value which is a direct multiple of Pi: Z = 32767(VAL) / (2 PI)
 	void c_Angle::setYaw_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundZ = int16_t(Radians / ANGStepRad);
+		if (Radians == 0) {
+			this->Angle_AroundZ = 0;
+		} else {
+			this->Angle_AroundZ = int16_t(Radians / ANGStepRad);
+		}
 	}
 	//! Sets the 'Z' angle to a value which is expressed as degrees: Z = 32767(VAL) / 360
 	void c_Angle::setYaw_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundZ = int16_t(Degrees / ANGStepDeg);
+		if (Degrees == 0) {
+			this->Angle_AroundZ = 0;
+		} else {
+			this->Angle_AroundZ = int16_t(Degrees / ANGStepDeg);
+		}
 	}
 	//! Sets the 'Y' angle to a value which is a direct multiple of Pi: Y = 32767(VAL) / (2 PI)
 	void c_Angle::setRoll_Rad(double Radians) noexcept {
 		// Normalize
 		while (Radians >= (2 * PI)) Radians -= (2 * PI);
-		this->Angle_AroundY = int16_t(Radians / ANGStepRad);
+		if (Radians == 0) {
+			this->Angle_AroundY = 0;
+		} else {
+			this->Angle_AroundY = int16_t(Radians / ANGStepRad);
+		}
 	}
 	//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
 	void c_Angle::setRoll_Deg(double Degrees) noexcept {
 		// Normalize
 		while (Degrees >= 360) Degrees -= 360;
-		this->Angle_AroundY = int16_t(Degrees / ANGStepDeg);
+		if (Degrees == 0) {
+			this->Angle_AroundY = 0;
+		} else {
+			this->Angle_AroundY = int16_t(Degrees / ANGStepDeg);
+		}
 	}
 	
 	// Stop c_Angle methods
+	
+	c_Vector3D::c_Vector3D(double X, double Y, double Z) {
+		ValX = X; ValY = Y; ValZ = Z;
+		calculateMagnitude();
+	}
+	c_Vector3D::c_Vector3D() {
+		ValX = 0, ValY = 0, ValZ = 0, Magnitude = 0;
+	}
+	c_Vector3D::c_Vector3D(const c_Vector3D& b) {
+		ValX = b.ValX; ValY = b.ValY; ValZ = b.ValZ;
+		calculateMagnitude();
+	}
+	
+	void c_Vector3D::calculateMagnitude() noexcept {
+		this->Magnitude = std::sqrt( (this->ValX * this->ValX) + (this->ValY * this->ValY) + (this->ValZ * this->ValZ) );
+	}
+	// the square of ValX, ValY and ValZ must add up to 1
+	void c_Vector3D::normalize() noexcept {
+		this->calculateMagnitude();
+		this->ValX = (this->ValX / this->Magnitude);
+		this->ValY = (this->ValY / this->Magnitude);
+		this->ValZ = (this->ValZ / this->Magnitude);
+	}
+	//! Gets the angle at which the vector is pointed from the base point.
+	
+	// They're all ARCTAN because the vector's magnitude is the hypotenuse of any given right triangle.
+	// Radians are the default value in CMATH
+	c_Angle c_Vector3D::getAngles() const {
+		c_Angle TMP;
+		// About the 'x' axis (Y / Z)
+		TMP.setPitch_Rad( std::atan( this->ValY	/ this->ValZ ) );
+		// About the 'z' axis (X / Y)
+		TMP.setYaw_Rad( std::atan( this->ValX / this->ValY ) );
+		// About the 'y' axis (X / Z)
+		TMP.setRoll_Rad( std::atan( this->ValX / this->ValZ ) );
+		
+		return TMP;
+	}
 	
 }}; //End Anoptamin::Geometry
