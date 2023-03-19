@@ -42,17 +42,17 @@ namespace Anoptamin { namespace Geometry {
 	static const long double ANGStepRad = 0.00019175345;
 	static const long double ANGStepDeg = 0.01098666341;
 	
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE double getPointDist_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
 		const Base::c_Point3D_Floating* B) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
 		const Base::c_Point3D_Integer* B) noexcept;
 	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
@@ -114,6 +114,33 @@ namespace Anoptamin { namespace Geometry {
 		//! Calculate a vector to represent the edge from PointA to PointB.
 		c_Vector3D calculateAsVector() const;
 	};
+	// references for the rendering info:
+	//https://open.gl/drawing
+	//https://stackoverflow.com/questions/8766788/opengl-polygon-rendering-mode-and-texture-mapping
+	//https://eng.libretexts.org/Bookshelves/Computer_Science/Applied_Programming/Book%3A_Introduction_to_Computer_Graphics_(Eck)/03%3A_OpenGL_1.1-_Geometry/3.04%3A_Polygonal_Meshes_and_glDrawArrays
+	//! Class which represents a polygon (useful for OpenGL rendering)
+	struct c_Polygon {
+		std::vector<Base::c_Point3D_Floating> Points;
+		std::vector<c_Edge> Edges;
+		double Perimiter, Area;
+		Base::c_Point3D_Floating PointAverage, PointVariance;
+		Base::c_Point3D_Integer PolygonCenter;
+		
+		//! Validates the points and its edges.
+		bool pointsValid() const;
+		//! Calculates the perimiter, area, average, variance and center point for the polygon.
+		void calculateData();
+	};
+namespace Algor {
+	//! Performs a fast collision test between two edges
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_Edges(const c_Edge* A, const c_Edge* B);
+	//! Performs a fast collision test between an edge and a polygon
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_EdgePoly(const c_Edge* A, const c_Polygon* B);
+	//! Performs a collision test between two polygons
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_Polys(const c_Polygon* A, const c_Polygon* B);
+} // End Anoptaming::Geometry::Algor
+
+
 }}; //End Anoptamin::Geometry
 
 #endif
