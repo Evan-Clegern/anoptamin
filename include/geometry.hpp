@@ -115,7 +115,7 @@ namespace Anoptamin { namespace Geometry {
 		c_Vector3D operator-(const c_Vector3D& vector2) const noexcept;
 	};
 	
-namespace Transforms {
+namespace PtTransforms {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
@@ -124,10 +124,6 @@ namespace Transforms {
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating rotateAbout_F(const Base::c_Point3D_Floating* main,
-		const Base::c_Point3D_Floating* about, const c_Angle* angle) noexcept;
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer rotateAbout_I(const Base::c_Point3D_Integer* main,
-		const Base::c_Point3D_Integer* about, const c_Angle* angle) noexcept;
 }
 	
 	//! Class which represents a line drawn between two points.

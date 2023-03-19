@@ -256,7 +256,7 @@ namespace Anoptamin { namespace Geometry {
 	}
 	//Stop c_Vector3D methods
 	
-namespace Transforms {
+namespace PtTransforms {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Floating NEWPT(*main);
@@ -288,14 +288,6 @@ namespace Transforms {
 		NEWPT.y *= int32_t(level->ValY);
 		NEWPT.z *= int32_t(level->ValZ);
 		return NEWPT;
-	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating rotateAbout_F(const Base::c_Point3D_Floating* main,
-	const Base::c_Point3D_Floating* about, const c_Angle* angle) noexcept {
-		Base::c_Point3D_Floating NEWPT(*main);
-	}
-	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer rotateAbout_I(const Base::c_Point3D_Integer* main,
-	const Base::c_Point3D_Integer* about, const c_Angle* angle) noexcept {
-		Base::c_Point3D_Integer NEWPT(*main);
 	}
 } // End Anoptamin::Geometry::Transforms
 		
