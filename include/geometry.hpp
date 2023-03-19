@@ -103,7 +103,20 @@ namespace Anoptamin { namespace Geometry {
 		//! Gets the angle at which the vector is pointed from the base point.
 		c_Angle getAngles() const;
 	};
-	//! Class which is essentially a vector between two points. Composes a rendered edge.
+	//! Class whichs contains pointers to three points to compose a triangle.
+	struct c_Face_Simple {
+		Base::c_Point3D_Floating *A, *B, *C;
+	};
+	//! Class which stores the simple point face plus information about it.
+	struct c_Face_Triangle {
+		double Area;
+		Base::c_Point3D_Floating Center;
+		c_Face_Simple Points;
+		
+		//! Computes the face's area and its center
+		void calculateData();
+	};
+	//! Class which combines two triangular faces by two fused points; an edge between two faces.
 	struct c_Edge {
 		double Length;
 		c_Angle EdgeAngle;
@@ -118,27 +131,6 @@ namespace Anoptamin { namespace Geometry {
 	//https://open.gl/drawing
 	//https://stackoverflow.com/questions/8766788/opengl-polygon-rendering-mode-and-texture-mapping
 	//https://eng.libretexts.org/Bookshelves/Computer_Science/Applied_Programming/Book%3A_Introduction_to_Computer_Graphics_(Eck)/03%3A_OpenGL_1.1-_Geometry/3.04%3A_Polygonal_Meshes_and_glDrawArrays
-	//! Class which represents a polygon (useful for OpenGL rendering)
-	struct c_Polygon {
-		std::vector<Base::c_Point3D_Floating> Points;
-		std::vector<c_Edge> Edges;
-		double Perimiter, Area;
-		Base::c_Point3D_Floating PointAverage, PointVariance;
-		Base::c_Point3D_Integer PolygonCenter;
-		
-		//! Validates the points and its edges.
-		bool pointsValid() const;
-		//! Calculates the perimiter, area, average, variance and center point for the polygon.
-		void calculateData();
-	};
-namespace Algor {
-	//! Performs a fast collision test between two edges
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_Edges(const c_Edge* A, const c_Edge* B);
-	//! Performs a fast collision test between an edge and a polygon
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_EdgePoly(const c_Edge* A, const c_Polygon* B);
-	//! Performs a collision test between two polygons
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT LIBANOP_FUNC_FIX_STATE bool CollisionTest_Polys(const c_Polygon* A, const c_Polygon* B);
-} // End Anoptaming::Geometry::Algor
 
 
 }}; //End Anoptamin::Geometry

@@ -215,8 +215,20 @@ namespace Anoptamin { namespace Geometry {
 	}
 	
 	
-	// Stop c_Edge methods
-	
+	// get area and center
+	void c_Face_Triangle::calculateData() {
+		// Centers
+		double tmpx = (this->Points.A->x + this->Points.B->x + this->Points.C->x) / 3;
+		double tmpy = (this->Points.A->y + this->Points.B->y + this->Points.C->y) / 3;
+		double tmpz = (this->Points.A->z + this->Points.B->z + this->Points.C->z) / 3;
+		this->Center = Base::c_Point3D_Floating(tmpx, tmpy, tmpz);
+		// Distances
+		double gooberAB = getPointDist_F(this->Points.A, this->Points.B);
+		double gooberBC = getPointDist_F(this->Points.B, this->Points.C);
+		double gooberCA = getPointDist_F(this->Points.C, this->Points.A);
+		long double perim = 0.5 * (gooberAB + gooberBC + gooberCA);
+		this->Area = std::sqrt( perim * (perim - gooberAB) * (perim - gooberBC) * (perim - gooberCA) );
+	}
 	
 	
 }}; //End Anoptamin::Geometry
