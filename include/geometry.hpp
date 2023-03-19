@@ -61,7 +61,7 @@ namespace Anoptamin { namespace Geometry {
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
 	struct c_Angle {
 		//! Pitch Yaw and Roll respectively; each subsequent value being equal to (X * 2 Pi / 32767)
-		int16_t Angle_AroundX, Angle_AroundZ, Angle_AroundY;
+		int16_t Angle_AroundX = 0, Angle_AroundZ = 0, Angle_AroundY = 0;
 		
 		//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
 		double getPitch_Rad() const noexcept;
