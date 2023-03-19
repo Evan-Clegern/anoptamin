@@ -255,6 +255,50 @@ namespace Anoptamin { namespace Geometry {
 		return TMP;
 	}
 	//Stop c_Vector3D methods
+	
+namespace Transforms {
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
+	const c_Vector3D* level) noexcept {
+		Base::c_Point3D_Floating NEWPT(*main);
+		NEWPT.x += level->ValX;
+		NEWPT.y += level->ValY;
+		NEWPT.z += level->ValZ;
+		return NEWPT;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
+	const c_Vector3D* level) noexcept {
+		Base::c_Point3D_Integer NEWPT(*main);
+		NEWPT.x += int32_t(level->ValX);
+		NEWPT.y += int32_t(level->ValY);
+		NEWPT.z += int32_t(level->ValZ);
+		return NEWPT;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
+	const c_Vector3D* level) noexcept {
+		Base::c_Point3D_Floating NEWPT(*main);
+		NEWPT.x *= level->ValX;
+		NEWPT.y *= level->ValY;
+		NEWPT.z *= level->ValZ;
+		return NEWPT;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
+	const c_Vector3D* level) noexcept {
+		Base::c_Point3D_Integer NEWPT(*main);
+		NEWPT.x *= int32_t(level->ValX);
+		NEWPT.y *= int32_t(level->ValY);
+		NEWPT.z *= int32_t(level->ValZ);
+		return NEWPT;
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating rotateAbout_F(const Base::c_Point3D_Floating* main,
+	const Base::c_Point3D_Floating* about, const c_Angle* angle) noexcept {
+		Base::c_Point3D_Floating NEWPT(*main);
+	}
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer rotateAbout_I(const Base::c_Point3D_Integer* main,
+	const Base::c_Point3D_Integer* about, const c_Angle* angle) noexcept {
+		Base::c_Point3D_Integer NEWPT(*main);
+	}
+} // End Anoptamin::Geometry::Transforms
+		
 		
 	//! Calculates the 'length' value and its angle.
 	c_Edge::c_Edge() {
@@ -379,7 +423,7 @@ namespace Anoptamin { namespace Geometry {
 	void c_Volume::calculateData() {
 		this->SurfaceArea = 0;
 		// Get the center by finding the average of all of the triangular faces' centers.
-		Base::c_Point3D_Floating TMP;
+		Base::c_Point3D_Floating TMP(0, 0, 0);
 		for (c_Face_Triangle i : this->Faces) {
 			TMP.x += i.Center.x;
 			TMP.y += i.Center.y;
@@ -387,11 +431,111 @@ namespace Anoptamin { namespace Geometry {
 			
 			this->SurfaceArea += i.Area;
 		}
-		Base::c_Point3D_Integer NTMP;
-		NTMP.x = int32_t(TMP.x / this->Faces.size());
-		NTMP.y = int32_t(TMP.y / this->Faces.size());
-		NTMP.z = int32_t(TMP.z / this->Faces.size());
+		Base::c_Point3D_Floating NTMP;
+		NTMP.x = (TMP.x / this->Faces.size());
+		NTMP.y = (TMP.y / this->Faces.size());
+		NTMP.z = (TMP.z / this->Faces.size());
 		this->Center = NTMP;
+	}
+	
+	// header-only, test if the point is in vector
+	bool isPtInVec(Base::c_Point3D_Floating* point, std::vector<Base::c_Point3D_Floating>& vector) {
+		for (auto i : vector) {
+			if (i.x == point->x) {
+				bool N = (i.y == point->y) and (i.z == point->z);
+				if (N) return true; else continue;
+			}
+		}
+		return false;
+	}
+	// header-only, test if the point is in vector
+	bool isPtInVec(Base::c_Point3D_Floating point, std::vector<Base::c_Point3D_Floating>& vector) {
+		for (auto i : vector) {
+			if (i.x == point.x) {
+				bool N = (i.y == point.y) and (i.z == point.z);
+				if (N) return true; else continue;
+			}
+		}
+		return false;
+	}
+	
+	//! Updates the pointer list, and removes redundant point pointers
+	void c_Volume::updatePointers() {
+		std::vector<Base::c_Point3D_Floating> actualPoints; // duplicates of those in the face data. used to trim redundant pointers.
+		this->MainPoints.clear();
+		for (c_Face_Triangle i : this->Faces) {
+			
+			if (!isPtInVec(i.Points.A, actualPoints)) {
+				actualPoints.push_back(i.Points.A);
+				this->MainPoints.push_back(&i.Points.A);
+			}
+			if (!isPtInVec(i.Points.B, actualPoints)) {
+				actualPoints.push_back(i.Points.B);
+				this->MainPoints.push_back(&i.Points.B);
+			}
+			if (!isPtInVec(i.Points.C, actualPoints)) {
+				actualPoints.push_back(i.Points.C);
+				this->MainPoints.push_back(&i.Points.C);
+			}
+		}
+	}
+	std::string c_Volume::toString() const {
+		std::string TMP = "Volume SA: " + std::to_string(this->SurfaceArea) + ", Volume Faces: " + std::to_string(this->Faces.size());
+		TMP += "; Volume Center: " + pointToStr_F(&(this->Center));
+		return TMP;
+	}
+	
+	// End c_Volume methods
+	
+	//! Generates a rectangular volume between the specified points
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT c_Volume generateRectangle(Base::c_Point3D_Floating lowestBound, Base::c_Point3D_Floating highestBound) {
+		// gets the dimensions
+		Base::c_Point3D_Floating DIFF = getPointDiff_F(&highestBound, &lowestBound);
+		
+		// Points which compose the rectangle
+		Base::c_Point3D_Floating PtA = lowestBound;
+		Base::c_Point3D_Floating PtB = lowestBound;
+		PtB.x += DIFF.x;
+		Base::c_Point3D_Floating PtC = lowestBound;
+		PtC.y += DIFF.y;
+		Base::c_Point3D_Floating PtD = lowestBound;
+		PtD.x += DIFF.x;
+		PtD.y += DIFF.y;
+		
+		Base::c_Point3D_Floating PtE = highestBound;
+		Base::c_Point3D_Floating PtF = highestBound;
+		PtF.x -= DIFF.x;
+		Base::c_Point3D_Floating PtG = highestBound;
+		PtG.y -= DIFF.y;
+		Base::c_Point3D_Floating PtH = highestBound;
+		PtH.x -= DIFF.x;
+		PtH.y -= DIFF.y;
+		
+		// Faces of the rectangle
+		c_Face_Triangle F1A(PtA, PtB, PtH);
+		c_Face_Triangle F1B(PtF, PtB, PtH);
+		
+		c_Face_Triangle F2A(PtB, PtD, PtF);
+		c_Face_Triangle F2B(PtE, PtD, PtF);
+		
+		c_Face_Triangle F3A(PtD, PtE, PtC);
+		c_Face_Triangle F3B(PtG, PtE, PtC);
+		
+		c_Face_Triangle F4A(PtC, PtA, PtH);
+		c_Face_Triangle F4B(PtC, PtG, PtH);
+		
+		c_Face_Triangle F5A(PtH, PtF, PtG);
+		c_Face_Triangle F5B(PtE, PtF, PtG);
+		
+		c_Face_Triangle F6A(PtA, PtB, PtC);
+		c_Face_Triangle F6B(PtD, PtB, PtC);
+		
+		// Do the magicalities
+		c_Volume X;
+		X.Faces = {F1A, F1B,  F2A, F2B,  F3A, F3B,  F4A, F4B,  F5A, F5B,  F6A, F6B};
+		X.updatePointers();
+		X.calculateData();
+		return X;
 	}
 	
 }}; //End Anoptamin::Geometry

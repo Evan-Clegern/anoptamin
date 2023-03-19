@@ -114,6 +114,22 @@ namespace Anoptamin { namespace Geometry {
 		c_Vector3D operator+(const c_Vector3D& vector2) const noexcept;
 		c_Vector3D operator-(const c_Vector3D& vector2) const noexcept;
 	};
+	
+namespace Transforms {
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Floating rotateAbout_F(const Base::c_Point3D_Floating* main,
+		const Base::c_Point3D_Floating* about, const c_Angle* angle) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL LIBANOP_FUNC_FIX_STATE Base::c_Point3D_Integer rotateAbout_I(const Base::c_Point3D_Integer* main,
+		const Base::c_Point3D_Integer* about, const c_Angle* angle) noexcept;
+}
+	
 	//! Class which represents a line drawn between two points.
 	struct c_Edge {
 		double Length;
@@ -155,21 +171,25 @@ namespace Anoptamin { namespace Geometry {
 	//! Class which stores a simple bounded volume.
 	struct c_Volume {
 		std::vector<c_Face_Triangle> Faces;
-		std::vector<const Base::c_Point3D_Floating*> Points;
-		Base::c_Point3D_Integer Center;
+		std::vector<const Base::c_Point3D_Floating*> MainPoints;
+		Base::c_Point3D_Floating Center;
 		double SurfaceArea;
 		
 		//! Compute the volume's center and its Surface Area
 		void calculateData();
+		//! Updates the pointer list, and removes redundant point pointers. Costly
+		void updatePointers();
+		//! Simple string representation (lists stats and face count, but not main points)
+		std::string toString() const;
 	};
+	
+	//! Generates a rectangular volume between the specified points
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT c_Volume generateRectangle(Base::c_Point3D_Floating lowestBound, Base::c_Point3D_Floating highestBound);
+	
 	// references for the rendering info:
 	//https://open.gl/drawing
 	//https://stackoverflow.com/questions/8766788/opengl-polygon-rendering-mode-and-texture-mapping
 	//https://eng.libretexts.org/Bookshelves/Computer_Science/Applied_Programming/Book%3A_Introduction_to_Computer_Graphics_(Eck)/03%3A_OpenGL_1.1-_Geometry/3.04%3A_Polygonal_Meshes_and_glDrawArrays
-
-namespace Algorithms {
-	
-} // End Anoptamin::Geometry::Algorithms
 
 }}; //End Anoptamin::Geometry
 

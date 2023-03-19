@@ -49,15 +49,12 @@ int main() {
 	
 	Anoptamin::initializeSDLGraphics();
 	
-	Anoptamin::Base::c_Point3D_Floating pointsTest[3] = {
-		Anoptamin::Base::c_Point3D_Floating(0, 0, 0.1),
-		Anoptamin::Base::c_Point3D_Floating(2, 1.25, 0),
-		Anoptamin::Base::c_Point3D_Floating(1, 4, 0)
-	};
+	Anoptamin::Base::c_Point3D_Floating ptA(0, 0, 0);
+	Anoptamin::Base::c_Point3D_Floating ptB(2, 1.25, 1);
 	
-	Anoptamin::Geometry::c_Face_Triangle TriangleOfDoom(pointsTest[0], pointsTest[1], pointsTest[2]);
 	
-	std::cout << TriangleOfDoom.toString() << '\n';
+	Anoptamin::Geometry::c_Volume box = Anoptamin::Geometry::generateRectangle(ptA, ptB);
+	std::cout << "Box info: " << box.toString() << '\n';
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
