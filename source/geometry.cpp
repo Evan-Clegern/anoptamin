@@ -304,9 +304,10 @@ namespace Anoptamin { namespace Geometry {
 		calculateData();
 	}
 	c_Face_Triangle::c_Face_Triangle(const c_Face_Triangle& b) {
-		Points.A = b.A;
-		Points.B = b.B;
-		Points.C = b.C;
+
+		Points.A = b.Points.A;
+		Points.B = b.Points.B;
+		Points.C = b.Points.C;
 		
 		c_Edge NA(&Points.A, &Points.B);
 		c_Edge NB(&Points.B, &Points.C);
