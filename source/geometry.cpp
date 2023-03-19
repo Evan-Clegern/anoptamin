@@ -190,7 +190,9 @@ namespace Anoptamin { namespace Geometry {
 		
 	//! Calculates the 'length' value and its angle.
 	void c_Edge::calculateData() {
-		check_runtime(this->isValid());
+		check_ptr(this->PointA != NULL);
+		check_ptr(this->PointB != NULL);
+		check_ptr(this->PointA != this->PointB);
 		this->Length = getPointDist_F(this->PointA, this->PointB);
 		c_Angle TMPANG;
 		Base::c_Point3D_Floating DIFF = getPointDiff_F(this->PointA, this->PointB);
@@ -200,45 +202,21 @@ namespace Anoptamin { namespace Geometry {
 		TMPANG.setRoll_Rad( std::acos(DIFF.y / this->Length) );
 		this->EdgeAngle = TMPANG;
 	}
-	//! Ensures that the faces actually fuse at the points specified.
-	bool c_Edge::isValid() const noexcept {
-		// Get the point pointers ready for comparison
-		const Base::c_Point3D_Floating* faceApt1 = this->FaceA->Points.A;
-		const Base::c_Point3D_Floating* faceApt2 = this->FaceA->Points.B;
-		const Base::c_Point3D_Floating* faceApt3 = this->FaceA->Points.C;
+	//! Calculate a vector to represent the edge from PointA to PointB.
+	c_Vector3D c_Edge::calculateAsVector() const {
+		check_ptr(this->PointA != NULL);
+		check_ptr(this->PointB != NULL);
+		check_ptr(this->PointA != this->PointB);
 		
-		const Base::c_Point3D_Floating* faceBpt1 = this->FaceB->Points.A;
-		const Base::c_Point3D_Floating* faceBpt2 = this->FaceB->Points.B;
-		const Base::c_Point3D_Floating* faceBpt3 = this->FaceB->Points.C;
+		Base::c_Point3D_Floating DIFF = getPointDiff_F(this->PointA, this->PointB);
 		
-		const Base::c_Point3D_Floating* edgePtA = this->PointA;
-		const Base::c_Point3D_Floating* edgePtB = this->PointB;
-		
-		if (arePointsEqual_F(faceApt1, edgePtA) || arePointsEqual_F(faceApt2, edgePtA) || arePointsEqual_F(faceApt3, edgePtA) ) {
-			return (arePointsEqual_F(faceBpt1, edgePtB) || arePointsEqual_F(faceBpt2, edgePtB) || arePointsEqual_F(faceBpt3, edgePtB));
-		} else if (arePointsEqual_F(faceApt1, edgePtB) || arePointsEqual_F(faceApt2, edgePtB) || arePointsEqual_F(faceApt3, edgePtB) ) {
-			return (arePointsEqual_F(faceBpt1, edgePtA) || arePointsEqual_F(faceBpt2, edgePtA) || arePointsEqual_F(faceBpt3, edgePtA));
-		} else return false;
+		c_Vector3D nyehehe(DIFF.x, DIFF.y, DIFF.z);
+		return nyehehe;
 	}
+	
 	
 	// Stop c_Edge methods
 	
-	// get area and center
-	void c_Face_Triangle::calculateData() {
-		// Centers
-		double tmpx = (this->Points.A->x + this->Points.B->x + this->Points.C->x) / 3;
-		double tmpy = (this->Points.A->y + this->Points.B->y + this->Points.C->y) / 3;
-		double tmpz = (this->Points.A->z + this->Points.B->z + this->Points.C->z) / 3;
-		this->Center = Base::c_Point3D_Floating(tmpx, tmpy, tmpz);
-		// Distances
-		double gooberAB = getPointDist_F(this->Points.A, this->Points.B);
-		double gooberBC = getPointDist_F(this->Points.B, this->Points.C);
-		double gooberCA = getPointDist_F(this->Points.C, this->Points.A);
-		long double perim = 0.5 * (gooberAB + gooberBC + gooberCA);
-		this->Area = std::sqrt( perim * (perim - gooberAB) * (perim - gooberBC) * (perim - gooberCA) );
-	}
-	
-	// Stop c_Face_Triangle methods
 	
 	
 }}; //End Anoptamin::Geometry

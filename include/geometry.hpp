@@ -103,43 +103,17 @@ namespace Anoptamin { namespace Geometry {
 		//! Gets the angle at which the vector is pointed from the base point.
 		c_Angle getAngles() const;
 	};
-	//! Class whichs contains pointers to three points to compose a triangle.
-	struct c_Face_Simple {
-		Base::c_Point3D_Floating *A, *B, *C;
-	};
-	//! Class which stores the simple point face plus information about it.
-	struct c_Face_Triangle {
-		double Area;
-		Base::c_Point3D_Floating Center;
-		c_Face_Simple Points;
-		
-		//! Computes the face's area and its center
-		void calculateData();
-	};
-	//! Class which combines two triangular faces by two fused points; an edge between two faces.
+	//! Class which is essentially a vector between two points. Composes a rendered edge.
 	struct c_Edge {
 		double Length;
 		c_Angle EdgeAngle;
-		const c_Face_Triangle *FaceA, *FaceB;
 		const Base::c_Point3D_Floating *PointA, *PointB;
 		
 		//! Calculates the 'length' value and its angle.
 		void calculateData();
-		//! Ensures that the faces actually fuse at the points specified.
-		bool isValid() const noexcept;
+		//! Calculate a vector to represent the edge from PointA to PointB.
+		c_Vector3D calculateAsVector() const;
 	};
-	//! Class which combines the raw points, the edges it makes, and the total faces, along with extra information.
-	struct c_Mesh {
-		std::vector<Base::c_Point3D_Floating> basePoints;
-		std::vector<c_Face_Triangle> mainTriangles;
-		std::vector<c_Edge> triangleEdges;
-		struct Stats {
-			Base::c_Point3D_Floating Average, Variance, Min_All, Max_All;
-			long double SurfaceArea; // just the sum of the Areas
-		};
-		Base::c_Point3D_Integer meshCenter;
-	};
-	
 }}; //End Anoptamin::Geometry
 
 #endif
