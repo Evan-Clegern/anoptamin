@@ -113,7 +113,7 @@ namespace Anoptamin { namespace Geometry {
 		Base::c_Point3D_Floating Center;
 		c_Face_Simple Points;
 		
-		//! Computes the face's area
+		//! Computes the face's area and its center
 		void calculateData();
 	};
 	//! Class which combines two triangular faces by two fused points; an edge between two faces.
