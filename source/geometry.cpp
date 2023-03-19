@@ -221,7 +221,39 @@ namespace Anoptamin { namespace Geometry {
 		tmpx += std::to_string(this->Magnitude) + "u)";
 		return tmpx;
 	}
-	
+
+	c_Vector3D c_Vector3D::operator*(double scalar) const noexcept {
+		c_Vector3D TMP(*this);
+		TMP.ValX *= scalar;
+		TMP.ValY *= scalar;
+		TMP.ValZ *= scalar;
+		TMP.calculateMagnitude();
+		return TMP;
+	}
+	c_Vector3D c_Vector3D::operator*(const c_Vector3D& vector2) const noexcept {
+		c_Vector3D TMP(*this);
+		TMP.ValX *= vector2.ValX;
+		TMP.ValY *= vector2.ValY;
+		TMP.ValZ *= vector2.ValZ;
+		TMP.calculateMagnitude();
+		return TMP;
+	}
+	c_Vector3D c_Vector3D::operator+(const c_Vector3D& vector2) const noexcept {
+		c_Vector3D TMP(*this);
+		TMP.ValX += vector2.ValX;
+		TMP.ValY += vector2.ValY;
+		TMP.ValZ += vector2.ValZ;
+		TMP.calculateMagnitude();
+		return TMP;
+	}
+	c_Vector3D c_Vector3D::operator-(const c_Vector3D& vector2) const noexcept {
+		c_Vector3D TMP(*this);
+		TMP.ValX -= vector2.ValX;
+		TMP.ValY -= vector2.ValY;
+		TMP.ValZ -= vector2.ValZ;
+		TMP.calculateMagnitude();
+		return TMP;
+	}
 	//Stop c_Vector3D methods
 		
 	//! Calculates the 'length' value and its angle.
@@ -342,5 +374,24 @@ namespace Anoptamin { namespace Geometry {
 		return tmp;
 	}
 	
+	// End c_Face_Triangle methods
+	
+	void c_Volume::calculateData() {
+		this->SurfaceArea = 0;
+		// Get the center by finding the average of all of the triangular faces' centers.
+		Base::c_Point3D_Floating TMP;
+		for (c_Face_Triangle i : this->Faces) {
+			TMP.x += i.Center.x;
+			TMP.y += i.Center.y;
+			TMP.z += i.Center.z;
+			
+			this->SurfaceArea += i.Area;
+		}
+		Base::c_Point3D_Integer NTMP;
+		NTMP.x = int32_t(TMP.x / this->Faces.size());
+		NTMP.y = int32_t(TMP.y / this->Faces.size());
+		NTMP.z = int32_t(TMP.z / this->Faces.size());
+		this->Center = NTMP;
+	}
 	
 }}; //End Anoptamin::Geometry

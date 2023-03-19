@@ -108,6 +108,11 @@ namespace Anoptamin { namespace Geometry {
 		c_Angle getAngles() const;
 		//! Returns a String representation.
 		std::string toString() const noexcept;
+		
+		c_Vector3D operator*(double scalar) const noexcept;
+		c_Vector3D operator*(const c_Vector3D& vector2) const noexcept;
+		c_Vector3D operator+(const c_Vector3D& vector2) const noexcept;
+		c_Vector3D operator-(const c_Vector3D& vector2) const noexcept;
 	};
 	//! Class which represents a line drawn between two points.
 	struct c_Edge {
@@ -147,11 +152,24 @@ namespace Anoptamin { namespace Geometry {
 		//! Returns a String representation.
 		std::string toString() const;
 	};
+	//! Class which stores a simple bounded volume.
+	struct c_Volume {
+		std::vector<c_Face_Triangle> Faces;
+		std::vector<const Base::c_Point3D_Floating*> Points;
+		Base::c_Point3D_Integer Center;
+		double SurfaceArea;
+		
+		//! Compute the volume's center and its Surface Area
+		void calculateData();
+	};
 	// references for the rendering info:
 	//https://open.gl/drawing
 	//https://stackoverflow.com/questions/8766788/opengl-polygon-rendering-mode-and-texture-mapping
 	//https://eng.libretexts.org/Bookshelves/Computer_Science/Applied_Programming/Book%3A_Introduction_to_Computer_Graphics_(Eck)/03%3A_OpenGL_1.1-_Geometry/3.04%3A_Polygonal_Meshes_and_glDrawArrays
 
+namespace Algorithms {
+	
+} // End Anoptamin::Geometry::Algorithms
 
 }}; //End Anoptamin::Geometry
 
