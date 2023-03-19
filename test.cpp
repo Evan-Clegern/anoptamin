@@ -54,6 +54,8 @@ int main() {
 	
 	std::cout << "Angles; X: " << angle.getPitch_Deg() << ", Z: " << angle.getYaw_Deg() << ", Y: " << angle.getRoll_Deg() << '\n';
 	
+	
+	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
 		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
 	Anoptamin_LogCommon("Window Created.");
