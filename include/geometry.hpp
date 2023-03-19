@@ -138,7 +138,9 @@ namespace Anoptamin { namespace Geometry {
 		c_Face_Simple Points;
 		
 		c_Face_Triangle();
+		//! Constructor which takes three points and creates the edges automatically.
 		c_Face_Triangle(Base::c_Point3D_Floating A, Base::c_Point3D_Floating B, Base::c_Point3D_Floating C);
+		c_Face_Triangle(const c_Face_Triangle& b);
 		
 		//! Computes the face's area and its center; updates state of edges as well.
 		void calculateData();

@@ -55,16 +55,7 @@ int main() {
 		Anoptamin::Base::c_Point3D_Floating(1, 4, 0)
 	};
 	
-	Anoptamin::Geometry::c_Face_Simple X;
-	X.A = pointsTest[0]; X.B = pointsTest[1]; X.C = pointsTest[2];
-	Anoptamin::Geometry::c_Edge eX, eY, eZ;
-	eX.PointA = &X.A; eX.PointB = &X.B;
-	eY.PointA = &X.B; eY.PointB = &X.C;
-	eZ.PointA = &X.C; eZ.PointB = &X.A;
-	Anoptamin::Geometry::c_Face_Triangle TriangleOfDoom;
-	TriangleOfDoom.EdgeA = eX; TriangleOfDoom.EdgeB = eY; TriangleOfDoom.EdgeC = eZ;
-	TriangleOfDoom.Points = X;
-	TriangleOfDoom.calculateData();
+	Anoptamin::Geometry::c_Face_Triangle TriangleOfDoom(pointsTest[0], pointsTest[1], pointsTest[2]);
 	
 	std::cout << TriangleOfDoom.toString() << '\n';
 	

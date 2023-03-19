@@ -303,6 +303,20 @@ namespace Anoptamin { namespace Geometry {
 		
 		calculateData();
 	}
+	c_Face_Triangle::c_Face_Triangle(const c_Face_Triangle& b) {
+		Points.A = b.A;
+		Points.B = b.B;
+		Points.C = b.C;
+		
+		c_Edge NA(&Points.A, &Points.B);
+		c_Edge NB(&Points.B, &Points.C);
+		c_Edge NC(&Points.C, &Points.A);
+		EdgeA = NA;
+		EdgeB = NB;
+		EdgeC = NC;
+		
+		calculateData();
+	}
 	void c_Face_Triangle::calculateData() {
 		this->EdgeA.calculateData();
 		this->EdgeB.calculateData();
@@ -323,7 +337,7 @@ namespace Anoptamin { namespace Geometry {
 	//! Returns a String representation.
 	std::string c_Face_Triangle::toString() const {
 		std::string tmp = "Tri: " + pointToStr_F(&(this->Points.A)) + "; " + pointToStr_F(&(this->Points.B)) + "; " + pointToStr_F(&(this->Points.C));
-		tmp += "\nArea: " + std::to_string(this->Area) + "u², Center: " + pointToStr_F(&(this->Center));
+		tmp += " - Area: " + std::to_string(this->Area) + "u², Center: " + pointToStr_F(&(this->Center));
 		return tmp;
 	}
 	
