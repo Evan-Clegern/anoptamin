@@ -59,10 +59,19 @@ int main() {
 	
 	Anoptamin::Geometry::c_Volume box = Anoptamin::Geometry::generateRectangle(ptA, ptB);
 	std::cout << "Box info: " << box.toString() << '\n';
+	std::vector<Anoptamin::Base::c_Point3D_Floating> pointsOf;
+	pointsOf = box.getAllPoints();
+	for (auto i : pointsOf) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
+	}
 	//box.rotateSelf(rotatinator);
 	box.translateSelf(translatinator);
 	
 	std::cout << "Box info: " << box.toString() << '\n';
+	pointsOf = box.getAllPoints();
+	for (auto i : pointsOf) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
+	}
 	
 	
 	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
