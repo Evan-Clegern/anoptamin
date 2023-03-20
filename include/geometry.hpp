@@ -177,6 +177,8 @@ namespace PtTransforms {
 		void calculateData();
 		//! Simple string representation (lists stats and face count, but not main points)
 		std::string toString() const;
+		//! Gets all of the unique points which compose the volume
+		std::vector<Base::c_Point3D_Floating> getAllPoints() const noexcept;
 		
 		//! Move the object by the amount specified in the vector.
 		void translateSelf(c_Vector3D translateBy);

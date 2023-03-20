@@ -560,6 +560,22 @@ namespace PtTransforms {
 		this->calculateData();
 	}
 	
+	std::vector<Base::c_Point3D_Floating> c_Volume::getAllPoints() const noexcept {
+		std::vector<Base::c_Point3D_Floating> TMP;
+		for (c_Face_Triangle i : this->Faces) {
+			if (!isPtInVec(i.Points.A, TMP)) {
+				TMP.push_back(i.Points.A);
+			}
+			if (!isPtInVec(i.Points.B, TMP)) {
+				TMP.push_back(i.Points.B);
+			}
+			if (!isPtInVec(i.Points.C, TMP)) {
+				TMP.push_back(i.Points.C);
+			}
+		}
+		return TMP;
+	}
+	
 	// End c_Volume methods
 	
 	//! Generates a rectangular volume between the specified points
