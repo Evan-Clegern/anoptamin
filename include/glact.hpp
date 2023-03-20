@@ -66,7 +66,7 @@ namespace Graphics {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD bool initializeGL();
 	
 	//! Handles the basic OpenGL and GLEW rendering system.
-	class c_Render_Engine {
+	class c_RenderEngine_Low {
 		c_Window_Renderer* mp_renderCtrl;
 		
 		uint32_t m_progID = 0;
@@ -78,7 +78,7 @@ namespace Graphics {
 		bool m_valid = false, m_compiled = false;
 	public:
 		//! Creates the OpenGL Rendering Program in respect to the window rendering object.
-		c_Render_Engine(c_Window_Renderer& baseRenderer);
+		c_RenderEngine_Low(c_Window_Renderer& baseRenderer);
 		
 		//! Shuts down the OpenGL Rendering Program, detaches shaders, and updates the Window Renderer.
 		void shutdownEngine();
