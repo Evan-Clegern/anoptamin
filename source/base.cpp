@@ -32,6 +32,25 @@
 namespace Anoptamin {
 	
 	namespace Base {
+		//! Seeds the random number generator.
+		LIBANOP_FUNC_COLD LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_IMPORT void seedEngine() {
+			std::time_t now = std::time(NULL);
+			uint64_t* rand0 = new uint64_t;
+			uint64_t* rand1 = new uint64_t;
+			uint64_t* rand2 = new uint64_t;
+			uint64_t oval = 0xA5A50FF00FF05A5A;
+			oval ^= *rand0;
+			oval ^= uint64_t(rand0); //use address as well
+			oval ^= *rand1;
+			oval ^= uint64_t(rand1);
+			oval ^= *rand2;
+			oval ^= uint64_t(rand2);
+			delete rand0;
+			delete rand1;
+			delete rand2;
+			RANDengine.seed( uint64_t(now) ^ oval );
+		}
+	
 		void LIBANOP_FUNC_COLD LIBANOP_FUNC_CODEPT dbg_stacktrace() {
 			uint64_t* pointers[64];
 			

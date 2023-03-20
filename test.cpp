@@ -101,7 +101,7 @@ int main() {
 	Anoptamin::Graphics::c_Window_Renderer autorender( BobWindow->getRawSDLWindow() );
 	assert_runtime( Anoptamin::Graphics::initializeGL() );
 	
-	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
+	Anoptamin::Graphics::c_RenderEngine_Low mainrenderer(autorender);
 	mainrenderer.registerShader_Vertex( "#version 140\nin vec3 LVertexPos3D1; void main() { gl_Position = vec4( LVertexPos3D1.x, LVertexPos3D1.y, LVertexPos3D1.z, 1 ); }" );
 	mainrenderer.registerShader_Fragment("#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }");
 	mainrenderer.compileWithShaders();

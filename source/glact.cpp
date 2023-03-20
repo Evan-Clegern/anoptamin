@@ -160,7 +160,7 @@ namespace Graphics {
 	}
 	
 	
-	c_Render_Engine::c_Render_Engine(c_Window_Renderer& baseRenderer) {
+	c_RenderEngine_Low::c_RenderEngine_Low(c_Window_Renderer& baseRenderer) {
 		mp_renderCtrl = &baseRenderer;
 		m_progID = glCreateProgram();
 		GLenum Error = GL_NO_ERROR;
@@ -194,7 +194,7 @@ namespace Graphics {
 			m_valid = true;
 		}
 	}
-	bool c_Render_Engine::registerShader_Vertex(std::string source) {
+	bool c_RenderEngine_Low::registerShader_Vertex(std::string source) {
 		check_codelogic( this->m_valid );
 		uint32_t nshader = glCreateShader( GL_VERTEX_SHADER );
 		const char* tmpptr[] = {source.c_str()};
@@ -221,7 +221,7 @@ namespace Graphics {
 		Anoptamin_LogDebug("Successfully compiled vertex shader for program #" + std::to_string(this->m_progID));
 		return true;
 	}
-	bool c_Render_Engine::registerShader_Fragment(std::string source) {
+	bool c_RenderEngine_Low::registerShader_Fragment(std::string source) {
 		check_codelogic( this->m_valid );
 		uint32_t nshader = glCreateShader( GL_FRAGMENT_SHADER );
 		const char* tmpptr[] = {source.c_str()};
@@ -248,13 +248,13 @@ namespace Graphics {
 		Anoptamin_LogDebug("Successfully compiled fragment shader for program #" + std::to_string(this->m_progID));
 		return true;
 	}
-	void c_Render_Engine::compileWithShaders() {
+	void c_RenderEngine_Low::compileWithShaders() {
 		check_codelogic( this->m_valid );
 		check_video(glIsProgram(this->m_progID));
 		glLinkProgram( this->m_progID );
 		m_compiled = true;
 	}
-	bool c_Render_Engine::renderEngineGood() noexcept {
+	bool c_RenderEngine_Low::renderEngineGood() noexcept {
 		if (!m_compiled) {
 			Anoptamin_LogInfo("Called a check for the renderEngine before it was compiled.");
 			this->compileWithShaders();
@@ -285,7 +285,7 @@ namespace Graphics {
 		}
 		return true;
 	}
-	void c_Render_Engine::shutdownEngine() {
+	void c_RenderEngine_Low::shutdownEngine() {
 		Anoptamin_LogDebug("Shutting down OpenGL render program #" + std::to_string(this->m_progID));
 		this->m_valid = 0;
 		for (auto i : this->m_fragShaders) {
@@ -303,17 +303,17 @@ namespace Graphics {
 		Anoptamin_LogCommon("Shut down OpenGL Interface Program.");
 	}
 	
-	void c_Render_Engine::bindRenderer() const {
+	void c_RenderEngine_Low::bindRenderer() const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		glUseProgram( this->m_progID );
 	}
-	void c_Render_Engine::unbindRenderer() const {
+	void c_RenderEngine_Low::unbindRenderer() const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		glUseProgram( 0 );
 	}
-	int c_Render_Engine::getAttributeLocation(std::string what) const {
+	int c_RenderEngine_Low::getAttributeLocation(std::string what) const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		int ReturnLoc = 0;
@@ -324,7 +324,7 @@ namespace Graphics {
 	
 	
 	//! Loads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic) {
+	LIBANOP_FUNC_HOT void c_RenderEngine_Low::loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
@@ -346,7 +346,7 @@ namespace Graphics {
 		}
 	}
 	//! Loads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic) {
+	LIBANOP_FUNC_HOT void c_RenderEngine_Low::loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		
@@ -367,7 +367,7 @@ namespace Graphics {
 			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		}
 	}
-	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
+	void c_RenderEngine_Low::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		

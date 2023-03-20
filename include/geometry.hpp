@@ -109,10 +109,26 @@ namespace Anoptamin { namespace Geometry {
 		//! Returns a String representation.
 		std::string toString() const noexcept;
 		
+		//! Scales the vector values by the provided multiplier.
 		c_Vector3D operator*(double scalar) const noexcept;
-		c_Vector3D operator*(const c_Vector3D& vector2) const noexcept;
+		//! Adds the vector values.
 		c_Vector3D operator+(const c_Vector3D& vector2) const noexcept;
+		//! Subtracts the vector values.
 		c_Vector3D operator-(const c_Vector3D& vector2) const noexcept;
+		
+		//! Performs a complex cross product between this vector and the specified vector.
+		c_Vector3D crossProduct(const c_Vector3D& b) const noexcept;
+		//! Performs a simple dot product between this vector and the specified vector.
+		double dotProduct(const c_Vector3D& b) const noexcept;
+	};
+	//! Class which represents a 2-Dimensional matrix.
+	struct c_Matrix {
+		uint16_t SizeRow, SizeCol;
+		std::vector< std::vector<long double> > MainData;
+		
+		//! Construct it with a single continuous value.
+		c_Matrix(uint16_t rows, uint16_t cols, long double fillWith);
+		//! Construct it with 
 	};
 	
 namespace PtTransforms {
