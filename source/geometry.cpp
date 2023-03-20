@@ -293,34 +293,47 @@ namespace PtTransforms {
 	}
 	
 	//! Rotates any arbitrary point about a second point using matrices.
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT std::vector<long double> getRotationVector(const c_Angle& by) {
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT std::vector<std::vector<long double>> getRotationMatrix(const c_Angle& by) {
 		// 'A' vector: 1x3
 		// 'B' vector: 3x3
 		// Output: 1x3 (new point)
 
-		// Manually create the matrix
+
+		const long double SinAlph = std::sin(by.getYaw_Rad());
+		const long double CosAlph = std::cos(by.getYaw_Rad());
+		const long double SinBeta = std::sin(by.getRoll_Rad());
+		const long double CosBeta = std::cos(by.getRoll_Rad());
+		const long double SinGamm = std::sin(by.getPitch_Rad());
+		const long double CosGamm = std::cos(by.getPitch_Rad());
+		// Manually create the matrix (using proper axes)
+		// 'α, β, γ, about axes z, y, x'...
+		// except we have Pitch about x, and not about y, so it is adjusted accordingly
 		// for Wikipedia info: ALPHA is YAW  BETA is PITCH  GAMMA is ROLL
-		long double R0C0 = std::cos(by.getPitch_Rad()) * std::cos(by.getRoll_Rad());
-		long double R0C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) - (std::cos(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
-		long double R0C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::sin(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
+		long double R0C0 = CosBeta * CosAlph;
+		long double R0C1 = (CosAlph * SinBeta * SinGamm) - (SinAlph * CosGamm);
+		long double R0C2 = (CosAlph * SinBeta * CosGamm) + (SinAlph * SinGamm);
 		
-		long double R1C0 = std::cos(by.getPitch_Rad()) * std::sin(by.getRoll_Rad());
-		long double R1C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::cos(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
-		long double R1C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::sin(by.getRoll_Rad())) - (std::sin(by.getYaw_Rad()) * std::cos(by.getRoll_Rad()));
+		long double R1C0 = CosBeta * SinAlph;
+		long double R1C1 = (SinAlph * SinBeta * SinGamm) + (CosAlph * CosGamm);
+		long double R1C2 = (SinAlph * SinBeta * CosGamm) - (CosAlph * SinGamm);
 		
-		long double R2C0 = -1 * std::sin(by.getPitch_Rad());
-		long double R2C1 = std::sin(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
-		long double R2C2 = std::cos(by.getYaw_Rad()) * std::cos(by.getPitch_Rad());
+		long double R2C0 = -1 * SinBeta;
+		long double R2C1 = SinGamm * CosBeta;
+		long double R2C2 = CosGamm * CosBeta;
 		
-		std::vector<long double> N = {R0C0, R0C1, R0C2,  R1C0, R1C1, R1C2,  R2C0, R2C1, R2C2};
+		std::vector<std::vector<long double>> N = {
+			{R0C0, R0C1, R0C2},
+			{R1C0, R1C1, R1C2}, 
+			{R2C0, R2C1, R2C2}
+		};
 		return N;
 	}
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByVector(const std::vector<long double> &vector, Base::c_Point3D_Floating main,
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const std::vector<std::vector<long double>> &vector, Base::c_Point3D_Floating main,
 	const Base::c_Point3D_Floating& about) {
 		Base::c_Point3D_Floating offset = getPointDiff_F(&main, &about);
-		double nX = (main.x * vector[0]) + (main.y * vector[3]) + (main.z * vector[6]) + offset.x;
-		double nY = (main.x * vector[1]) + (main.y * vector[4]) + (main.z * vector[7]) + offset.y;
-		double nZ = (main.x * vector[2]) + (main.y * vector[5]) + (main.z * vector[8]) + offset.z;
+		double nX = (main.x * vector[0][0]) + (main.y * vector[1][0]) + (main.z * vector[2][0]) + offset.x;
+		double nY = (main.x * vector[0][1]) + (main.y * vector[1][1]) + (main.z * vector[2][1]) + offset.y;
+		double nZ = (main.x * vector[0][2]) + (main.y * vector[1][2]) + (main.z * vector[2][2]) + offset.z;
 		return Base::c_Point3D_Floating(nX, nY, nZ);
 	}
 } // End Anoptamin::Geometry::Transforms
@@ -539,21 +552,21 @@ namespace PtTransforms {
 	// rotation time baby
 	//! Rotate the object by the various angles specified
 	void c_Volume::rotateSelf(c_Angle rotateBy) {
-		auto rotvec = PtTransforms::getRotationVector(rotateBy);
+		auto rotvec = PtTransforms::getRotationMatrix(rotateBy);
 		for (c_Face_Triangle& i : this->Faces) {
-			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, this->Center);
-			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, this->Center);
-			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, this->Center);
+			i.Points.A = PtTransforms::rotateByMatrix(rotvec, i.Points.A, this->Center);
+			i.Points.B = PtTransforms::rotateByMatrix(rotvec, i.Points.B, this->Center);
+			i.Points.C = PtTransforms::rotateByMatrix(rotvec, i.Points.C, this->Center);
 		}
 		this->calculateData();
 	}
 	//! Rotate the object by the various angles specified, about the position specified.
 	void c_Volume::rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about) {
-		auto rotvec = PtTransforms::getRotationVector(rotateBy);
+		auto rotvec = PtTransforms::getRotationMatrix(rotateBy);
 		for (c_Face_Triangle& i : this->Faces) {
-			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, about);
-			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, about);
-			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, about);
+			i.Points.A = PtTransforms::rotateByMatrix(rotvec, i.Points.A, about);
+			i.Points.B = PtTransforms::rotateByMatrix(rotvec, i.Points.B, about);
+			i.Points.C = PtTransforms::rotateByMatrix(rotvec, i.Points.C, about);
 		}
 		this->calculateData();
 	}
