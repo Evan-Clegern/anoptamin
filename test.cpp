@@ -80,8 +80,8 @@ int main() {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
 	
-	Anoptamin::Geometry::c_Matrix superMatrix1(2, 2, { {1.0, 2.0}, {2.0, 1.0} });
-	Anoptamin::Geometry::c_Matrix superMatrix2(2, 2, { {3.5, 1.0}, {1.5, 1.0} });
+	Anoptamin::Geometry::c_Matrix superMatrix1(3, 2, { {1.0, 2.0}, {2.0, 1.0}, {0.5, 0.5} });
+	Anoptamin::Geometry::c_Matrix superMatrix2(2, 3, { {3.5, 1.0, 0.5}, {1.5, 1.0, 0.5} });
 	
 	auto X = superMatrix2.dotProduct(superMatrix1);
 	std::cout << X.toString() << '\n';
