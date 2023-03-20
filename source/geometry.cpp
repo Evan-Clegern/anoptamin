@@ -438,7 +438,6 @@ namespace PtTransforms {
 		return NEWPT;
 	}
 	
-	//! Rotates any arbitrary point about a second point using matrices.
 	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT c_Matrix getRotationMatrix(const c_Angle& by) {
 		// 'A' vector: 1x3
 		// 'B' vector: 3x3
