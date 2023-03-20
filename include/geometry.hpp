@@ -41,11 +41,27 @@ namespace Anoptamin { namespace Geometry {
 	static const long double EULER =      2.71828182846;
 	static const long double ANGStepRad = 0.00019175345;
 	static const long double ANGStepDeg = 0.01098666341;
+	
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL bool arePointsEqual_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
+		const Base::c_Point3D_Floating* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
+		const Base::c_Point3D_Integer* B) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_F(const Base::c_Point3D_Floating* A) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL std::string pointToStr_I(const Base::c_Point3D_Integer* A) noexcept;
+	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
 	struct c_Angle {
 		//! Pitch Yaw and Roll respectively; each subsequent value being equal to (X * 2 Pi / 32767)
-		int16_t Angle_AroundX, Angle_AroundZ, Angle_AroundY;
+		int16_t Angle_AroundX = 0, Angle_AroundZ = 0, Angle_AroundY = 0;
 		
 		//! Return the angle as a value of (Angle_AroundX * (2 PI / 32767))
 		double getPitch_Rad() const noexcept;
@@ -72,6 +88,8 @@ namespace Anoptamin { namespace Geometry {
 		void setRoll_Rad(double Radians) noexcept;
 		//! Sets the 'Y' angle to a value which is expressed as degrees: Y = 32767(VAL) / 360
 		void setRoll_Deg(double Degrees) noexcept;
+		//! Returns a String representation.
+		std::string toString(bool degrees = 1) const noexcept;
 	};
 	//! Class which represents a single 3D vector. Can be tied to a point.
 	struct c_Vector3D {
@@ -88,40 +106,100 @@ namespace Anoptamin { namespace Geometry {
 		void normalize() noexcept;
 		//! Gets the angle at which the vector is pointed from the base point.
 		c_Angle getAngles() const;
+		//! Returns a String representation.
+		std::string toString() const noexcept;
+		
+		c_Vector3D operator*(double scalar) const noexcept;
+		c_Vector3D operator*(const c_Vector3D& vector2) const noexcept;
+		c_Vector3D operator+(const c_Vector3D& vector2) const noexcept;
+		c_Vector3D operator-(const c_Vector3D& vector2) const noexcept;
 	};
-	//! Class whichs contains pointers to three points to compose a triangle.
+	
+namespace PtTransforms {
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
+		const c_Vector3D* level) noexcept;
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT std::vector<std::vector<long double>> getRotationMatrix(const c_Angle& by);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const std::vector<std::vector<long double>> &vector, Base::c_Point3D_Floating main,
+		const Base::c_Point3D_Floating& about);
+}
+	//! Class which represents a line drawn between two points.
+	struct c_Edge {
+		double Length;
+		c_Angle EdgeAngle;
+		const Base::c_Point3D_Floating *PointA, *PointB;
+		
+		c_Edge();
+		LIBANOP_FUNC_INPUTS_NONNULL c_Edge(const Base::c_Point3D_Floating* from, const Base::c_Point3D_Floating* to);
+		c_Edge(const c_Edge& b);
+		
+		//! Calculates the 'length' value and its angle.
+		void calculateData();
+		//! Calculate a vector to represent the edge from PointA to PointB.
+		c_Vector3D calculateAsVector() const;
+		//! Returns a String representation.
+		std::string toString() const;
+	};
+	//! Class whichs contains the three points needed to compose a triangle.
 	struct c_Face_Simple {
-		Base::c_Point3D_Floating* A, B, C;
+		Base::c_Point3D_Floating A, B, C;
 	};
 	//! Class which stores the simple point face plus information about it.
 	struct c_Face_Triangle {
-		double Area, Hypotenuse;
-		//! Angles relative to their trigonometric identities
-		c_Angle Angle_Sine, Angle_Cosine;
+		double Area;
 		Base::c_Point3D_Floating Center;
+		c_Edge EdgeA, EdgeB, EdgeC;
 		c_Face_Simple Points;
 		
+		c_Face_Triangle();
+		//! Constructor which takes three points and creates the edges automatically.
+		c_Face_Triangle(Base::c_Point3D_Floating A, Base::c_Point3D_Floating B, Base::c_Point3D_Floating C);
+		c_Face_Triangle(const c_Face_Triangle& b);
+		
+		//! Computes the face's area and its center; updates state of edges as well.
 		void calculateData();
+		//! Returns a String representation.
+		std::string toString() const;
 	};
-	//! Class which combines two triangular faces by two fused points; an edge between two faces.
-	struct c_Edge {
-		double Length;
-		const c_Face_Triangle* FaceA, FaceB;
-		const Base::c_Point3D_Floating* PointA, PointB;
-		bool isValid() const noexcept;
-	};
-	//! Class which combines the raw points, the edges it makes, and the total faces, along with extra information.
-	struct c_Mesh {
-		std::vector<Base::c_Point3D_Floating> basePoints;
-		std::vector<c_Face_Triangle> mainTriangles;
-		std::vector<c_Edge> triangleEdges;
-		struct Stats {
-			Base::c_Point3D_Floating Average, Variance, Min_All, Max_All;
-			long double SurfaceArea; // just the sum of the Areas
-		};
-		Base::c_Point3D_Integer meshCenter;
+	//! Class which stores a simple bounded volume.
+	struct c_Volume {
+		std::vector<c_Face_Triangle> Faces;
+		
+		Base::c_Point3D_Floating Center;
+		double SurfaceArea;
+		
+		//! Compute the volume's center and its Surface Area
+		void calculateData();
+		//! Simple string representation (lists stats and face count, but not main points)
+		std::string toString() const;
+		//! Gets all of the unique points which compose the volume
+		std::vector<Base::c_Point3D_Floating> getAllPoints() const noexcept;
+		
+		//! Move the object by the amount specified in the vector.
+		void translateSelf(c_Vector3D translateBy);
+		//! Scale the object's points by the amount specified in the vector.
+		void scaleSelf(c_Vector3D scaleBy);
+		//! Scale the object's points by the amount specified.
+		void scaleSelf(float scalar);
+		//! Rotate the object by the various angles specified, about the position specified.
+		void rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about);
+		//! Rotate the object by the various angles specified
+		void rotateSelf(c_Angle rotateBy);
 	};
 	
+	//! Generates a rectangular volume between the specified points
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT c_Volume generateRectangle(Base::c_Point3D_Floating lowestBound, Base::c_Point3D_Floating highestBound);
+	
+	// references for the rendering info:
+	//https://open.gl/drawing
+	//https://stackoverflow.com/questions/8766788/opengl-polygon-rendering-mode-and-texture-mapping
+	//https://eng.libretexts.org/Bookshelves/Computer_Science/Applied_Programming/Book%3A_Introduction_to_Computer_Graphics_(Eck)/03%3A_OpenGL_1.1-_Geometry/3.04%3A_Polygonal_Meshes_and_glDrawArrays
+
 }}; //End Anoptamin::Geometry
 
 #endif
