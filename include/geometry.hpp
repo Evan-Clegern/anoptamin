@@ -169,14 +169,12 @@ namespace PtTransforms {
 	//! Class which stores a simple bounded volume.
 	struct c_Volume {
 		std::vector<c_Face_Triangle> Faces;
-		std::vector<const Base::c_Point3D_Floating*> MainPoints;
+		
 		Base::c_Point3D_Floating Center;
 		double SurfaceArea;
 		
 		//! Compute the volume's center and its Surface Area
 		void calculateData();
-		//! Updates the pointer list, and removes redundant point pointers. Costly
-		void updatePointers();
 		//! Simple string representation (lists stats and face count, but not main points)
 		std::string toString() const;
 		

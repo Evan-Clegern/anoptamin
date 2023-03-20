@@ -483,26 +483,6 @@ namespace PtTransforms {
 		return false;
 	}
 	
-	//! Updates the pointer list, and removes redundant point pointers
-	void c_Volume::updatePointers() {
-		std::vector<Base::c_Point3D_Floating> actualPoints; // duplicates of those in the face data. used to trim redundant pointers.
-		this->MainPoints.clear();
-		for (c_Face_Triangle i : this->Faces) {
-			
-			if (!isPtInVec(i.Points.A, actualPoints)) {
-				actualPoints.push_back(i.Points.A);
-				this->MainPoints.push_back(&i.Points.A);
-			}
-			if (!isPtInVec(i.Points.B, actualPoints)) {
-				actualPoints.push_back(i.Points.B);
-				this->MainPoints.push_back(&i.Points.B);
-			}
-			if (!isPtInVec(i.Points.C, actualPoints)) {
-				actualPoints.push_back(i.Points.C);
-				this->MainPoints.push_back(&i.Points.C);
-			}
-		}
-	}
 	std::string c_Volume::toString() const {
 		std::string TMP = "Volume SA: " + std::to_string(this->SurfaceArea) + ", Volume Faces: " + std::to_string(this->Faces.size());
 		TMP += "; Volume Center: " + pointToStr_F(&(this->Center));
@@ -514,7 +494,7 @@ namespace PtTransforms {
 	//! Move the object by the amount specified in the vector.
 	void c_Volume::translateSelf(c_Vector3D translateBy) {
 		c_Vector3D nvec = translateBy;
-		for (c_Face_Triangle i : this->Faces) {
+		for (c_Face_Triangle& i : this->Faces) {
 			auto na = PtTransforms::translateBy_F(&i.Points.A, &nvec);
 			i.Points.A = na;
 			na = PtTransforms::translateBy_F(&i.Points.B, &nvec);
@@ -522,141 +502,61 @@ namespace PtTransforms {
 			na = PtTransforms::translateBy_F(&i.Points.C, &nvec);
 			i.Points.C = na;
 		}
-		this->updatePointers();
 		this->calculateData();
+	}
+	
+	// code-only for scaling in respect to another point
+	// distances must be scaled properly!!!!!!!
+	Base::c_Point3D_Floating scaleWith(Base::c_Point3D_Floating main, Base::c_Point3D_Floating from, double x, double y, double z) {
+		// starting differences
+		double diffx = (from.x - main.x);
+		double diffy = (from.y - main.y);
+		double diffz = (from.z - main.z);
+		// target/scaled differences
+		double targx = diffx * x;
+		double targy = diffy * y;
+		double targz = diffz * z;
+		
+		return Base::c_Point3D_Floating(main.x + (targx - diffx), main.y + (targy - diffy), main.z + (targz - diffz));
 	}
 	
 	// we have to increase the distance of each point from the center
 	//! Scale the object's points by the amount specified in the vector.
 	void c_Volume::scaleSelf(c_Vector3D scaleBy) {
-		for (c_Face_Triangle i : this->Faces) {
-			// we can try to do the reverse of normalizing a vector
-			if (i.Points.A.x > i.Center.x) {
-				i.Points.A.x *= scaleBy.ValX;
-			} else {
-				i.Points.A.x *= -1 * scaleBy.ValX;
-			}
-			if (i.Points.A.y > i.Center.y) {
-				i.Points.A.y *= scaleBy.ValY;
-			} else {
-				i.Points.A.y *= -1 * scaleBy.ValY;
-			}
-			if (i.Points.A.z > i.Center.z) {
-				i.Points.A.z *= scaleBy.ValZ;
-			} else {
-				i.Points.A.z *= -1 * scaleBy.ValZ;
-			}
-			
-			if (i.Points.B.x > i.Center.x) {
-				i.Points.B.x *= scaleBy.ValX;
-			} else {
-				i.Points.B.x *= -1 * scaleBy.ValX;
-			}
-			if (i.Points.B.y > i.Center.y) {
-				i.Points.B.y *= scaleBy.ValY;
-			} else {
-				i.Points.B.y *= -1 * scaleBy.ValY;
-			}
-			if (i.Points.B.z > i.Center.z) {
-				i.Points.B.z *= scaleBy.ValZ;
-			} else {
-				i.Points.B.z *= -1 * scaleBy.ValZ;
-			}
-			
-			if (i.Points.C.x > i.Center.x) {
-				i.Points.C.x *= scaleBy.ValX;
-			} else {
-				i.Points.C.x *= -1 * scaleBy.ValX;
-			}
-			if (i.Points.C.y > i.Center.y) {
-				i.Points.C.y *= scaleBy.ValY;
-			} else {
-				i.Points.C.y *= -1 * scaleBy.ValY;
-			}
-			if (i.Points.C.z > i.Center.z) {
-				i.Points.C.z *= scaleBy.ValZ;
-			} else {
-				i.Points.C.z *= -1 * scaleBy.ValZ;
-			}
+		for (c_Face_Triangle& i : this->Faces) {
+			i.Points.A = scaleWith(i.Points.A, this->Center, scaleBy.ValX, scaleBy.ValY, scaleBy.ValZ);
+			i.Points.B = scaleWith(i.Points.B, this->Center, scaleBy.ValX, scaleBy.ValY, scaleBy.ValZ);
+			i.Points.C = scaleWith(i.Points.C, this->Center, scaleBy.ValX, scaleBy.ValY, scaleBy.ValZ);
 		}
-		this->updatePointers();
 		this->calculateData();
 	}
 	void c_Volume::scaleSelf(float scaleBy) {
-		for (c_Face_Triangle i : this->Faces) {
-			// we can try to do the reverse of normalizing a vector
-			if (i.Points.A.x > i.Center.x) {
-				i.Points.A.x *= scaleBy;
-			} else {
-				i.Points.A.x *= -1 * scaleBy;
-			}
-			if (i.Points.A.y > i.Center.y) {
-				i.Points.A.y *= scaleBy;
-			} else {
-				i.Points.A.y *= -1 * scaleBy;
-			}
-			if (i.Points.A.z > i.Center.z) {
-				i.Points.A.z *= scaleBy;
-			} else {
-				i.Points.A.z *= -1 * scaleBy;
-			}
-			
-			if (i.Points.B.x > i.Center.x) {
-				i.Points.B.x *= scaleBy;
-			} else {
-				i.Points.B.x *= -1 * scaleBy;
-			}
-			if (i.Points.B.y > i.Center.y) {
-				i.Points.B.y *= scaleBy;
-			} else {
-				i.Points.B.y *= -1 * scaleBy;
-			}
-			if (i.Points.B.z > i.Center.z) {
-				i.Points.B.z *= scaleBy;
-			} else {
-				i.Points.B.z *= -1 * scaleBy;
-			}
-			
-			if (i.Points.C.x > i.Center.x) {
-				i.Points.C.x *= scaleBy;
-			} else {
-				i.Points.C.x *= -1 * scaleBy;
-			}
-			if (i.Points.C.y > i.Center.y) {
-				i.Points.C.y *= scaleBy;
-			} else {
-				i.Points.C.y *= -1 * scaleBy;
-			}
-			if (i.Points.C.z > i.Center.z) {
-				i.Points.C.z *= scaleBy;
-			} else {
-				i.Points.C.z *= -1 * scaleBy;
-			}
+		for (c_Face_Triangle& i : this->Faces) {
+			i.Points.A = scaleWith(i.Points.A, this->Center, scaleBy, scaleBy, scaleBy);
+			i.Points.B = scaleWith(i.Points.B, this->Center, scaleBy, scaleBy, scaleBy);
+			i.Points.C = scaleWith(i.Points.C, this->Center, scaleBy, scaleBy, scaleBy);
 		}
-		this->updatePointers();
 		this->calculateData();
 	}
 	// rotation time baby
 	//! Rotate the object by the various angles specified
 	void c_Volume::rotateSelf(c_Angle rotateBy) {
 		auto rotvec = PtTransforms::getRotationVector(rotateBy);
-		for (c_Face_Triangle i : this->Faces) {
+		for (c_Face_Triangle& i : this->Faces) {
 			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, this->Center);
 			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, this->Center);
 			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, this->Center);
 		}
-		this->updatePointers();
 		this->calculateData();
 	}
 	//! Rotate the object by the various angles specified, about the position specified.
 	void c_Volume::rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about) {
 		auto rotvec = PtTransforms::getRotationVector(rotateBy);
-		for (c_Face_Triangle i : this->Faces) {
+		for (c_Face_Triangle& i : this->Faces) {
 			i.Points.A = PtTransforms::rotateByVector(rotvec, i.Points.A, about);
 			i.Points.B = PtTransforms::rotateByVector(rotvec, i.Points.B, about);
 			i.Points.C = PtTransforms::rotateByVector(rotvec, i.Points.C, about);
 		}
-		this->updatePointers();
 		this->calculateData();
 	}
 	
@@ -665,26 +565,32 @@ namespace PtTransforms {
 	//! Generates a rectangular volume between the specified points
 	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT c_Volume generateRectangle(Base::c_Point3D_Floating lowestBound, Base::c_Point3D_Floating highestBound) {
 		// gets the dimensions
-		Base::c_Point3D_Floating DIFF = getPointDiff_F(&highestBound, &lowestBound);
+		long double OffsetX = highestBound.x - lowestBound.x;
+		long double OffsetY = highestBound.y - lowestBound.y;
+		long double OffsetZ = highestBound.z - lowestBound.z;
 		
 		// Points which compose the rectangle
 		Base::c_Point3D_Floating PtA = lowestBound;
 		Base::c_Point3D_Floating PtB = lowestBound;
-		PtB.x += DIFF.x;
+		PtB.x += OffsetX;
 		Base::c_Point3D_Floating PtC = lowestBound;
-		PtC.y += DIFF.y;
+		PtC.y += OffsetY;
 		Base::c_Point3D_Floating PtD = lowestBound;
-		PtD.x += DIFF.x;
-		PtD.y += DIFF.y;
+		PtD.x += OffsetX;
+		PtD.y += OffsetY;
+		Base::c_Point3D_Floating PtE = lowestBound;
+		PtE.z += OffsetZ;
+		Base::c_Point3D_Floating PtF = lowestBound;
+		PtF.x += OffsetX;
+		PtF.z += OffsetZ;
+		Base::c_Point3D_Floating PtG = lowestBound;
+		PtG.y += OffsetY;
+		PtG.z += OffsetZ;
+		Base::c_Point3D_Floating PtH = lowestBound;
+		PtH.x += OffsetX;
+		PtH.y += OffsetY;
+		PtH.z += OffsetZ;
 		
-		Base::c_Point3D_Floating PtE = highestBound;
-		Base::c_Point3D_Floating PtF = highestBound;
-		PtF.x -= DIFF.x;
-		Base::c_Point3D_Floating PtG = highestBound;
-		PtG.y -= DIFF.y;
-		Base::c_Point3D_Floating PtH = highestBound;
-		PtH.x -= DIFF.x;
-		PtH.y -= DIFF.y;
 		
 		// Faces of the rectangle
 		c_Face_Triangle F1A(PtA, PtB, PtH);
@@ -708,7 +614,6 @@ namespace PtTransforms {
 		// Do the magicalities
 		c_Volume X;
 		X.Faces = {F1A, F1B,  F2A, F2B,  F3A, F3B,  F4A, F4B,  F5A, F5B,  F6A, F6B};
-		X.updatePointers();
 		X.calculateData();
 		return X;
 	}
