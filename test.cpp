@@ -68,23 +68,6 @@ int main() {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
 	
-	box.scaleSelf(2.0);
-	
-	std::cout << "Box info: " << box.toString() << '\n';
-	pointsOf = box.getAllPoints();
-	for (auto i : pointsOf) {
-		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
-	}
-	
-	box.scaleSelf(0.5);
-	
-	std::cout << "Box info: " << box.toString() << '\n';
-	pointsOf = box.getAllPoints();
-	for (auto i : pointsOf) {
-		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
-	}
-	
-	/*
 	box.rotateSelf(rotatinator);
 	std::cout << "Box info: " << box.toString() << '\n';
 	pointsOf = box.getAllPoints();
@@ -100,7 +83,7 @@ int main() {
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
-	*/
+	
 	// Just to prevent unneeded delay when testing geometry; move the graphics to an unreachable point for the time being
 	return 0;
 	

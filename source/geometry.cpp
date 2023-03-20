@@ -301,19 +301,21 @@ namespace PtTransforms {
 
 		const long double SinAlph = std::sin(by.getYaw_Rad());
 		const long double CosAlph = std::cos(by.getYaw_Rad());
+		
 		const long double SinBeta = std::sin(by.getRoll_Rad());
 		const long double CosBeta = std::cos(by.getRoll_Rad());
+		
 		const long double SinGamm = std::sin(by.getPitch_Rad());
 		const long double CosGamm = std::cos(by.getPitch_Rad());
 		// Manually create the matrix (using proper axes)
 		// 'α, β, γ, about axes z, y, x'...
 		// except we have Pitch about x, and not about y, so it is adjusted accordingly
 		// for Wikipedia info: ALPHA is YAW  BETA is PITCH  GAMMA is ROLL
-		long double R0C0 = CosBeta * CosAlph;
+		long double R0C0 = CosAlph * CosBeta;
 		long double R0C1 = (CosAlph * SinBeta * SinGamm) - (SinAlph * CosGamm);
 		long double R0C2 = (CosAlph * SinBeta * CosGamm) + (SinAlph * SinGamm);
 		
-		long double R1C0 = CosBeta * SinAlph;
+		long double R1C0 = SinAlph * CosBeta;
 		long double R1C1 = (SinAlph * SinBeta * SinGamm) + (CosAlph * CosGamm);
 		long double R1C2 = (SinAlph * SinBeta * CosGamm) - (CosAlph * SinGamm);
 		
