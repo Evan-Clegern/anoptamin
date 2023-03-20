@@ -92,7 +92,7 @@ namespace Anoptamin { namespace Geometry {
 	}
 	
 	double c_Angle::getRoll_Rad() const noexcept {
-		return this->Angle_AroundZ * ANGStepRad;
+		return this->Angle_AroundY * ANGStepRad;
 	}
 	
 	double c_Angle::getRoll_Deg() const noexcept {
@@ -159,6 +159,8 @@ namespace Anoptamin { namespace Geometry {
 			this->Angle_AroundY = int16_t(Degrees / ANGStepDeg);
 		}
 	}
+	
+	
 	std::string c_Angle::toString(bool degrees) const noexcept {
 		std::string tmp = "(";
 		if (degrees) {
