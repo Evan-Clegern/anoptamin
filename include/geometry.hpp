@@ -144,6 +144,9 @@ namespace Anoptamin { namespace Geometry {
 		
 		//! Calculate the dot product between two matrices
 		c_Matrix dotProduct(const c_Matrix& b) const;
+		
+		//! Returns a multi-line string representing the matrix
+		std::string toString() const;
 	};
 	
 namespace PtTransforms {

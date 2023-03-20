@@ -252,6 +252,7 @@ namespace Anoptamin { namespace Geometry {
 	double c_Vector3D::dotProduct(const c_Vector3D& b) const noexcept {
 		return (b.ValX * this->ValX) + (b.ValY * this->ValY) + (b.ValZ * this->ValZ);
 	}
+	// this follows the FORMAL definition for cross products, but i'm pretty sure it could be made more efficient later on
 	c_Vector3D c_Vector3D::crossProduct(const c_Vector3D& b) const noexcept {
 		c_Vector3D ncopies(
 			(this->ValY * b.ValZ) - (this->ValZ * b.ValY),
@@ -385,6 +386,22 @@ namespace Anoptamin { namespace Geometry {
 		return c_Matrix(OutsizeRows, OutsizeCols, TMP);
 	}
 	
+	std::string c_Matrix::toString() const {
+		std::string OUT = std::to_string(this->SizeRow) + "x" + std::to_string(this->SizeCol) + " matrix:\n";
+		for (uint16_t row = 0; row < this->SizeRow; row++) {
+			std::string TMP = "[ ";
+			for (uint16_t col = 0; col < this->SizeCol; col++) {
+				TMP += std::to_string( this->at(row, col) );
+				if (col != (this->SizeCol - 1)) {
+					TMP += ", ";
+				} else {
+					TMP += " ]\n";
+				}
+			}
+			OUT += TMP;
+		}
+		return OUT;
+	}
 	// stop c_Matrix methods
 	
 namespace PtTransforms {
@@ -458,7 +475,8 @@ namespace PtTransforms {
 		});
 		
 		c_Matrix TMP = FromYaw.dotProduct(FromPitch);
-		return TMP.dotProduct(FromRoll);
+		c_Matrix OUT = TMP.dotProduct(FromRoll);
+		return OUT;
 	}
 	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const c_Matrix &matrix, Base::c_Point3D_Floating main,
 	const Base::c_Point3D_Floating& about) {
