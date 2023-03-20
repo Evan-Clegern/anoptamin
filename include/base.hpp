@@ -280,7 +280,7 @@ namespace Anoptamin { namespace Base {
 	#define check_useract(cond) if (!(cond)) {Anoptamin::Base::dbg_checkfunc("User Activity", __PRETTY_FUNCTION__, __LINE__, __FILE__, anoptamin_stringify(cond)); throw std::runtime_error("User Activity");};
 	//! Code Logic check. Used for any other problem that would arise from faulty internal logic. Throws logic_error.
 	#define check_codelogic(cond) if (!(cond)) {Anoptamin::Base::dbg_checkfunc("Code Logic", __PRETTY_FUNCTION__, __LINE__, __FILE__, anoptamin_stringify(cond)); throw std::logic_error("Code Logic");};
-	//! Runtime checl. Used for any other problem that is difficult to predict and which is beyond basic program logic. Throws runtime_error.
+	//! Runtime check. Used for any other problem that is difficult to predict and which is beyond basic program logic. Throws runtime_error.
 	#define check_runtime(cond) if (!(cond)) {Anoptamin::Base::dbg_checkfunc("Runtime", __PRETTY_FUNCTION__, __LINE__, __FILE__, anoptamin_stringify(cond)); throw std::runtime_error("Runtime");};
 #endif
 

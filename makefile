@@ -16,10 +16,11 @@ FlagsIncludeGL := -I. -I/usr/include/GL -I/usr/include/GLES3
 # libglew2.2 libglew-dev libsdl2-2.0-0 libsdl2-dev libopengl0 libopengl-dev libgle3 libgle3-dev libgles2
 
 UseSDL2 := -lSDL2
-UseOpenGL := -lGLEW -lGLU -lGL -lGLESv2
-UseBase := -lanoptamin_base -lSDL2
+UseOpenGL := -lGLEW -lGLU -lGL
+UseBase := -lanoptamin_base
 UseSDLOps := -lanoptamin_sdlops
 UseGLAct := -lanoptamin_glact
+UseGeom := -lanoptamin_geometry
 
 .PHONY: all
 all: clean test
@@ -32,13 +33,16 @@ lib/libanoptamin_base.so:
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/base.cpp -o lib/libanoptamin_base.so $(UseSDL2)
 	
 lib/libanoptamin_sdlops.so: lib/libanoptamin_base.so
-	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/sdl.cpp -o lib/libanoptamin_sdlops.so $(UseBase)
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/sdl.cpp -o lib/libanoptamin_sdlops.so $(UseBase) $(UseSDL2)
 	
 lib/libanoptamin_glact.so: lib/libanoptamin_base.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/glact.cpp -o lib/libanoptamin_glact.so $(UseBase) $(UseOpenGL)
 	
-test: lib/libanoptamin_sdlops.so lib/libanoptamin_glact.so
-	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps) $(UseGLAct) $(UseOpenGL)
+lib/libanoptamin_geometry.so: lib/libanoptamin_base.so
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkLibs) source/geometry.cpp -o lib/libanoptamin_geometry.so $(UseBase)
+	
+test: lib/libanoptamin_sdlops.so lib/libanoptamin_glact.so lib/libanoptamin_geometry.so
+	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) test.cpp -o test $(UseBase) $(UseSDLOps) $(UseGLAct) $(UseOpenGL) $(UseGeom)
 
 01_Hooked_Closing.out: lib/libanoptamin_sdlops.so
 	g++ $(FlagsGeneral) $(FlagsGCC) $(FlagsLinkDirs) 01_Hooked_Closing.cpp -o 01_Hooked_Closing.out $(UseBase) $(UseSDLOps)
