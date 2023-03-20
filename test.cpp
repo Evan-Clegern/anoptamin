@@ -49,8 +49,6 @@ int main() {
 	Anoptamin::Base::c_Point3D_Floating ptB(2, 1.5, 1);
 	
 	Anoptamin::Geometry::c_Vector3D translatinator(2, 0, -1);
-	Anoptamin::Geometry::c_Angle rotatinator;
-	rotatinator.setRoll_Deg(90);
 	
 	Anoptamin::Geometry::c_Volume box = Anoptamin::Geometry::generateRectangle(ptA, ptB);
 	std::cout << "Box info: " << box.toString() << '\n';
@@ -59,7 +57,7 @@ int main() {
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
-	//box.rotateSelf(rotatinator);
+	
 	box.translateSelf(translatinator);
 	
 	std::cout << "Box info: " << box.toString() << '\n';
@@ -68,21 +66,27 @@ int main() {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
 	
-	box.rotateSelf(rotatinator);
+	box.scaleSelf(2.0);
 	std::cout << "Box info: " << box.toString() << '\n';
 	pointsOf = box.getAllPoints();
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
 	
-	rotatinator.setRoll_Deg(-90);
-	
-	box.rotateSelf(rotatinator);
+	box.scaleSelf(0.5);
 	std::cout << "Box info: " << box.toString() << '\n';
 	pointsOf = box.getAllPoints();
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
+	
+	Anoptamin::Geometry::c_Matrix superMatrix1(2, 2, { {1.0, 2.0}, {2.0, 1.0} });
+	Anoptamin::Geometry::c_Matrix superMatrix2(2, 2, { {3.5, 1.0}, {1.5, 1.0} });
+	
+	auto X = superMatrix2.dotProduct(superMatrix1);
+	std::cout << X.toString() << '\n';
+	X = superMatrix1.dotProduct(superMatrix2);
+	std::cout << X.toString() << '\n';
 	
 	// Just to prevent unneeded delay when testing geometry; move the graphics to an unreachable point for the time being
 	return 0;
