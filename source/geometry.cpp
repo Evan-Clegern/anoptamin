@@ -268,6 +268,125 @@ namespace Anoptamin { namespace Geometry {
 	}
 	//Stop c_Vector3D methods
 	
+	
+	//uint16_t SizeRow, SizeCol;
+	//std::vector< std::vector<long double> > MainData;
+	
+	//! Construct it with a single continuous value.
+	c_Matrix::c_Matrix(uint16_t rows, uint16_t cols, long double fillWith) {
+		SizeRow = rows;
+		SizeCol = cols;
+		MainData.clear();
+		for (uint16_t i = 0; i < rows; i++) {
+			std::vector<long double> tmp;
+			for (uint16_t j = 0; j < rows; j++) {
+				tmp.push_back(fillWith);
+			}
+			MainData.push_back(tmp);
+		}
+	}
+	//! Construct it with random values between 0 and 1.
+	c_Matrix::c_Matrix(uint16_t rows, uint16_t cols) {
+		SizeRow = rows;
+		SizeCol = cols;
+		MainData.clear();
+		std::uniform_real_distribution<long double> distr(0.0, 1.0);
+		for (uint16_t i = 0; i < rows; i++) {
+			std::vector<long double> tmp;
+			for (uint16_t j = 0; j < rows; j++) {
+				tmp.push_back(distr(Base::RANDengine));
+			}
+			MainData.push_back(tmp);
+		}
+	}
+	//! Construct it with an initialization vector (will check size!)
+	c_Matrix::c_Matrix(uint16_t rows, uint16_t cols, std::initializer_list<std::initializer_list<long double>> data) {
+		SizeRow = rows;
+		SizeCol = cols;
+		MainData.clear();
+		
+		check_param(data.size() == rows);
+		for (std::initializer_list<long double> EachRow : data) {
+			check_param(EachRow.size() == cols);
+			
+			std::vector<long double> newvec = EachRow;
+			MainData.push_back(newvec);
+		}
+	}
+	//! Construct it with a filled set of vectors (will check initial sizes, but not all vectors)
+	c_Matrix::c_Matrix(uint16_t rows, uint16_t cols, std::vector<std::vector<long double>> data) {
+		SizeRow = rows;
+		SizeCol = cols;
+		MainData.clear();
+		
+		check_param(data.size() == rows);
+		check_param(data.at(0).size() == cols);
+		
+		MainData = data;
+	}
+	//! Copy an existing matrix.
+	c_Matrix::c_Matrix(const c_Matrix& b) {
+		SizeRow = b.SizeRow;
+		SizeCol = b.SizeCol;
+		MainData.clear();
+		
+		check_param(b.MainData.size() == SizeRow);
+		for (std::vector<long double> i : b.MainData) {
+			check_param(i.size() == SizeCol);
+			MainData.push_back(i);
+		}
+	}
+	
+	//! Access a value at given position
+	long double& c_Matrix::get(uint16_t row, uint16_t col) {
+		check_param(row < this->SizeRow);
+		check_param(col < this->SizeCol);
+		return this->MainData.at(row).at(col);
+	}
+	
+	long double c_Matrix::at(uint16_t row, uint16_t col) const {
+		check_param(row < this->SizeRow);
+		check_param(col < this->SizeCol);
+		return this->MainData.at(row).at(col);
+	}
+	
+	//! Calculate the dot product between two matrices
+	c_Matrix c_Matrix::dotProduct(const c_Matrix& b) const {
+		uint16_t OutsizeRows, OutsizeCols, Sharedsize;
+		bool MatchesSelfCols = 0;
+		if (b.SizeRow == this->SizeCol) {
+			Sharedsize = this->SizeCol;
+			OutsizeRows = this->SizeRow;
+			OutsizeCols = b.SizeCol;
+			MatchesSelfCols = 1;
+		} else if (b.SizeCol == this->SizeRow) {
+			Sharedsize = this->SizeRow;
+			OutsizeCols = this->SizeCol;
+			OutsizeRows = b.SizeRow;
+		} else {
+			throw std::invalid_argument("Cross product impossible with provided matrix; no matching dimensions");
+		}
+		std::vector<std::vector<long double>> TMP;
+		for (uint16_t Row = 0; Row < OutsizeRows; Row++) {
+			std::vector<long double> Current;
+			for (uint16_t Col = 0; Col < OutsizeCols; Col++) {
+				long double Working = 0;
+				for (uint16_t i = 0; i < Sharedsize; i++) {
+					if (MatchesSelfCols) {
+						Working += this->MainData.at(Row).at(i) * b.MainData.at(i).at(Col);
+					} else {
+						Working += this->MainData.at(i).at(Col) * b.MainData.at(Row).at(i);
+					}
+				}
+				Current.push_back(Working);
+			}
+			TMP.push_back(Current);
+		}
+		return c_Matrix(OutsizeRows, OutsizeCols, TMP);
+	}
+	
+	// stop c_Matrix methods
+	
 namespace PtTransforms {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
@@ -303,7 +422,7 @@ namespace PtTransforms {
 	}
 	
 	//! Rotates any arbitrary point about a second point using matrices.
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT std::vector<std::vector<long double>> getRotationMatrix(const c_Angle& by) {
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT c_Matrix getRotationMatrix(const c_Angle& by) {
 		// 'A' vector: 1x3
 		// 'B' vector: 3x3
 		// Output: 1x3 (new point)
@@ -312,41 +431,41 @@ namespace PtTransforms {
 		const long double SinAlph = std::sin(by.getYaw_Rad());
 		const long double CosAlph = std::cos(by.getYaw_Rad());
 		
-		const long double SinBeta = std::sin(by.getRoll_Rad());
-		const long double CosBeta = std::cos(by.getRoll_Rad());
+		const long double SinBeta = std::sin(by.getPitch_Rad());
+		const long double CosBeta = std::cos(by.getPitch_Rad());
 		
-		const long double SinGamm = std::sin(by.getPitch_Rad());
-		const long double CosGamm = std::cos(by.getPitch_Rad());
+		const long double SinGamm = std::sin(by.getRoll_Rad());
+		const long double CosGamm = std::cos(by.getRoll_Rad());
 		// Manually create the matrix (using proper axes)
 		// 'α, β, γ, about axes z, y, x'...
 		// except we have Pitch about x, and not about y, so it is adjusted accordingly
 		// for Wikipedia info: ALPHA is YAW  BETA is PITCH  GAMMA is ROLL
-		long double R0C0 = CosAlph * CosBeta;
-		long double R0C1 = (CosAlph * SinBeta * SinGamm) - (SinAlph * CosGamm);
-		long double R0C2 = (CosAlph * SinBeta * CosGamm) + (SinAlph * SinGamm);
 		
-		long double R1C0 = SinAlph * CosBeta;
-		long double R1C1 = (SinAlph * SinBeta * SinGamm) + (CosAlph * CosGamm);
-		long double R1C2 = (SinAlph * SinBeta * CosGamm) - (CosAlph * SinGamm);
+		c_Matrix FromYaw(3, 3, {
+			{CosAlph, -1 * SinAlph, 0},
+			{SinAlph, CosAlph, 0},
+			{0, 0, 1}
+		});
+		c_Matrix FromPitch(3, 3, {
+			{CosBeta, 0, SinBeta},
+			{0, 1, 0},
+			{-1 * SinBeta, 0, CosBeta}
+		});
+		c_Matrix FromRoll(3, 3, {
+			{1, 0, 0},
+			{0, CosGamm, -1 * SinGamm},
+			{0, SinGamm, CosGamm}
+		});
 		
-		long double R2C0 = -1 * SinBeta;
-		long double R2C1 = SinGamm * CosBeta;
-		long double R2C2 = CosGamm * CosBeta;
-		
-		std::vector<std::vector<long double>> N = {
-			{R0C0, R0C1, R0C2},
-			{R1C0, R1C1, R1C2}, 
-			{R2C0, R2C1, R2C2}
-		};
-		return N;
+		c_Matrix TMP = FromYaw.dotProduct(FromPitch);
+		return TMP.dotProduct(FromRoll);
 	}
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const std::vector<std::vector<long double>> &vector, Base::c_Point3D_Floating main,
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const c_Matrix &matrix, Base::c_Point3D_Floating main,
 	const Base::c_Point3D_Floating& about) {
 		Base::c_Point3D_Floating offset = getPointDiff_F(&main, &about);
-		double nX = ((main.x * vector[0][0]) + (main.y * vector[1][0]) + (main.z * vector[2][0])) + offset.x;
-		double nY = ((main.x * vector[0][1]) + (main.y * vector[1][1]) + (main.z * vector[2][1])) + offset.y;
-		double nZ = ((main.x * vector[0][2]) + (main.y * vector[1][2]) + (main.z * vector[2][2])) + offset.z;
-		return Base::c_Point3D_Floating(nX, nY, nZ);
+		c_Matrix AsMatr(1, 3, { {main.x, main.y, main.z} });
+		c_Matrix Out = AsMatr.dotProduct(matrix);
+		return Base::c_Point3D_Floating(Out.at(0,0) + offset.x, Out.at(0,1) + offset.y, Out.at(0,2) + offset.z);
 	}
 } // End Anoptamin::Geometry::Transforms
 		

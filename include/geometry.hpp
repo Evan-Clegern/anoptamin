@@ -128,7 +128,22 @@ namespace Anoptamin { namespace Geometry {
 		
 		//! Construct it with a single continuous value.
 		c_Matrix(uint16_t rows, uint16_t cols, long double fillWith);
-		//! Construct it with 
+		//! Construct it with random values between 0 and 1.
+		c_Matrix(uint16_t rows, uint16_t cols);
+		//! Construct it with an initialization list (will check the size of all initializer lists)
+		c_Matrix(uint16_t rows, uint16_t cols, std::initializer_list<std::initializer_list<long double>> data);
+		//! Construct it with a filled set of vectors (will check initial sizes, but not all vectors)
+		c_Matrix(uint16_t rows, uint16_t cols, std::vector<std::vector<long double>> data);
+		//! Copy an existing matrix.
+		c_Matrix(const c_Matrix& b);
+		
+		//! Access a value at given position, with enabled editing.
+		long double& get(uint16_t row, uint16_t col);
+		//! Access a value at given position, without editing ability.
+		long double at(uint16_t row, uint16_t col) const;
+		
+		//! Calculate the dot product between two matrices
+		c_Matrix dotProduct(const c_Matrix& b) const;
 	};
 	
 namespace PtTransforms {
@@ -140,8 +155,8 @@ namespace PtTransforms {
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT std::vector<std::vector<long double>> getRotationMatrix(const c_Angle& by);
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const std::vector<std::vector<long double>> &vector, Base::c_Point3D_Floating main,
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT c_Matrix getRotationMatrix(const c_Angle& by);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const c_Matrix &matrix, Base::c_Point3D_Floating main,
 		const Base::c_Point3D_Floating& about);
 }
 	//! Class which represents a line drawn between two points.
