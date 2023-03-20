@@ -232,14 +232,6 @@ namespace Anoptamin { namespace Geometry {
 		TMP.calculateMagnitude();
 		return TMP;
 	}
-	c_Vector3D c_Vector3D::operator*(const c_Vector3D& vector2) const noexcept {
-		c_Vector3D TMP(*this);
-		TMP.ValX *= vector2.ValX;
-		TMP.ValY *= vector2.ValY;
-		TMP.ValZ *= vector2.ValZ;
-		TMP.calculateMagnitude();
-		return TMP;
-	}
 	c_Vector3D c_Vector3D::operator+(const c_Vector3D& vector2) const noexcept {
 		c_Vector3D TMP(*this);
 		TMP.ValX += vector2.ValX;
@@ -255,6 +247,24 @@ namespace Anoptamin { namespace Geometry {
 		TMP.ValZ -= vector2.ValZ;
 		TMP.calculateMagnitude();
 		return TMP;
+	}
+	
+	double c_Vector3D::dotProduct(const c_Vector3D& b) const noexcept {
+		return (b.ValX * this->ValX) + (b.ValY * this->ValY) + (b.ValZ * this->ValZ);
+	}
+	c_Vector3D c_Vector3D::crossProduct(const c_Vector3D& b) const noexcept {
+		c_Vector3D ncopies(
+			(this->ValY * b.ValZ) - (this->ValZ * b.ValY),
+			(this->ValX * b.ValZ) - (this->ValZ * b.ValX),
+			(this->ValX * b.ValY) - (this->ValY * b.ValX)
+		);
+		const c_Vector3D xAxis(1.0, 0.0, 0.0);
+		const c_Vector3D yAxis(0.0, 1.0, 0.0);
+		const c_Vector3D zAxis(0.0, 0.0, 1.0);
+		double NX = ncopies.dotProduct(xAxis);
+		double NY = ncopies.dotProduct(yAxis);
+		double NZ = ncopies.dotProduct(zAxis);
+		return c_Vector3D(NX, NY, NZ);
 	}
 	//Stop c_Vector3D methods
 	
