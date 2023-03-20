@@ -299,7 +299,7 @@ namespace PtTransforms {
 		// Output: 1x3 (new point)
 
 		// Manually create the matrix
-		// for Wikipedia info: alpha == yaw, beta == pitch, gamma == roll
+		// for Wikipedia info: ALPHA is YAW  BETA is PITCH  GAMMA is ROLL
 		long double R0C0 = std::cos(by.getPitch_Rad()) * std::cos(by.getRoll_Rad());
 		long double R0C1 = (std::sin(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) - (std::cos(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
 		long double R0C2 = (std::cos(by.getYaw_Rad()) * std::sin(by.getPitch_Rad()) * std::cos(by.getRoll_Rad())) + (std::sin(by.getYaw_Rad()) * std::sin(by.getRoll_Rad()));
@@ -509,17 +509,13 @@ namespace PtTransforms {
 	
 	// code-only for scaling in respect to another point
 	// distances must be scaled properly!!!!!!!
-	Base::c_Point3D_Floating scaleWith(Base::c_Point3D_Floating main, Base::c_Point3D_Floating from, double x, double y, double z) {
-		// starting differences
-		double diffx = (from.x - main.x);
-		double diffy = (from.y - main.y);
-		double diffz = (from.z - main.z);
-		// target/scaled differences
-		double targx = diffx * x;
-		double targy = diffy * y;
-		double targz = diffz * z;
+	Base::c_Point3D_Floating scaleWith(Base::c_Point3D_Floating main, Base::c_Point3D_Floating from, double xSc, double ySc, double zSc) {
+		// treat 'from' as the arbitrary origin
+		double diff_x = from.x - main.x, diff_y = from.y - main.y, diff_z = from.z - main.z;
 		
-		return Base::c_Point3D_Floating(main.x + (targx - diffx), main.y + (targy - diffy), main.z + (targz - diffz));
+		long double scale_x = diff_x * xSc, scale_y = diff_y * ySc, scale_z = diff_z * zSc;
+		
+		return Base::c_Point3D_Floating(from.x + scale_x, from.y + scale_y, from.z + scale_z);
 	}
 	
 	// we have to increase the distance of each point from the center
