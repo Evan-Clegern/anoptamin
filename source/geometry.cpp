@@ -331,9 +331,9 @@ namespace PtTransforms {
 	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const std::vector<std::vector<long double>> &vector, Base::c_Point3D_Floating main,
 	const Base::c_Point3D_Floating& about) {
 		Base::c_Point3D_Floating offset = getPointDiff_F(&main, &about);
-		double nX = (main.x * vector[0][0]) + (main.y * vector[1][0]) + (main.z * vector[2][0]) + offset.x;
-		double nY = (main.x * vector[0][1]) + (main.y * vector[1][1]) + (main.z * vector[2][1]) + offset.y;
-		double nZ = (main.x * vector[0][2]) + (main.y * vector[1][2]) + (main.z * vector[2][2]) + offset.z;
+		double nX = ((main.x * vector[0][0]) + (main.y * vector[1][0]) + (main.z * vector[2][0])) + offset.x;
+		double nY = ((main.x * vector[0][1]) + (main.y * vector[1][1]) + (main.z * vector[2][1])) + offset.y;
+		double nZ = ((main.x * vector[0][2]) + (main.y * vector[1][2]) + (main.z * vector[2][2])) + offset.z;
 		return Base::c_Point3D_Floating(nX, nY, nZ);
 	}
 } // End Anoptamin::Geometry::Transforms
