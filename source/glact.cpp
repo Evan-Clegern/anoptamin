@@ -175,25 +175,6 @@ namespace Graphics {
 		} else {
 			Anoptamin_LogCommon("OpenGL Interface Program Created, ID #" + std::to_string(m_progID));
 			
-			glGenBuffers(1, &m_VBO);
-			glBindBuffer( GL_ARRAY_BUFFER, m_VBO );
-			
-			glGenBuffers(1, &m_IBO);
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_IBO );
-			
-			glGenBuffers(1, &m_TBO);
-			glBindBuffer( GL_TEXTURE_BUFFER, m_TBO );
-			
-			Error = glGetError();
-			if (Error != GL_NO_ERROR) {
-				Anoptamin_LogError("Failed to initialize OpenGL Buffers for Rendering Engine!");
-				std::string X = SDL_GetError();
-				Anoptamin_LogTrace("SDL2 Error State: " + X);
-				const uint8_t* V = gluErrorString( Error );
-				X = (reinterpret_cast<const char*>(V));
-				Anoptamin_LogTrace("OpenGL Error State: " + X);
-			}
-			Anoptamin_LogDebug("OpenGL VBO and IBO buffers bound.");
 			m_valid = true;
 		}
 	}
@@ -320,6 +301,10 @@ namespace Graphics {
 	void c_RenderEngine_Low::shutdownEngine() {
 		Anoptamin_LogDebug("Shutting down OpenGL render program #" + std::to_string(this->m_progID));
 		this->m_valid = 0;
+		for (auto i : this->m_geomShaders) {
+			glDetachShader( this->m_progID, i );
+		}
+		this->m_geomShaders.clear();
 		for (auto i : this->m_fragShaders) {
 			glDetachShader( this->m_progID, i );
 		}
@@ -354,125 +339,9 @@ namespace Graphics {
 		return ReturnLoc;
 	}
 	
-	
-	//! Loads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_RenderEngine_Low::loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
-		if (vbostatic) {
-			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_STATIC_DRAW );
-		} else {
-			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_DYNAMIC_DRAW );
-		}
-		Error = glGetError();
-		if (Error == GL_INVALID_ENUM) {
-			Anoptamin_LogInfo("Bad Enumeration in VBO Binding.");
-		} else if (Error != GL_NO_ERROR) {
-			Anoptamin_LogWarn("Bad VBO Binding Data.");
-			const uint8_t* V = gluErrorString( Error );
-			std::string X = (reinterpret_cast<const char*>(V));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-		}
-	}
-	//! Loads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_RenderEngine_Low::loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
-		if (ibostatic) {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_STATIC_DRAW );
-		} else {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_DYNAMIC_DRAW );
-		}
-		Error = glGetError();
-		if (Error == GL_INVALID_ENUM) {
-			Anoptamin_LogInfo("Bad Enumeration in IBO Binding.");
-		} else if (Error != GL_NO_ERROR) {
-			Anoptamin_LogWarn("Bad IBO Binding Data.");
-			const uint8_t* V = gluErrorString( Error );
-			std::string X = (reinterpret_cast<const char*>(V));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-		}
-	}
-	//! Preloads some data into the Texture Buffer Object. If 'tbostatic' is true, then it will not allow the data buffer to be modified!
-	void c_RenderEngine_Low::loadDataTBO(size_t tbosize, float* tbodata, bool tbostatic) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		glBindBuffer(GL_TEXTURE_BUFFER, this->m_TBO);
-		if (tbostatic) {
-			glBufferData( GL_TEXTURE_BUFFER, tbosize, tbodata, GL_STATIC_DRAW );
-		} else {
-			glBufferData( GL_TEXTURE_BUFFER, tbosize, tbodata, GL_DYNAMIC_DRAW );
-		}
-		
-		Error = glGetError();
-		if (Error == GL_INVALID_ENUM) {
-			Anoptamin_LogInfo("Bad Enumeration in TBO Binding.");
-		} else if (Error != GL_NO_ERROR) {
-			Anoptamin_LogWarn("Bad TBO Binding Data.");
-			const uint8_t* V = gluErrorString( Error );
-			std::string X = (reinterpret_cast<const char*>(V));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-		}
-	}
-	
 	//! Retrieves the raw OpenGL value for the Rendering Program
 	const uint32_t c_RenderEngine_Low::getGLProgram() const {
 		check_codelogic(this->m_valid);
 		return this->m_progID;
-	}
-	//! Retrieves the raw OpenGL value for the VBO.
-	const uint32_t c_RenderEngine_Low::getGLVBO() const {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		return this->m_VBO;
-	}
-	//! Retrieves the raw OpenGL value for the IBO.
-	const uint32_t c_RenderEngine_Low::getGLIBO() const {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		return this->m_IBO;
-	}
-	//! Retrieves the raw OpenGL value for the TBO.
-	const uint32_t c_RenderEngine_Low::getGLTBO() const {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		return this->m_TBO;
-	}
-
-	void c_RenderEngine_Low::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		
-		glClear( GL_COLOR_BUFFER_BIT );
-		glEnableVertexAttribArray(attribLocation);
-		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
-		if (useLongFloats) {
-			glVertexAttribPointer( attribLocation, vertexSize, GL_DOUBLE, GL_FALSE, vertexSize * sizeof(float), NULL );
-		} else {
-			glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
-		}
-		Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogInfo("Bad Enumeration in ARRAY_BUFFER Binding.");
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
-		glDrawElements( GL_TRIANGLE_FAN, pointsRender, GL_UNSIGNED_INT, NULL );
-		Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogInfo("Bad Enumeration in object drawing.");
-		}
-		glDisableVertexAttribArray(attribLocation);
-		
-		this->mp_renderCtrl->updateRenderer();
 	}
 }} //End Anoptamin::Graphics

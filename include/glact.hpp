@@ -66,12 +66,12 @@ namespace Graphics {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_COLD bool initializeGL();
 	
 	//! Handles the basic OpenGL and GLEW rendering system.
+	//! This class handles shader compiling and attachment, OpenGL render program control, and minor utilities.
+	//! Redesigned to NOT use VBOs, IBOs and VAOs, as (to my knowledge) they're needed for each individual object to render!
 	class c_RenderEngine_Low {
 		c_Window_Renderer* mp_renderCtrl;
 		
 		uint32_t m_progID = 0;
-		
-		uint32_t m_VBO = 0, m_IBO = 0, m_TBO = 0;
 		
 		std::vector<uint32_t> m_vertexShaders;
 		std::vector<uint32_t> m_fragShaders;
@@ -110,26 +110,8 @@ namespace Graphics {
 		//! Gets the internal OpenGL location for the given attribute.
 		int getAttributeLocation(std::string what) const;
 		
-		//! Preloads some data into the Vertex Buffer Object. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
-		void loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic = false);
-		//! Preloads some data into the Index Buffer Object. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
-		void loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic = false);
-		//! Preloads some data into the Texture Buffer Object. If 'tbostatic' is true, then it will not allow the data buffer to be modified!
-		void loadDataTBO(size_t tbosize, float* tbodata, bool tbostatic = false);
-		
-		//! Retrieves the raw OpenGL value for the Rendering Program
+		//! Returns a reference to the low-level OpenGL rendering program.
 		const uint32_t getGLProgram() const;
-		//! Retrieves the raw OpenGL value for the VBO.
-		const uint32_t getGLVBO() const;
-		//! Retrieves the raw OpenGL value for the IBO.
-		const uint32_t getGLIBO() const;
-		//! Retrieves the raw OpenGL value for the TBO.
-		const uint32_t getGLTBO() const;
-		
-		//! Binds preloaded data, prepares it for rendering, and then calls the 'glDrawElements' to draw them.
-		//! Allows for 1D, 2D and 3D rendering (vertexSize, and attribLocation based on getAttributeLocation(OPENGL STRING FOR IT) )
-		//! Note that the speed of this will likely be capped to 1 over the max refresh rate of the main monitor (VSYNCed).
-		void bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats = false);
 	};
 }} //End Anoptamin::Graphics
 
