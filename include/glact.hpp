@@ -71,10 +71,11 @@ namespace Graphics {
 		
 		uint32_t m_progID = 0;
 		
-		uint32_t m_VBO = 0, m_IBO = 0;
+		uint32_t m_VBO = 0, m_IBO = 0, m_TBO = 0;
 		
 		std::vector<uint32_t> m_vertexShaders;
 		std::vector<uint32_t> m_fragShaders;
+		std::vector<uint32_t> m_geomShaders;
 		bool m_valid = false, m_compiled = false;
 	public:
 		//! Creates the OpenGL Rendering Program in respect to the window rendering object.
@@ -83,10 +84,18 @@ namespace Graphics {
 		//! Shuts down the OpenGL Rendering Program, detaches shaders, and updates the Window Renderer.
 		void shutdownEngine();
 		
+		// For more information regarding the shader types:
+		// https://www.khronos.org/opengl/wiki/Shader
+		
 		//! Compiles a new Vertex Shader into the rendering engine, and returns 'true' if done successfully.
+		//! A Vertex Shader is a program which processes individual vertices, mainly for transforming them in the viewport.
 		bool registerShader_Vertex(std::string source);
 		//! Compiles a new Fragment Shader into the rendering engine, and returns 'true' if done successfully.
+		//! A Fragment Shader is a program which assigns color to rasterized primitives, which is the final step.
 		bool registerShader_Fragment(std::string source);
+		//! Compiles a new Geometry Shader into the rendering engine, and returns 'true' if done successfully.
+		//! A Geometry Shader is a program which adjusts primitives post-Vertex; that is, the points, lines, or triangles.
+		bool registerShader_Geometry(std::string source);
 		//! Compiles and links the OpenGL Rendering Program.
 		void compileWithShaders();
 		
@@ -101,10 +110,12 @@ namespace Graphics {
 		//! Gets the internal OpenGL location for the given attribute.
 		int getAttributeLocation(std::string what) const;
 		
-		//! Preloads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
+		//! Preloads some data into the Vertex Buffer Object. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
 		void loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic = false);
-		//! Preloads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
+		//! Preloads some data into the Index Buffer Object. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
 		void loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic = false);
+		//! Preloads some data into the Texture Buffer Object. If 'tbostatic' is true, then it will not allow the data buffer to be modified!
+		void loadDataTBO(size_t tbosize, float* tbodata, bool tbostatic = false);
 		
 		//! Binds preloaded data, prepares it for rendering, and then calls the 'glDrawElements' to draw them.
 		//! Allows for 1D, 2D and 3D rendering (vertexSize, and attribLocation based on getAttributeLocation(OPENGL STRING FOR IT) )

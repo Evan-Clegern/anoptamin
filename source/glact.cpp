@@ -181,6 +181,9 @@ namespace Graphics {
 			glGenBuffers(1, &m_IBO);
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_IBO );
 			
+			glGenBuffers(1, &m_TBO);
+			glBindBuffer( GL_TEXTURE_BUFFER, m_TBO );
+			
 			Error = glGetError();
 			if (Error != GL_NO_ERROR) {
 				Anoptamin_LogError("Failed to initialize OpenGL Buffers for Rendering Engine!");
@@ -246,6 +249,35 @@ namespace Graphics {
 		glAttachShader( this->m_progID, nshader );
 		m_fragShaders.push_back(nshader);
 		Anoptamin_LogDebug("Successfully compiled fragment shader for program #" + std::to_string(this->m_progID));
+		return true;
+	}
+	//! Compiles a new Geometry Shader into the rendering engine, and returns 'true' if done successfully.
+	//! A Geometry Shader is a program which adjusts primitives post-Vertex; that is, the points, lines, or triangles.
+	bool c_RenderEngine_Low::registerShader_Geometry(std::string source) {
+		check_codelogic( this->m_valid );
+		uint32_t nshader = glCreateShader( GL_GEOMETRY_SHADER );
+		const char* tmpptr[] = {source.c_str()};
+		glShaderSource( nshader, 1, tmpptr, NULL );
+		glCompileShader( nshader );
+		int32_t compiled = GL_FALSE;
+		glGetShaderiv( nshader, GL_COMPILE_STATUS, &compiled );
+		if ( compiled != GL_TRUE ) {
+			Anoptamin_LogWarn("Failed to compile geometry shader for program #" + std::to_string(this->m_progID));
+			int errloglen = 0, maxloglen = 0;
+			glGetShaderiv( nshader, GL_INFO_LOG_LENGTH, &maxloglen );
+			char* infolog = new char[maxloglen + 1];
+			glGetShaderInfoLog( nshader, maxloglen, &errloglen, infolog );
+			Anoptamin_LogTrace("OpenGL Shader Log: " + std::string(infolog));
+			delete [] infolog;
+			GLenum Error = glGetError();
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			return false;
+		}
+		glAttachShader( this->m_progID, nshader );
+		m_geomShaders.push_back(nshader);
+		Anoptamin_LogDebug("Successfully compiled geometry shader for program #" + std::to_string(this->m_progID));
 		return true;
 	}
 	void c_RenderEngine_Low::compileWithShaders() {
@@ -367,6 +399,30 @@ namespace Graphics {
 			Anoptamin_LogTrace("OpenGL Error State: " + X);
 		}
 	}
+	//! Preloads some data into the Texture Buffer Object. If 'tbostatic' is true, then it will not allow the data buffer to be modified!
+	void c_RenderEngine_Low::loadDataTBO(size_t tbosize, float* tbodata, bool tbostatic) {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		
+		GLenum Error = GL_NO_ERROR;
+		glBindBuffer(GL_TEXTURE_BUFFER, this->m_TBO);
+		if (tbostatic) {
+			glBufferData( GL_TEXTURE_BUFFER, tbosize, tbodata, GL_STATIC_DRAW );
+		} else {
+			glBufferData( GL_TEXTURE_BUFFER, tbosize, tbodata, GL_DYNAMIC_DRAW );
+		}
+		
+		Error = glGetError();
+		if (Error == GL_INVALID_ENUM) {
+			Anoptamin_LogInfo("Bad Enumeration in TBO Binding.");
+		} else if (Error != GL_NO_ERROR) {
+			Anoptamin_LogWarn("Bad TBO Binding Data.");
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+		}
+	}
+	
 	void c_RenderEngine_Low::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
