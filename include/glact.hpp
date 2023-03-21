@@ -117,6 +117,15 @@ namespace Graphics {
 		//! Preloads some data into the Texture Buffer Object. If 'tbostatic' is true, then it will not allow the data buffer to be modified!
 		void loadDataTBO(size_t tbosize, float* tbodata, bool tbostatic = false);
 		
+		//! Retrieves the raw OpenGL value for the Rendering Program
+		const uint32_t getGLProgram() const;
+		//! Retrieves the raw OpenGL value for the VBO.
+		const uint32_t getGLVBO() const;
+		//! Retrieves the raw OpenGL value for the IBO.
+		const uint32_t getGLIBO() const;
+		//! Retrieves the raw OpenGL value for the TBO.
+		const uint32_t getGLTBO() const;
+		
 		//! Binds preloaded data, prepares it for rendering, and then calls the 'glDrawElements' to draw them.
 		//! Allows for 1D, 2D and 3D rendering (vertexSize, and attribLocation based on getAttributeLocation(OPENGL STRING FOR IT) )
 		//! Note that the speed of this will likely be capped to 1 over the max refresh rate of the main monitor (VSYNCed).

@@ -423,6 +423,30 @@ namespace Graphics {
 		}
 	}
 	
+	//! Retrieves the raw OpenGL value for the Rendering Program
+	const uint32_t c_RenderEngine_Low::getGLProgram() const {
+		check_codelogic(this->m_valid);
+		return this->m_progID;
+	}
+	//! Retrieves the raw OpenGL value for the VBO.
+	const uint32_t c_RenderEngine_Low::getGLVBO() const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		return this->m_VBO;
+	}
+	//! Retrieves the raw OpenGL value for the IBO.
+	const uint32_t c_RenderEngine_Low::getGLIBO() const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		return this->m_IBO;
+	}
+	//! Retrieves the raw OpenGL value for the TBO.
+	const uint32_t c_RenderEngine_Low::getGLTBO() const {
+		check_codelogic(this->m_valid);
+		check_video(this->m_compiled);
+		return this->m_TBO;
+	}
+
 	void c_RenderEngine_Low::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
