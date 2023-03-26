@@ -31,4 +31,34 @@
 
 namespace Anoptamin { namespace Graphics {
 	
+	//! Initializes the Rendering Object.
+	c_RenderObject::c_RenderObject() {
+		glGenVertexArrays(1, &GL_VAO);
+		glBindVertexArray(GL_VAO);
+		glGenBuffers(1, &GL_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, GL_VBO);
+		glGenBuffers(1, &GL_IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_IBO);
+	}
+	//! Initializes the Rendering Object and loads data from an existing volume.
+	c_RenderObject::c_RenderObject(const Geometry::c_Volume& loadFrom) {
+		glGenVertexArrays(1, &GL_VAO);
+		glBindVertexArray(GL_VAO);
+		glGenBuffers(1, &GL_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, GL_VBO);
+		glGenBuffers(1, &GL_IBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_IBO);
+		// TODO: load data from the volume.
+		// Also, do we need to do extra culling? If so, do we need the current viewport angle and position?
+		// And if that, then would we also have to then translate everything into the 'real area'?
+		// That may need to be handled before calling the c_RenderObject...
+	}
+	
+	//! Destroys the Rendering Object and frees the buffers.
+	c_RenderObject::~c_RenderObject() {
+		glDeleteBuffers(1, &(this->GL_VBO));
+		glDeleteBuffers(1, &(this->GL_IBO));
+		glDeleteVertexArrays(1, &(this->GL_VAO));
+	}
+		
 }};

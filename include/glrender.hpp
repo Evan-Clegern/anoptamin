@@ -31,7 +31,7 @@
  ********/
 
 #ifndef anoptamin_glrender
-#defnie anoptamin_glrender
+#define anoptamin_glrender
 
 #include "../include/geometry.hpp"
 #include "../include/glact.hpp"
@@ -50,6 +50,13 @@ namespace Anoptamin { namespace Graphics {
 		std::vector<double> GL_Vertexes;
 		//! OpenGL-format index set.
 		std::vector<uint32_t> GL_Indexes;
+		
+		//! Initializes the Rendering Object for future loading.
+		c_RenderObject();
+		//! Initializes the Rendering Object and loads data from an existing volume.
+		c_RenderObject(const Geometry::c_Volume& loadFrom);
+		//! Destroys the Rendering Object and frees the buffers.
+		~c_RenderObject();
 	};
 	
 }}; //End Anoptamin::Graphics
