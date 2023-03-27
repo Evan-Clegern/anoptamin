@@ -40,6 +40,8 @@ namespace Anoptamin { namespace Graphics {
 	
 	//! Wrapper object which is intended to store the points and various buffers needed to draw any given primitive set.
 	struct c_RenderObject {
+		//! Whether or not we bind the data as static or dynamic
+		bool GL_STATIC;
 		//! Vertex Buffer Object. Stores vertexes (points) for rendering.
 		uint32_t GL_VBO;
 		//! Index Buffer Object. Stores the indexes in which OpenGL places the vertexes for drawing lines.
@@ -51,12 +53,18 @@ namespace Anoptamin { namespace Graphics {
 		//! OpenGL-format index set.
 		std::vector<uint32_t> GL_Indexes;
 		
-		//! Initializes the Rendering Object for future loading.
-		c_RenderObject();
-		//! Initializes the Rendering Object and loads data from an existing volume.
-		c_RenderObject(const Geometry::c_Volume& loadFrom);
+		//! Initializes the Rendering Object for future loading, and marks it as a static (one write) or dynamic (multi write) object.
+		c_RenderObject(bool isStatic);
+		//! Initializes the Rendering Object and loads data from an existing volume, and marks it as a static (one write) or dynamic (multi write) object.
+		c_RenderObject(const Geometry::c_Volume& loadFrom, bool isStatic);
 		//! Destroys the Rendering Object and frees the buffers.
 		~c_RenderObject();
+		
+		//! Loads the GL-ready flattened vertexes into the render object's VBO
+		void loadVBO_Prepared(uint32_t PointCount, const std::vector<double>& FlattenedVertexes);
+		//! Loads the GL-ready flattened vertex indexes into the render object's IBO
+		void loadIBO_Prepared(uint32_t PointCount, const std::vector<uint32_t>& FlattenedIndexes);
+		
 	};
 	
 }}; //End Anoptamin::Graphics
