@@ -39,6 +39,7 @@ namespace Anoptamin { namespace Graphics {
 		glBindBuffer(GL_ARRAY_BUFFER, GL_VBO);
 		glGenBuffers(1, &GL_IBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_IBO);
+		glBindVertexArray(0);
 	}
 	//! Initializes the Rendering Object and loads data from an existing volume.
 	c_RenderObject::c_RenderObject(const Geometry::c_Volume& loadFrom) {
@@ -56,9 +57,11 @@ namespace Anoptamin { namespace Graphics {
 	
 	//! Destroys the Rendering Object and frees the buffers.
 	c_RenderObject::~c_RenderObject() {
+		glBindVertexArray(GL_VAO);
 		glDeleteBuffers(1, &(this->GL_VBO));
 		glDeleteBuffers(1, &(this->GL_IBO));
 		glDeleteVertexArrays(1, &(this->GL_VAO));
+		glBindVertexArray(0);
 	}
 		
 }};
