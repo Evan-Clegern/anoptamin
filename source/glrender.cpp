@@ -31,6 +31,48 @@
 
 namespace Anoptamin { namespace Graphics {
 	
+	namespace Loading {
+		/*
+		struct c_Edge {
+			double Length;
+			c_Angle EdgeAngle;
+			const Base::c_Point3D_Floating *PointA, *PointB;
+		}
+		struct c_Face_Triangle {
+			double Area;
+			Base::c_Point3D_Floating Center;
+			c_Edge EdgeA, EdgeB, EdgeC;
+			c_Face_Simple Points;
+		}
+		struct c_SerializedPoints {
+			uint32_t ObjectPoints;
+			std::vector<double> ObjectVertexes;
+			std::vector<uint16_t> ObjectIndexes;
+			
+			bool IsVolume;
+			union {
+				Geometry::c_Volume* AsVolume;
+				Geometry::c_Face_Triangle* AsTriangle;
+			} Type;
+		};
+		*/
+		LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeFace(const Geometry::c_Face_Triangle& face) {
+			c_SerializedPoints TMP;
+			TMP.IsVolume = false;
+			TMP.Type.AsTriangle = &face;
+			TMP.ObjectPoints = 3;
+			std::vector<double> SerialPts = {
+				face.Points.A.x, face.Points.A.y, face.Points.A.z,
+				face.Points.B.x, face.Points.B.y, face.Points.B.z,
+				face.Points.C.x, face.Points.C.y, face.Points.C.z
+			};
+			std::vector<uint16_t> SerialInd {0, 1, 2};
+			TMP.ObjectIndexes = SerialInd;
+			TMP.ObjectVertexes = SerialPts;
+			return TMP;
+		}
+	}
+	
 	//! Initializes the Rendering Object.
 	c_RenderObject::c_RenderObject(bool isStatic) {
 		glGenVertexArrays(1, &GL_VAO);

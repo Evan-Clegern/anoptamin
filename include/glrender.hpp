@@ -46,14 +46,14 @@ namespace Loading {
 		std::vector<uint16_t> ObjectIndexes;
 		
 		bool IsVolume;
-		union Type {
-			Geometry::c_Volume* AsVolume;
-			Geometry::c_Face_Triangle* AsTriangle;
-		};
+		union {
+			const Geometry::c_Volume* AsVolume;
+			const Geometry::c_Face_Triangle* AsTriangle;
+		} Type;
 	};
 	
-	const c_SerializedPoints serializeVolume(const Geometry::c_Volume& volume);
-	const c_SerializedPoints serializeFace(const Geometry::c_Face_Triangle& face);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeVolume(const Geometry::c_Volume& volume);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeFace(const Geometry::c_Face_Triangle& face);
 }
 	
 	//! Wrapper object which is intended to store the points and various buffers needed to draw any given primitive set.
