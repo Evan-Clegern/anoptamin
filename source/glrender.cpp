@@ -76,52 +76,6 @@ namespace Anoptamin { namespace Graphics {
 		this->GL_STATIC = isStatic;
 		glBindVertexArray(0);
 	}
-	//! Initializes the Rendering Object and loads data from an existing volume.
-	c_RenderObject::c_RenderObject(const Geometry::c_Volume& loadFrom, bool isStatic) {
-		glGenVertexArrays(1, &GL_VAO);
-		glBindVertexArray(GL_VAO);
-		GLenum Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogError("Render Object Error when generating vertex array!");
-			std::string X = SDL_GetError();
-			Anoptamin_LogTrace("SDL2 Error State: " + X);
-			const uint8_t* Y = gluErrorString( Error );
-			X = (reinterpret_cast<const char*>(Y));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-			GLenum glewError = glewInit();
-			const uint8_t* Z = glewGetErrorString( glewError );
-			X = (reinterpret_cast<const char*>(Z));
-			Anoptamin_LogTrace("GLEW Error State: " + X);
-			// For simplicity in logging
-			bool couldGenerateVertArray = false;
-			check_video(couldGenerateVertArray);
-		}
-		glGenBuffers(1, &GL_VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, GL_VBO);
-		glGenBuffers(1, &GL_IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_IBO);
-		Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogError("Render Object Error when binding buffers for VAO!");
-			std::string X = SDL_GetError();
-			Anoptamin_LogTrace("SDL2 Error State: " + X);
-			const uint8_t* Y = gluErrorString( Error );
-			X = (reinterpret_cast<const char*>(Y));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-			GLenum glewError = glewInit();
-			const uint8_t* Z = glewGetErrorString( glewError );
-			X = (reinterpret_cast<const char*>(Z));
-			Anoptamin_LogTrace("GLEW Error State: " + X);
-			// For simplicity in logging
-			bool couldAssignBuffers = false;
-			check_video(couldAssignBuffers);
-		}
-		this->GL_STATIC = isStatic;
-		// TODO: load data from the volume.
-		// Also, do we need to do extra culling? If so, do we need the current viewport angle and position?
-		// And if that, then would we also have to then translate everything into the 'real area'?
-		// That may need to be handled before calling the c_RenderObject...
-	}
 	
 	//! Destroys the Rendering Object and frees the buffers.
 	c_RenderObject::~c_RenderObject() {

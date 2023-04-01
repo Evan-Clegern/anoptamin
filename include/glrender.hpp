@@ -66,15 +66,9 @@ namespace Loading {
 		uint32_t GL_IBO;
 		//! Vertex Array Object. Stores vertex attributes, vertex data formatting, and links to other buffer objects.
 		uint32_t GL_VAO;
-		//! OpenGL-format vertex set.
-		std::vector<double> GL_Vertexes;
-		//! OpenGL-format index set.
-		std::vector<uint32_t> GL_Indexes;
 		
 		//! Initializes the Rendering Object for future loading, and marks it as a static (one write) or dynamic (multi write) object.
 		c_RenderObject(bool isStatic);
-		//! Initializes the Rendering Object and loads data from an existing volume, and marks it as a static (one write) or dynamic (multi write) object.
-		c_RenderObject(const Geometry::c_Volume& loadFrom, bool isStatic);
 		//! Destroys the Rendering Object and frees the buffers.
 		~c_RenderObject();
 		
