@@ -37,6 +37,24 @@
 #include "../include/glact.hpp"
 
 namespace Anoptamin { namespace Graphics {
+
+namespace Loading {
+	//! Stores the serialized points representing a volume or triangle.
+	struct c_SerializedPoints {
+		uint32_t ObjectPoints;
+		std::vector<double> ObjectVertexes;
+		std::vector<uint16_t> ObjectIndexes;
+		
+		bool IsVolume;
+		union Type {
+			Geometry::c_Volume* AsVolume;
+			Geometry::c_Face_Triangle* AsTriangle;
+		};
+	};
+	
+	const c_SerializedPoints serializeVolume(const Geometry::c_Volume& volume);
+	const c_SerializedPoints serializeFace(const Geometry::c_Face_Triangle& face);
+}
 	
 	//! Wrapper object which is intended to store the points and various buffers needed to draw any given primitive set.
 	struct c_RenderObject {
@@ -63,9 +81,11 @@ namespace Anoptamin { namespace Graphics {
 		//! Loads the GL-ready flattened vertexes into the render object's VBO
 		void loadVBO_Prepared(uint32_t PointCount, const std::vector<double>& FlattenedVertexes);
 		//! Loads the GL-ready flattened vertex indexes into the render object's IBO
-		void loadIBO_Prepared(uint32_t PointCount, const std::vector<uint32_t>& FlattenedIndexes);
-		
+		void loadIBO_Prepared(uint32_t PointCount, const std::vector<uint16_t>& FlattenedIndexes);
+		//! Loads the Serialized Points into the render object's VBO and IBO.
+		void loadSerialized(const Loading::c_SerializedPoints& Data);
 	};
+	
 	
 }}; //End Anoptamin::Graphics
 

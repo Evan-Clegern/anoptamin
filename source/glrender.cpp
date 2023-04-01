@@ -182,7 +182,7 @@ namespace Anoptamin { namespace Graphics {
 		glBindVertexArray(0);
 	}
 	//! Loads the GL-ready flattened vertex indexes into the render object's IBO
-	void c_RenderObject::loadIBO_Prepared(uint32_t PointCount, const std::vector<uint32_t>& FlattenedIndexes) {
+	void c_RenderObject::loadIBO_Prepared(uint32_t PointCount, const std::vector<uint16_t>& FlattenedIndexes) {
 		check_codelogic(this->GL_VAO != 0);
 		check_codelogic(this->GL_VBO != 0);
 		check_codelogic(this->GL_IBO != 0);
@@ -201,14 +201,14 @@ namespace Anoptamin { namespace Graphics {
 			X = (reinterpret_cast<const char*>(Z));
 			Anoptamin_LogTrace("GLEW Error State: " + X);
 			// For simplicity in logging
-			bool couldGenerateVertArray = false;
-			check_video(couldGenerateVertArray);
+			bool couldBindIndexArray = false;
+			check_video(couldBindIndexArray);
 		}
 		check_codelogic( (FlattenedIndexes.size() % PointCount == 0) );
 		if (this->GL_STATIC) {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, PointCount * sizeof(uint32_t), FlattenedIndexes.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, PointCount * sizeof(uint16_t), FlattenedIndexes.data(), GL_STATIC_DRAW );
 		} else {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, PointCount * sizeof(uint32_t), FlattenedIndexes.data(), GL_DYNAMIC_DRAW );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, PointCount * sizeof(uint16_t), FlattenedIndexes.data(), GL_DYNAMIC_DRAW );
 		}
 		Error = glGetError();
 		if (Error != GL_NO_ERROR) {
@@ -223,10 +223,96 @@ namespace Anoptamin { namespace Graphics {
 			X = (reinterpret_cast<const char*>(Z));
 			Anoptamin_LogTrace("GLEW Error State: " + X);
 			// For simplicity in logging
-			bool couldGenerateVertArray = false;
-			check_video(couldGenerateVertArray);
+			bool couldLoadIndexArray = false;
+			check_video(couldLoadIndexArray);
 		}
 		
+		glBindVertexArray(0);
+	}
+	void c_RenderObject::loadSerialized(const Loading::c_SerializedPoints& Data) {
+		check_codelogic(this->GL_VAO != 0);
+		check_codelogic(this->GL_VBO != 0);
+		check_codelogic(this->GL_IBO != 0);
+		check_loaded(Data.ObjectPoints != 0);
+		check_loaded(Data.ObjectIndexes.size() != 0);
+		check_loaded(Data.ObjectVertexes.size() != 0);
+		glBindVertexArray(this->GL_VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->GL_IBO);
+		GLenum Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogError("Render Object Error when binding index array!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			GLenum glewError = glewInit();
+			const uint8_t* Z = glewGetErrorString( glewError );
+			X = (reinterpret_cast<const char*>(Z));
+			Anoptamin_LogTrace("GLEW Error State: " + X);
+			// For simplicity in logging
+			bool couldBindIndexArray = false;
+			check_video(couldBindIndexArray);
+		}
+		if (this->GL_STATIC) {
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, Data.ObjectPoints * sizeof(uint16_t), Data.ObjectIndexes.data(), GL_STATIC_DRAW );
+		} else {
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, Data.ObjectPoints * sizeof(uint16_t), Data.ObjectIndexes.data(), GL_DYNAMIC_DRAW );
+		}
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogError("Render Object Error when loading index array!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			GLenum glewError = glewInit();
+			const uint8_t* Z = glewGetErrorString( glewError );
+			X = (reinterpret_cast<const char*>(Z));
+			Anoptamin_LogTrace("GLEW Error State: " + X);
+			// For simplicity in logging
+			bool couldLoadIndexArray = false;
+			check_video(couldLoadIndexArray);
+		}
+		glBindBuffer(GL_ARRAY_BUFFER, this->GL_VBO);
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogError("Render Object Error when binding vertex array!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			GLenum glewError = glewInit();
+			const uint8_t* Z = glewGetErrorString( glewError );
+			X = (reinterpret_cast<const char*>(Z));
+			Anoptamin_LogTrace("GLEW Error State: " + X);
+			// For simplicity in logging
+			bool couldBindVertexArray = false;
+			check_video(couldBindVertexArray);
+		}
+		if (this->GL_STATIC) {
+			glBufferData( GL_ARRAY_BUFFER, Data.ObjectPoints * sizeof(double), Data.ObjectVertexes.data(), GL_STATIC_DRAW );
+		} else {
+			glBufferData( GL_ARRAY_BUFFER, Data.ObjectPoints * sizeof(double), Data.ObjectVertexes.data(), GL_DYNAMIC_DRAW );
+		}
+		Error = glGetError();
+		if (Error != GL_NO_ERROR) {
+			Anoptamin_LogError("Render Object Error when loading vertex array!");
+			std::string X = SDL_GetError();
+			Anoptamin_LogTrace("SDL2 Error State: " + X);
+			const uint8_t* Y = gluErrorString( Error );
+			X = (reinterpret_cast<const char*>(Y));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			GLenum glewError = glewInit();
+			const uint8_t* Z = glewGetErrorString( glewError );
+			X = (reinterpret_cast<const char*>(Z));
+			Anoptamin_LogTrace("GLEW Error State: " + X);
+			// For simplicity in logging
+			bool couldLoadVertexArray = false;
+			check_video(couldLoadVertexArray);
+		}
 		
 		glBindVertexArray(0);
 	}
