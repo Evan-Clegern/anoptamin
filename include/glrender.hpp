@@ -52,7 +52,11 @@ namespace Loading {
 		} Type;
 	};
 	
+	//! Create a rendering-ready object for OpenGL, from an initial volume. Does not implement culling!
 	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeVolume(const Geometry::c_Volume& volume);
+	//! Create a rendering-ready object for OpenGL, from an initial volume. Implements very basic culling.
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeVolume(const Geometry::c_Volume& volume, Geometry::c_Angle relativeAngle);
+	//! Create a rendering-ready object for OpenGL, from a single triangular face.
 	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeFace(const Geometry::c_Face_Triangle& face);
 }
 	
@@ -72,9 +76,9 @@ namespace Loading {
 		//! Destroys the Rendering Object and frees the buffers.
 		~c_RenderObject();
 		
-		//! Loads the GL-ready flattened vertexes into the render object's VBO
+		//! Loads the GL-ready flattened vertexes into the render object's VBO.
 		void loadVBO_Prepared(uint32_t PointCount, const std::vector<double>& FlattenedVertexes);
-		//! Loads the GL-ready flattened vertex indexes into the render object's IBO
+		//! Loads the GL-ready flattened vertex indexes into the render object's IBO.
 		void loadIBO_Prepared(uint32_t PointCount, const std::vector<uint16_t>& FlattenedIndexes);
 		//! Loads the Serialized Points into the render object's VBO and IBO.
 		void loadSerialized(const Loading::c_SerializedPoints& Data);
