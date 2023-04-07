@@ -71,6 +71,57 @@ namespace Anoptamin { namespace Graphics {
 			TMP.ObjectVertexes = SerialPts;
 			return TMP;
 		}
+		LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeVolume(const Geometry::c_Volume& face) {
+			c_SerializedPoints TMP;
+			TMP.IsVolume = true;
+			TMP.Type.AsVolume = &face;
+			
+			auto AllPoints = face.getAllPoints();
+			
+			TMP.ObjectPoints = AllPoints.size();
+			std::vector<double> SerialPts;
+			std::vector<uint16_t> SerialInd;
+			
+			uint16_t indx = 0;
+			for (Base::c_Point3D_Floating i : AllPoints) {
+				SerialInd.push_back(indx);
+				SerialPts.push_back(i.x);
+				SerialPts.push_back(i.y);
+				SerialPts.push_back(i.z);
+				indx++;
+			}
+			
+			TMP.ObjectIndexes = SerialInd;
+			TMP.ObjectVertexes = SerialPts;
+			return TMP;
+		}
+		
+		LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT const c_SerializedPoints serializeVolume(const Geometry::c_Volume& face, Geometry::c_Angle relativeAngle) {
+			c_SerializedPoints TMP;
+			TMP.IsVolume = true;
+			TMP.Type.AsVolume = &face;
+			
+			auto AllPoints = face.getAllPoints();
+			
+			// TODO: find culling method based on the relativeAngle modifier!
+			
+			TMP.ObjectPoints = AllPoints.size();
+			std::vector<double> SerialPts;
+			std::vector<uint16_t> SerialInd;
+			
+			uint16_t indx = 0;
+			for (Base::c_Point3D_Floating i : AllPoints) {
+				SerialInd.push_back(indx);
+				SerialPts.push_back(i.x);
+				SerialPts.push_back(i.y);
+				SerialPts.push_back(i.z);
+				indx++;
+			}
+			
+			TMP.ObjectIndexes = SerialInd;
+			TMP.ObjectVertexes = SerialPts;
+			return TMP;
+		}
 	}
 	
 	//! Initializes the Rendering Object.
