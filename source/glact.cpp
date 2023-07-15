@@ -160,7 +160,7 @@ namespace Graphics {
 	}
 	
 	
-	c_Render_Engine::c_Render_Engine(c_Window_Renderer& baseRenderer) {
+	c_RenderEngine_Low::c_RenderEngine_Low(c_Window_Renderer& baseRenderer) {
 		mp_renderCtrl = &baseRenderer;
 		m_progID = glCreateProgram();
 		GLenum Error = GL_NO_ERROR;
@@ -175,26 +175,10 @@ namespace Graphics {
 		} else {
 			Anoptamin_LogCommon("OpenGL Interface Program Created, ID #" + std::to_string(m_progID));
 			
-			glGenBuffers(1, &m_VBO);
-			glBindBuffer( GL_ARRAY_BUFFER, m_VBO );
-			
-			glGenBuffers(1, &m_IBO);
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_IBO );
-			
-			Error = glGetError();
-			if (Error != GL_NO_ERROR) {
-				Anoptamin_LogError("Failed to initialize OpenGL Buffers for Rendering Engine!");
-				std::string X = SDL_GetError();
-				Anoptamin_LogTrace("SDL2 Error State: " + X);
-				const uint8_t* V = gluErrorString( Error );
-				X = (reinterpret_cast<const char*>(V));
-				Anoptamin_LogTrace("OpenGL Error State: " + X);
-			}
-			Anoptamin_LogDebug("OpenGL VBO and IBO buffers bound.");
 			m_valid = true;
 		}
 	}
-	bool c_Render_Engine::registerShader_Vertex(std::string source) {
+	bool c_RenderEngine_Low::registerShader_Vertex(std::string source) {
 		check_codelogic( this->m_valid );
 		uint32_t nshader = glCreateShader( GL_VERTEX_SHADER );
 		const char* tmpptr[] = {source.c_str()};
@@ -221,7 +205,7 @@ namespace Graphics {
 		Anoptamin_LogDebug("Successfully compiled vertex shader for program #" + std::to_string(this->m_progID));
 		return true;
 	}
-	bool c_Render_Engine::registerShader_Fragment(std::string source) {
+	bool c_RenderEngine_Low::registerShader_Fragment(std::string source) {
 		check_codelogic( this->m_valid );
 		uint32_t nshader = glCreateShader( GL_FRAGMENT_SHADER );
 		const char* tmpptr[] = {source.c_str()};
@@ -248,13 +232,42 @@ namespace Graphics {
 		Anoptamin_LogDebug("Successfully compiled fragment shader for program #" + std::to_string(this->m_progID));
 		return true;
 	}
-	void c_Render_Engine::compileWithShaders() {
+	//! Compiles a new Geometry Shader into the rendering engine, and returns 'true' if done successfully.
+	//! A Geometry Shader is a program which adjusts primitives post-Vertex; that is, the points, lines, or triangles.
+	bool c_RenderEngine_Low::registerShader_Geometry(std::string source) {
+		check_codelogic( this->m_valid );
+		uint32_t nshader = glCreateShader( GL_GEOMETRY_SHADER );
+		const char* tmpptr[] = {source.c_str()};
+		glShaderSource( nshader, 1, tmpptr, NULL );
+		glCompileShader( nshader );
+		int32_t compiled = GL_FALSE;
+		glGetShaderiv( nshader, GL_COMPILE_STATUS, &compiled );
+		if ( compiled != GL_TRUE ) {
+			Anoptamin_LogWarn("Failed to compile geometry shader for program #" + std::to_string(this->m_progID));
+			int errloglen = 0, maxloglen = 0;
+			glGetShaderiv( nshader, GL_INFO_LOG_LENGTH, &maxloglen );
+			char* infolog = new char[maxloglen + 1];
+			glGetShaderInfoLog( nshader, maxloglen, &errloglen, infolog );
+			Anoptamin_LogTrace("OpenGL Shader Log: " + std::string(infolog));
+			delete [] infolog;
+			GLenum Error = glGetError();
+			const uint8_t* V = gluErrorString( Error );
+			std::string X = (reinterpret_cast<const char*>(V));
+			Anoptamin_LogTrace("OpenGL Error State: " + X);
+			return false;
+		}
+		glAttachShader( this->m_progID, nshader );
+		m_geomShaders.push_back(nshader);
+		Anoptamin_LogDebug("Successfully compiled geometry shader for program #" + std::to_string(this->m_progID));
+		return true;
+	}
+	void c_RenderEngine_Low::compileWithShaders() {
 		check_codelogic( this->m_valid );
 		check_video(glIsProgram(this->m_progID));
 		glLinkProgram( this->m_progID );
 		m_compiled = true;
 	}
-	bool c_Render_Engine::renderEngineGood() noexcept {
+	bool c_RenderEngine_Low::renderEngineGood() noexcept {
 		if (!m_compiled) {
 			Anoptamin_LogInfo("Called a check for the renderEngine before it was compiled.");
 			this->compileWithShaders();
@@ -285,9 +298,13 @@ namespace Graphics {
 		}
 		return true;
 	}
-	void c_Render_Engine::shutdownEngine() {
+	void c_RenderEngine_Low::shutdownEngine() {
 		Anoptamin_LogDebug("Shutting down OpenGL render program #" + std::to_string(this->m_progID));
 		this->m_valid = 0;
+		for (auto i : this->m_geomShaders) {
+			glDetachShader( this->m_progID, i );
+		}
+		this->m_geomShaders.clear();
 		for (auto i : this->m_fragShaders) {
 			glDetachShader( this->m_progID, i );
 		}
@@ -303,17 +320,17 @@ namespace Graphics {
 		Anoptamin_LogCommon("Shut down OpenGL Interface Program.");
 	}
 	
-	void c_Render_Engine::bindRenderer() const {
+	void c_RenderEngine_Low::bindRenderer() const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		glUseProgram( this->m_progID );
 	}
-	void c_Render_Engine::unbindRenderer() const {
+	void c_RenderEngine_Low::unbindRenderer() const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		glUseProgram( 0 );
 	}
-	int c_Render_Engine::getAttributeLocation(std::string what) const {
+	int c_RenderEngine_Low::getAttributeLocation(std::string what) const {
 		check_codelogic(this->m_valid);
 		check_video(this->m_compiled);
 		int ReturnLoc = 0;
@@ -322,77 +339,9 @@ namespace Graphics {
 		return ReturnLoc;
 	}
 	
-	
-	//! Loads some data into the VBO buffer. If 'vbostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataVBO(size_t vbosize, float* vbodata, bool vbostatic) {
+	//! Retrieves the raw OpenGL value for the Rendering Program
+	const uint32_t c_RenderEngine_Low::getGLProgram() const {
 		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
-		if (vbostatic) {
-			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_STATIC_DRAW );
-		} else {
-			glBufferData( GL_ARRAY_BUFFER, vbosize, vbodata, GL_DYNAMIC_DRAW );
-		}
-		Error = glGetError();
-		if (Error == GL_INVALID_ENUM) {
-			Anoptamin_LogInfo("Bad Enumeration in VBO Binding.");
-		} else if (Error != GL_NO_ERROR) {
-			Anoptamin_LogWarn("Bad VBO Binding Data.");
-			const uint8_t* V = gluErrorString( Error );
-			std::string X = (reinterpret_cast<const char*>(V));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-		}
-	}
-	//! Loads some data into the IBO buffer. If 'ibostatic' is true, then it will not allow the data buffer to be modified!
-	LIBANOP_FUNC_HOT void c_Render_Engine::loadDataIBO(size_t ibosize, uint32_t* ibodata, bool ibostatic) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
-		if (ibostatic) {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_STATIC_DRAW );
-		} else {
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, ibosize, ibodata, GL_DYNAMIC_DRAW );
-		}
-		Error = glGetError();
-		if (Error == GL_INVALID_ENUM) {
-			Anoptamin_LogInfo("Bad Enumeration in IBO Binding.");
-		} else if (Error != GL_NO_ERROR) {
-			Anoptamin_LogWarn("Bad IBO Binding Data.");
-			const uint8_t* V = gluErrorString( Error );
-			std::string X = (reinterpret_cast<const char*>(V));
-			Anoptamin_LogTrace("OpenGL Error State: " + X);
-		}
-	}
-	void c_Render_Engine::bindAndDraw(int32_t attribLocation, int8_t vertexSize, int32_t pointsRender, bool useLongFloats) {
-		check_codelogic(this->m_valid);
-		check_video(this->m_compiled);
-		
-		GLenum Error = GL_NO_ERROR;
-		
-		glClear( GL_COLOR_BUFFER_BIT );
-		glEnableVertexAttribArray(attribLocation);
-		glBindBuffer(GL_ARRAY_BUFFER, this->m_VBO);
-		if (useLongFloats) {
-			glVertexAttribPointer( attribLocation, vertexSize, GL_DOUBLE, GL_FALSE, vertexSize * sizeof(float), NULL );
-		} else {
-			glVertexAttribPointer( attribLocation, vertexSize, GL_FLOAT, GL_FALSE, vertexSize * sizeof(float), NULL );
-		}
-		Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogInfo("Bad Enumeration in ARRAY_BUFFER Binding.");
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->m_IBO);
-		glDrawElements( GL_TRIANGLE_FAN, pointsRender, GL_UNSIGNED_INT, NULL );
-		Error = glGetError();
-		if (Error != GL_NO_ERROR) {
-			Anoptamin_LogInfo("Bad Enumeration in object drawing.");
-		}
-		glDisableVertexAttribArray(attribLocation);
-		
-		this->mp_renderCtrl->updateRenderer();
+		return this->m_progID;
 	}
 }} //End Anoptamin::Graphics

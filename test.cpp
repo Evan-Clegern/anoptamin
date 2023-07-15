@@ -49,8 +49,7 @@ int main() {
 	Anoptamin::Base::c_Point3D_Floating ptB(2, 1.5, 1);
 	
 	Anoptamin::Geometry::c_Vector3D translatinator(2, 0, -1);
-	Anoptamin::Geometry::c_Angle rotatinator;
-	rotatinator.setRoll_Deg(90);
+	Anoptamin::Geometry::c_Vector3D translatinatorR(-2, 0, 1);
 	
 	Anoptamin::Geometry::c_Volume box = Anoptamin::Geometry::generateRectangle(ptA, ptB);
 	std::cout << "Box info: " << box.toString() << '\n';
@@ -59,108 +58,68 @@ int main() {
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
-	//box.rotateSelf(rotatinator);
+	
 	box.translateSelf(translatinator);
 	
+	std::cout << "(TR) Box info: " << box.toString() << '\n';
+	pointsOf = box.getAllPoints();
+	for (auto i : pointsOf) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
+	}
+	
+	box.translateSelf(translatinatorR);
+	
 	std::cout << "Box info: " << box.toString() << '\n';
 	pointsOf = box.getAllPoints();
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
 	
-	box.rotateSelf(rotatinator);
+	Anoptamin::Geometry::c_Angle rotator;
+	rotator.setPitch_Deg(1);
+	rotator.setRoll_Deg(0);
+	rotator.setYaw_Deg(0);
+	Anoptamin::Geometry::c_Angle rotator2;
+	rotator2.setPitch_Deg(-1);
+	rotator2.setRoll_Deg(0);
+	rotator2.setYaw_Deg(0);
+	
+	box.rotateSelf(rotator);
+	std::cout << "(ROT) Box info: " << box.toString() << '\n';
+	pointsOf = box.getAllPoints();
+	for (auto i : pointsOf) {
+		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
+	}
+	box.rotateSelf(rotator2);
 	std::cout << "Box info: " << box.toString() << '\n';
 	pointsOf = box.getAllPoints();
 	for (auto i : pointsOf) {
 		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
 	}
-	
-	rotatinator.setRoll_Deg(-90);
-	
-	box.rotateSelf(rotatinator);
-	std::cout << "Box info: " << box.toString() << '\n';
-	pointsOf = box.getAllPoints();
-	for (auto i : pointsOf) {
-		std::cout << Anoptamin::Geometry::pointToStr_F(&i) << '\n';
-	}
+	/*
+	Output:
+	(ROT) Box info: Volume SA: 65.338619, Volume Faces: 12; Volume Center: (1.046671, 0.791667, 0.518342)
+	(-1.055556, -0.791667, -0.500000)
+	(2.944140, -0.791667, -0.465103)
+	(2.926691, 2.208333, 1.534745)
+	(2.926691, -0.791667, 1.534745)
+	(2.944140, 2.208333, -0.465103)
+	(-1.073004, -0.791667, 1.499848)
+	(-1.055556, 2.208333, -0.500000)
+	(-1.073004, 2.208333, 1.499848)
+	Box info: Volume SA: 261.342907, Volume Faces: 12; Volume Center: (1.055556, 0.791667, 0.500000)
+	(-3.166345, -2.375000, -1.499848)
+	(4.833046, -2.375000, -1.499848)
+	(4.833046, 3.625000, 2.499848)
+	(4.833046, -2.375000, 2.499848)
+	(4.833046, 3.625000, -1.499848)
+	(-3.166345, -2.375000, 2.499848)
+	(-3.166345, 3.625000, -1.499848)
+	(-3.166345, 3.625000, 2.499848)
+
+	TL;DR: rotation is fucked up
+	*/
 	
 	// Just to prevent unneeded delay when testing geometry; move the graphics to an unreachable point for the time being
-	return 0;
-	
-	Anoptamin::Log::SetupFiles();
-	
-	Anoptamin::initializeSDLGraphics();
-	
-	
-	BobWindow = new Anoptamin::Base::c_SDLWindow(605, 300,
-		"Test Window for The Doom Test", false, Anoptamin::Base::TYPE_GENERIC, true, true, false);
-	Anoptamin_LogCommon("Window Created.");
-	
-	BobWindow->addHook_KeyboardEvent(exitWindowOnEsc_F);
-	
-	Anoptamin::Graphics::c_Window_Renderer autorender( BobWindow->getRawSDLWindow() );
-	assert_runtime( Anoptamin::Graphics::initializeGL() );
-	
-	Anoptamin::Graphics::c_Render_Engine mainrenderer(autorender);
-	mainrenderer.registerShader_Vertex( "#version 140\nin vec3 LVertexPos3D1; void main() { gl_Position = vec4( LVertexPos3D1.x, LVertexPos3D1.y, LVertexPos3D1.z, 1 ); }" );
-	mainrenderer.registerShader_Fragment("#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }");
-	mainrenderer.compileWithShaders();
-	assert_runtime( mainrenderer.renderEngineGood() );
-	
-	bool isclosed = 0;
-	
-	uint64_t sum_avg = 0;
-	
-	float vertexes1[] = {
-		0.5, 0.5, 1.0,
-		0.5, -0.5, 1.0,
-		-0.85, -0.35, -1.0,
-		-1.0, -0.4, -0.8,
-		-0.5, 0.5, -1.0
-	};
-	uint32_t indexes[] = {
-		0, 1, 2, 3, 4
-	};
-	
-	mainrenderer.loadDataVBO(sizeof(float) * 3 * 5, vertexes1, true);
-	mainrenderer.loadDataIBO(sizeof(uint32_t) * 5, indexes, true);
-	int attrib3d = mainrenderer.getAttributeLocation("LVertexPos3D1");
-	
-	uint64_t msst = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-	uint16_t i = 0;
-	for (; i < 1500; i++) {
-		// This essentially gives us a 1 ms delay
-		uint64_t mst_top = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-		std::vector<SDL_Event> Events = BobWindow->fullEventPoll();
-		uint64_t mst_btm = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-		
-		sum_avg += (mst_btm - mst_top);
-		
-		if (!BobWindow->isOpen()) {
-			isclosed = 1;
-			break;
-		}
-		mainrenderer.bindRenderer();
-		// Draw the rectangle
-		mainrenderer.bindAndDraw(attrib3d, 3, 5); // 3D points; 5 of them in total.
-		
-		mainrenderer.unbindRenderer();
-	}
-	uint64_t msed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-	std::cout << "The average event polling time was: " << (sum_avg / double(i)) << " us, and the total time elapsed was: " << (msed - msst) << "ms.\n";
-	
-	mainrenderer.shutdownEngine();
-
-	if (!isclosed) BobWindow->closeWindow(); else {
-		Anoptamin_LogCommon("Window Closed at User Bequest.");
-	}
-	// Delete the window
-	delete BobWindow;
-	Anoptamin_LogCommon("Window Closed.");
-	
-	// Finish up.
-	
-	Anoptamin::cleanupSDLGraphics();
-	
 	return 0;
 }

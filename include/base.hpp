@@ -201,6 +201,12 @@
 	#define anoptamin_stringify(n) #n
 
 namespace Anoptamin { namespace Base {
+	
+	static std::shuffle_order_engine< std::independent_bits_engine< std::mt19937_64, 64, uint64_t >, 80 > RANDengine;
+	
+	//! Seeds the random number generator.
+	LIBANOP_FUNC_COLD LIBANOP_FUNC_NOINLINE LIBANOP_FUNC_IMPORT void seedEngine();
+	
 	static std::filesystem::path anoptamin_TMPpath;
 	static std::filesystem::path anoptamin_LOGpath;
 	static std::filesystem::path anoptamin_BASEpath;
