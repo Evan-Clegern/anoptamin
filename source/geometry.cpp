@@ -252,20 +252,9 @@ namespace Anoptamin { namespace Geometry {
 	double c_Vector3D::dotProduct(const c_Vector3D& b) const noexcept {
 		return (b.ValX * this->ValX) + (b.ValY * this->ValY) + (b.ValZ * this->ValZ);
 	}
-	// this follows the FORMAL definition for cross products, but i'm pretty sure it could be made more efficient later on
+	
 	c_Vector3D c_Vector3D::crossProduct(const c_Vector3D& b) const noexcept {
-		c_Vector3D ncopies(
-			(this->ValY * b.ValZ) - (this->ValZ * b.ValY),
-			(this->ValX * b.ValZ) - (this->ValZ * b.ValX),
-			(this->ValX * b.ValY) - (this->ValY * b.ValX)
-		);
-		const c_Vector3D xAxis(1.0, 0.0, 0.0);
-		const c_Vector3D yAxis(0.0, 1.0, 0.0);
-		const c_Vector3D zAxis(0.0, 0.0, 1.0);
-		double NX = ncopies.dotProduct(xAxis);
-		double NY = ncopies.dotProduct(yAxis);
-		double NZ = ncopies.dotProduct(zAxis);
-		return c_Vector3D(NX, NY, NZ);
+		return c_Vector3D((this->ValY * b.ValZ) - (this->ValZ * b.ValY), (this->ValX * b.ValZ) - (this->ValZ * b.ValX), (this->ValX * b.ValY) - (this->ValY * b.ValX));
 	}
 	//Stop c_Vector3D methods
 	
@@ -438,7 +427,7 @@ namespace PtTransforms {
 		return NEWPT;
 	}
 	
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT c_Matrix getRotationMatrix(const c_Angle& by) {
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT std::array<c_Matrix, 3> getRotationMatrices(const c_Angle& by) {
 		// 'A' vector: 1x3
 		// 'B' vector: 3x3
 		// Output: 1x3 (new point)
@@ -447,11 +436,11 @@ namespace PtTransforms {
 		const long double SinAlph = std::sin(by.getYaw_Rad());
 		const long double CosAlph = std::cos(by.getYaw_Rad());
 		
-		const long double SinBeta = std::sin(by.getPitch_Rad());
-		const long double CosBeta = std::cos(by.getPitch_Rad());
+		const long double SinBeta = std::sin(by.getRoll_Rad());
+		const long double CosBeta = std::cos(by.getRoll_Rad());
 		
-		const long double SinGamm = std::sin(by.getRoll_Rad());
-		const long double CosGamm = std::cos(by.getRoll_Rad());
+		const long double SinGamm = std::sin(by.getPitch_Rad());
+		const long double CosGamm = std::cos(by.getPitch_Rad());
 		// Manually create the matrix (using proper axes)
 		// 'α, β, γ, about axes z, y, x'...
 		// except we have Pitch about x, and not about y, so it is adjusted accordingly
@@ -473,16 +462,25 @@ namespace PtTransforms {
 			{0, SinGamm, CosGamm}
 		});
 		
-		c_Matrix TMP = FromYaw.dotProduct(FromPitch);
-		c_Matrix OUT = TMP.dotProduct(FromRoll);
+		std::array<c_Matrix, 3> OUT = {FromYaw, FromPitch, FromRoll};
 		return OUT;
 	}
-	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const c_Matrix &matrix, Base::c_Point3D_Floating main,
+	/*
+    1 Translate the object to world origin
+        Object's origin would align with world's, making r = 0
+    2 Rotate with one (or more) aforementioned rotation matrices
+    3 Translate object back again to its previous (original) location.
+	*/
+	LIBANOP_FUNC_CODEPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrices(const std::array<c_Matrix, 3> &matrix, Base::c_Point3D_Floating main,
 	const Base::c_Point3D_Floating& about) {
-		Base::c_Point3D_Floating offset = getPointDiff_F(&main, &about);
-		c_Matrix AsMatr(1, 3, { {main.x, main.y, main.z} });
-		c_Matrix Out = AsMatr.dotProduct(matrix);
-		return Base::c_Point3D_Floating(Out.at(0,0) + offset.x, Out.at(0,1) + offset.y, Out.at(0,2) + offset.z);
+		Base::c_Point3D_Floating origin(0.0, 0.0, 0.0);
+		Base::c_Point3D_Floating offset = getPointDiff_F(&about, &origin);
+		Base::c_Point3D_Floating direct = getPointDiff_F(&main, &offset);
+		c_Matrix AsMatr(1, 3, { {direct.x, direct.y, direct.z} });
+		c_Matrix YawRot = AsMatr.dotProduct(matrix[0]);
+		c_Matrix PitRot = YawRot.dotProduct(matrix[2]);
+		c_Matrix RolRot = PitRot.dotProduct(matrix[1]);
+		return Base::c_Point3D_Floating(RolRot.at(0,0) + offset.x, RolRot.at(0,1) + offset.y, RolRot.at(0,2) + offset.z);
 	}
 } // End Anoptamin::Geometry::Transforms
 		
@@ -700,21 +698,22 @@ namespace PtTransforms {
 	// rotation time baby
 	//! Rotate the object by the various angles specified
 	void c_Volume::rotateSelf(c_Angle rotateBy) {
-		auto rotvec = PtTransforms::getRotationMatrix(rotateBy);
+		auto rotvec = PtTransforms::getRotationMatrices(rotateBy);
+		const auto this_ctr = this->Center;
 		for (c_Face_Triangle& i : this->Faces) {
-			i.Points.A = PtTransforms::rotateByMatrix(rotvec, i.Points.A, this->Center);
-			i.Points.B = PtTransforms::rotateByMatrix(rotvec, i.Points.B, this->Center);
-			i.Points.C = PtTransforms::rotateByMatrix(rotvec, i.Points.C, this->Center);
+			i.Points.A = PtTransforms::rotateByMatrices(rotvec, i.Points.A, this_ctr);
+			i.Points.B = PtTransforms::rotateByMatrices(rotvec, i.Points.B, this_ctr);
+			i.Points.C = PtTransforms::rotateByMatrices(rotvec, i.Points.C, this_ctr);
 		}
 		this->calculateData();
 	}
 	//! Rotate the object by the various angles specified, about the position specified.
 	void c_Volume::rotateSelf_About(c_Angle rotateBy, Base::c_Point3D_Integer about) {
-		auto rotvec = PtTransforms::getRotationMatrix(rotateBy);
+		auto rotvec = PtTransforms::getRotationMatrices(rotateBy);
 		for (c_Face_Triangle& i : this->Faces) {
-			i.Points.A = PtTransforms::rotateByMatrix(rotvec, i.Points.A, about);
-			i.Points.B = PtTransforms::rotateByMatrix(rotvec, i.Points.B, about);
-			i.Points.C = PtTransforms::rotateByMatrix(rotvec, i.Points.C, about);
+			i.Points.A = PtTransforms::rotateByMatrices(rotvec, i.Points.A, about);
+			i.Points.B = PtTransforms::rotateByMatrices(rotvec, i.Points.B, about);
+			i.Points.C = PtTransforms::rotateByMatrices(rotvec, i.Points.C, about);
 		}
 		this->calculateData();
 	}

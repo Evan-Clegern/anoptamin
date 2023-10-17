@@ -158,8 +158,8 @@ namespace PtTransforms {
 		const c_Vector3D* level) noexcept;
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 		const c_Vector3D* level) noexcept;
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT c_Matrix getRotationMatrix(const c_Angle& by);
-	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrix(const c_Matrix &matrix, Base::c_Point3D_Floating main,
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT std::array<c_Matrix, 3> getRotationMatrices(const c_Angle& by);
+	LIBANOP_FUNC_HEADERPT LIBANOP_FUNC_HOT Base::c_Point3D_Floating rotateByMatrices(const std::array<c_Matrix, 3> &matrix, Base::c_Point3D_Floating main,
 		const Base::c_Point3D_Floating& about);
 }
 	//! Class which represents a line drawn between two points.
