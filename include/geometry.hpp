@@ -59,6 +59,7 @@ namespace Anoptamin { namespace Geometry {
 	
 	//! Class which holds basic angle data in an efficient manner (as integer based fractions of 2PI)
 	//! This still means that an angle has a precision of 0.010987 degrees per step, in either direction.
+	//! pitch affects x/z, roll affects y/z, yaw affects x/y.
 	struct c_Angle {
 		//! Pitch Yaw and Roll respectively; each subsequent value being equal to (X * 2 Pi / 32767)
 		int16_t Angle_AroundX = 0, Angle_AroundZ = 0, Angle_AroundY = 0;

@@ -436,11 +436,11 @@ namespace PtTransforms {
 		const long double SinAlph = std::sin(by.getYaw_Rad());
 		const long double CosAlph = std::cos(by.getYaw_Rad());
 		
-		const long double SinBeta = std::sin(by.getRoll_Rad());
-		const long double CosBeta = std::cos(by.getRoll_Rad());
+		const long double SinBeta = std::sin(by.getPitch_Rad());
+		const long double CosBeta = std::cos(by.getPitch_Rad());
 		
-		const long double SinGamm = std::sin(by.getPitch_Rad());
-		const long double CosGamm = std::cos(by.getPitch_Rad());
+		const long double SinGamm = std::sin(by.getRoll_Rad());
+		const long double CosGamm = std::cos(by.getRoll_Rad());
 		// Manually create the matrix (using proper axes)
 		// 'α, β, γ, about axes z, y, x'...
 		// except we have Pitch about x, and not about y, so it is adjusted accordingly
@@ -478,8 +478,8 @@ namespace PtTransforms {
 		Base::c_Point3D_Floating direct = getPointDiff_F(&main, &offset);
 		c_Matrix AsMatr(1, 3, { {direct.x, direct.y, direct.z} });
 		c_Matrix YawRot = AsMatr.dotProduct(matrix[0]);
-		c_Matrix PitRot = YawRot.dotProduct(matrix[2]);
-		c_Matrix RolRot = PitRot.dotProduct(matrix[1]);
+		c_Matrix PitRot = YawRot.dotProduct(matrix[1]);
+		c_Matrix RolRot = PitRot.dotProduct(matrix[2]);
 		return Base::c_Point3D_Floating(RolRot.at(0,0) + offset.x, RolRot.at(0,1) + offset.y, RolRot.at(0,2) + offset.z);
 	}
 } // End Anoptamin::Geometry::Transforms
