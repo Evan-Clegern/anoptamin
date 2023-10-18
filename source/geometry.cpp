@@ -76,27 +76,27 @@ namespace Anoptamin { namespace Geometry {
 	}
 	
 	double c_Angle::getPitch_Rad() const noexcept {
-		return this->Angle_AroundX * ANGStepRad;
+		return Base::round(this->Angle_AroundX * ANGStepRad);
 	}
 	
 	double c_Angle::getPitch_Deg() const noexcept {
-		return this->Angle_AroundX * ANGStepDeg;
+		return Base::round(this->Angle_AroundX * ANGStepDeg);
 	}
 	
 	double c_Angle::getYaw_Rad() const noexcept {
-		return this->Angle_AroundZ * ANGStepRad;
+		return Base::round(this->Angle_AroundZ * ANGStepRad);
 	}
 	
 	double c_Angle::getYaw_Deg() const noexcept {
-		return this->Angle_AroundZ * ANGStepDeg;
+		return Base::round(this->Angle_AroundZ * ANGStepDeg);
 	}
 	
 	double c_Angle::getRoll_Rad() const noexcept {
-		return this->Angle_AroundY * ANGStepRad;
+		return Base::round(this->Angle_AroundY * ANGStepRad);
 	}
 	
 	double c_Angle::getRoll_Deg() const noexcept {
-		return this->Angle_AroundY * ANGStepDeg;
+		return Base::round(this->Angle_AroundY * ANGStepDeg);
 	}
 	
 	
