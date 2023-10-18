@@ -43,15 +43,15 @@ namespace Anoptamin { namespace Geometry {
 	}
 	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_F(const Base::c_Point3D_Floating* A,
 	const Base::c_Point3D_Floating* B) noexcept {
-		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
+		return Base::round(std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) ));
 	}
 	LIBANOP_FUNC_EXPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL double getPointDist_I(const Base::c_Point3D_Integer* A,
 	const Base::c_Point3D_Integer* B) noexcept {
-		return std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) );
+		return Base::round(std::sqrt( std::pow(A->x - B->x, 2) + std::pow(A->y - B->y, 2) + std::pow(A->z - B->z, 2) ));
 	}
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating getPointDiff_F(const Base::c_Point3D_Floating* A,
 	const Base::c_Point3D_Floating* B) noexcept {
-		Base::c_Point3D_Floating N(A->x - B->x, A->y - B->y, A->z - B->z);
+		Base::c_Point3D_Floating N(Base::round(A->x - B->x, 3), Base::round(A->y - B->y, 3), Base::round(A->z - B->z, 3));
 		return N;
 	}
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer getPointDiff_I(const Base::c_Point3D_Integer* A,
@@ -178,7 +178,7 @@ namespace Anoptamin { namespace Geometry {
 	// Stop c_Angle methods
 	
 	c_Vector3D::c_Vector3D(double X, double Y, double Z) {
-		ValX = X; ValY = Y; ValZ = Z;
+		ValX = Base::round(X,3); ValY = Base::round(Y,3); ValZ = Base::round(Z,3);
 		calculateMagnitude();
 	}
 	c_Vector3D::c_Vector3D() {
@@ -190,14 +190,14 @@ namespace Anoptamin { namespace Geometry {
 	}
 	
 	void c_Vector3D::calculateMagnitude() noexcept {
-		this->Magnitude = std::sqrt( (this->ValX * this->ValX) + (this->ValY * this->ValY) + (this->ValZ * this->ValZ) );
+		this->Magnitude = Base::round(std::sqrt( (this->ValX * this->ValX) + (this->ValY * this->ValY) + (this->ValZ * this->ValZ) ));
 	}
 	// the square of ValX, ValY and ValZ must add up to 1
 	void c_Vector3D::normalize() noexcept {
 		this->calculateMagnitude();
-		this->ValX = (this->ValX / this->Magnitude);
-		this->ValY = (this->ValY / this->Magnitude);
-		this->ValZ = (this->ValZ / this->Magnitude);
+		this->ValX = Base::round(this->ValX / this->Magnitude, 3);
+		this->ValY = Base::round(this->ValY / this->Magnitude, 3);
+		this->ValZ = Base::round(this->ValZ / this->Magnitude, 3);
 	}
 	//! Gets the angle at which the vector is pointed from the base point.
 	
@@ -206,11 +206,11 @@ namespace Anoptamin { namespace Geometry {
 	c_Angle c_Vector3D::getAngles() const {
 		c_Angle TMP;
 		// About the 'x' axis (Y / Z)
-		TMP.setPitch_Rad( std::atan( this->ValY	/ this->ValZ ) );
+		TMP.setPitch_Rad( Base::round(std::atan( this->ValY	/ this->ValZ )) );
 		// About the 'z' axis (X / Y)
-		TMP.setYaw_Rad( std::atan( this->ValX / this->ValY ) );
+		TMP.setYaw_Rad( Base::round(std::atan( this->ValX / this->ValY )) );
 		// About the 'y' axis (X / Z)
-		TMP.setRoll_Rad( std::atan( this->ValX / this->ValZ ) );
+		TMP.setRoll_Rad( Base::round(std::atan( this->ValX / this->ValZ )) );
 		
 		return TMP;
 	}
@@ -226,9 +226,9 @@ namespace Anoptamin { namespace Geometry {
 
 	c_Vector3D c_Vector3D::operator*(double scalar) const noexcept {
 		c_Vector3D TMP(*this);
-		TMP.ValX *= scalar;
-		TMP.ValY *= scalar;
-		TMP.ValZ *= scalar;
+		TMP.ValX = Base::round(scalar * TMP.ValX, 3);
+		TMP.ValY = Base::round(scalar * TMP.ValY, 3);
+		TMP.ValZ = Base::round(scalar * TMP.ValZ, 3);
 		TMP.calculateMagnitude();
 		return TMP;
 	}
@@ -250,11 +250,15 @@ namespace Anoptamin { namespace Geometry {
 	}
 	
 	double c_Vector3D::dotProduct(const c_Vector3D& b) const noexcept {
-		return (b.ValX * this->ValX) + (b.ValY * this->ValY) + (b.ValZ * this->ValZ);
+		return Base::round(b.ValX * this->ValX) + Base::round(b.ValY * this->ValY) + Base::round(b.ValZ * this->ValZ);
 	}
 	
 	c_Vector3D c_Vector3D::crossProduct(const c_Vector3D& b) const noexcept {
-		return c_Vector3D((this->ValY * b.ValZ) - (this->ValZ * b.ValY), (this->ValX * b.ValZ) - (this->ValZ * b.ValX), (this->ValX * b.ValY) - (this->ValY * b.ValX));
+		return c_Vector3D(
+			Base::round((this->ValY * b.ValZ) - (this->ValZ * b.ValY), 3),
+			Base::round((this->ValX * b.ValZ) - (this->ValZ * b.ValX), 3),
+			Base::round((this->ValX * b.ValY) - (this->ValY * b.ValX), 3)
+		);
 	}
 	//Stop c_Vector3D methods
 	
@@ -397,9 +401,9 @@ namespace PtTransforms {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating translateBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Floating NEWPT(*main);
-		NEWPT.x += level->ValX;
-		NEWPT.y += level->ValY;
-		NEWPT.z += level->ValZ;
+		NEWPT.x = Base::round(NEWPT.x + level->ValX, 3);
+		NEWPT.y = Base::round(level->ValY + NEWPT.y, 3);
+		NEWPT.z = Base::round(level->ValZ + NEWPT.z, 3);
 		return NEWPT;
 	}
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer translateBy_I(const Base::c_Point3D_Integer* main,
@@ -413,17 +417,17 @@ namespace PtTransforms {
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Floating scaleBy_F(const Base::c_Point3D_Floating* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Floating NEWPT(*main);
-		NEWPT.x *= level->ValX;
-		NEWPT.y *= level->ValY;
-		NEWPT.z *= level->ValZ;
+		NEWPT.x = Base::round(level->ValX * NEWPT.x, 3);
+		NEWPT.y = Base::round(level->ValY * NEWPT.y, 3);
+		NEWPT.z = Base::round(level->ValZ * NEWPT.z, 3);
 		return NEWPT;
 	}
 	LIBANOP_FUNC_IMPORT LIBANOP_FUNC_HOT LIBANOP_FUNC_INPUTS_NONNULL Base::c_Point3D_Integer scaleBy_I(const Base::c_Point3D_Integer* main,
 	const c_Vector3D* level) noexcept {
 		Base::c_Point3D_Integer NEWPT(*main);
-		NEWPT.x *= int32_t(level->ValX);
-		NEWPT.y *= int32_t(level->ValY);
-		NEWPT.z *= int32_t(level->ValZ);
+		NEWPT.x = (int)(level->ValX * NEWPT.x);
+		NEWPT.y = (int)(level->ValY * NEWPT.y);
+		NEWPT.z = (int)(level->ValZ * NEWPT.z);
 		return NEWPT;
 	}
 	
@@ -433,14 +437,14 @@ namespace PtTransforms {
 		// Output: 1x3 (new point)
 
 
-		const long double SinAlph = std::sin(by.getYaw_Rad());
-		const long double CosAlph = std::cos(by.getYaw_Rad());
+		const long double SinAlph = Base::round(std::sin(by.getYaw_Rad()));
+		const long double CosAlph = Base::round(std::cos(by.getYaw_Rad()));
 		
-		const long double SinBeta = std::sin(by.getPitch_Rad());
-		const long double CosBeta = std::cos(by.getPitch_Rad());
+		const long double SinBeta = Base::round(std::sin(by.getPitch_Rad()));
+		const long double CosBeta = Base::round(std::cos(by.getPitch_Rad()));
 		
-		const long double SinGamm = std::sin(by.getRoll_Rad());
-		const long double CosGamm = std::cos(by.getRoll_Rad());
+		const long double SinGamm = Base::round(std::sin(by.getRoll_Rad()));
+		const long double CosGamm = Base::round(std::cos(by.getRoll_Rad()));
 		// Manually create the matrix (using proper axes)
 		// 'α, β, γ, about axes z, y, x'...
 		// except we have Pitch about x, and not about y, so it is adjusted accordingly
@@ -480,7 +484,7 @@ namespace PtTransforms {
 		c_Matrix YawRot = AsMatr.dotProduct(matrix[0]);
 		c_Matrix PitRot = YawRot.dotProduct(matrix[1]);
 		c_Matrix RolRot = PitRot.dotProduct(matrix[2]);
-		return Base::c_Point3D_Floating(RolRot.at(0,0) + offset.x, RolRot.at(0,1) + offset.y, RolRot.at(0,2) + offset.z);
+		return Base::c_Point3D_Floating(Base::round(RolRot.at(0,0) + offset.x, 3), Base::round(RolRot.at(0,1) + offset.y, 3), Base::round(RolRot.at(0,2) + offset.z, 3));
 	}
 } // End Anoptamin::Geometry::Transforms
 		
@@ -508,9 +512,9 @@ namespace PtTransforms {
 		c_Angle TMPANG;
 		Base::c_Point3D_Floating DIFF = getPointDiff_F(this->PointA, this->PointB);
 		// hypotenuse == this->Length
-		TMPANG.setPitch_Rad( std::acos(DIFF.x / this->Length) );
-		TMPANG.setYaw_Rad( std::acos(DIFF.z / this->Length) );
-		TMPANG.setRoll_Rad( std::acos(DIFF.y / this->Length) );
+		TMPANG.setPitch_Rad( Base::round(std::acos(DIFF.x / this->Length)) );
+		TMPANG.setYaw_Rad( Base::round(std::acos(DIFF.z / this->Length)) );
+		TMPANG.setRoll_Rad( Base::round(std::acos(DIFF.y / this->Length)) );
 		this->EdgeAngle = TMPANG;
 	}
 	//! Calculate a vector to represent the edge from PointA to PointB.
@@ -585,16 +589,16 @@ namespace PtTransforms {
 		this->EdgeC.calculateData();
 		
 		// Centers
-		double tmpx = (this->Points.A.x + this->Points.B.x + this->Points.C.x) / 3;
-		double tmpy = (this->Points.A.y + this->Points.B.y + this->Points.C.y) / 3;
-		double tmpz = (this->Points.A.z + this->Points.B.z + this->Points.C.z) / 3;
+		double tmpx = Base::round((this->Points.A.x + this->Points.B.x + this->Points.C.x) / 3, 3);
+		double tmpy = Base::round((this->Points.A.y + this->Points.B.y + this->Points.C.y) / 3, 3);
+		double tmpz = Base::round((this->Points.A.z + this->Points.B.z + this->Points.C.z) / 3, 3);
 		this->Center = Base::c_Point3D_Floating(tmpx, tmpy, tmpz);
 		// Distances
 		double gooberAB = this->EdgeA.Length;
 		double gooberBC = this->EdgeB.Length;
 		double gooberCA = this->EdgeC.Length;
-		long double perim = 0.5 * (gooberAB + gooberBC + gooberCA);
-		this->Area = std::sqrt( perim * (perim - gooberAB) * (perim - gooberBC) * (perim - gooberCA) );
+		long double perim = Base::round(0.5 * (gooberAB + gooberBC + gooberCA));
+		this->Area = Base::round(std::sqrt( perim * (perim - gooberAB) * (perim - gooberBC) * (perim - gooberCA) ));
 	}
 	//! Returns a String representation.
 	std::string c_Face_Triangle::toString() const {
@@ -616,14 +620,15 @@ namespace PtTransforms {
 			
 			this->SurfaceArea += i.Area;
 		}
+		this->SurfaceArea = Base::round(this->SurfaceArea);
 		Base::c_Point3D_Floating NTMP;
-		NTMP.x = (TMP.x / this->Faces.size());
-		NTMP.y = (TMP.y / this->Faces.size());
-		NTMP.z = (TMP.z / this->Faces.size());
+		NTMP.x = Base::round(TMP.x / this->Faces.size(), 3);
+		NTMP.y = Base::round(TMP.y / this->Faces.size(), 3);
+		NTMP.z = Base::round(TMP.z / this->Faces.size(), 3);
 		this->Center = NTMP;
 	}
 	
-	// header-only, test if the point is in vector
+	// codeonly, test if the point is in vector
 	bool isPtInVec(Base::c_Point3D_Floating* point, std::vector<Base::c_Point3D_Floating>& vector) {
 		for (auto i : vector) {
 			if (i.x == point->x) {
@@ -633,7 +638,7 @@ namespace PtTransforms {
 		}
 		return false;
 	}
-	// header-only, test if the point is in vector
+	// codeonly, test if the point is in vector
 	bool isPtInVec(Base::c_Point3D_Floating point, std::vector<Base::c_Point3D_Floating>& vector) {
 		for (auto i : vector) {
 			if (i.x == point.x) {
@@ -674,7 +679,7 @@ namespace PtTransforms {
 		
 		long double scale_x = diff_x * xSc, scale_y = diff_y * ySc, scale_z = diff_z * zSc;
 		
-		return Base::c_Point3D_Floating(from.x + scale_x, from.y + scale_y, from.z + scale_z);
+		return Base::c_Point3D_Floating(Base::round(from.x + scale_x, 3), Base::round(from.y + scale_y, 3), Base::round(from.z + scale_z, 3));
 	}
 	
 	// we have to increase the distance of each point from the center

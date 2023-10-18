@@ -201,6 +201,14 @@
 	#define anoptamin_stringify(n) #n
 
 namespace Anoptamin { namespace Base {
+	//! Round specified value to the specified # of decimal places.
+	//! Standard for scalars (default) is 5, standard for points and vectors is 3.
+	template<typename T> T round(T value, uint8_t places = 5) {
+		long double tmp = value;
+		long double mlt = std::pow(10, places);
+		long double out = (std::round(tmp * mlt)) / mlt;
+		return static_cast<T>(out);
+	}
 	
 	static std::shuffle_order_engine< std::independent_bits_engine< std::mt19937_64, 64, uint64_t >, 80 > RANDengine;
 	
@@ -230,9 +238,9 @@ namespace Anoptamin { namespace Base {
 	} __attribute__((__packed__));
 	//! A 3D coordinate with decimal positions.
 	struct c_Point3D_Floating {
-		double x, y, z;
+		float x, y, z;
 		c_Point3D_Floating();
-		c_Point3D_Floating(double ix, double iy, double iz);
+		c_Point3D_Floating(float ix, float iy, float iz);
 		c_Point3D_Floating(const c_Point3D_Floating& other);
 		c_Point3D_Floating(const c_Point3D_Integer& base);
 	} __attribute__((__packed__));
