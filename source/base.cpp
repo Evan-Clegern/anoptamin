@@ -197,14 +197,14 @@ namespace Anoptamin {
 		c_Point3D_Floating::c_Point3D_Floating() {
 			x = 0; y = 0; z = 0;
 		}
-		c_Point3D_Floating::c_Point3D_Floating(double ix, double iy, double iz) {
+		c_Point3D_Floating::c_Point3D_Floating(float ix, float iy, float iz) {
 			x = ix; y = iy; z = iz;
 		}
 		c_Point3D_Floating::c_Point3D_Floating(const c_Point3D_Floating& other) {
 			x = other.x; y = other.y; z = other.z;
 		}
 		c_Point3D_Floating::c_Point3D_Floating(const c_Point3D_Integer& base) {
-			x = double(base.x); y = double(base.y); z = double(base.z);
+			x = float(base.x); y = float(base.y); z = float(base.z);
 		}
 	} // End Base namespace
 	
